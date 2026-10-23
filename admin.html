@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShaolinApp - Espace Admin</title>
+    <style>
+        :root {
+            --primary: #0f172a;
+            --accent: #38bdf8;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-body: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-body);
+            margin: 0;
+            padding: 0;
+            color: var(--text-main);
+            padding-top: 110px;
+            scroll-behavior: smooth;
+        }
+        
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(15, 23, 42, 0.98);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            gap: 10px;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-container img {
+            height: 38px;
+            width: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent);
+        }
+
+        .logo-container h1 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            white-space: nowrap;
+        }
+
+        nav {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px 20px;
+            margin: 0;
+            padding: 0;
+            align-items: center;
+        }
+
+        nav ul li a {
+            color: #cbd5e1;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.88rem;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 3px 0;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        nav ul li a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        nav ul li a:hover, nav ul li a.actif {
+            color: white;
+        }
+
+        nav ul li a:hover::after, nav ul li a.actif::after {
+            width: 100%;
+        }
+
+        @media (min-width: 850px) {
+            body {
+                padding-top: 80px;
+            }
+            header {
+                flex-direction: row;
+                justify-content: space-between;
+                padding: 15px 40px;
+            }
+            nav {
+                width: auto;
+            }
+            nav ul {
+                gap: 25px;
+            }
+            nav ul li a {
+                font-size: 0.95rem;
+            }
+        }
+
+        .styled-card {
+            max-width: 750px;
+            margin: 40px auto;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .styled-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #2563eb, #38bdf8);
+        }
+
+        .badge-section {
+            display: inline-block;
+            background-color: #eff6ff;
+            color: #2563eb;
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            border: 1px solid #bfdbfe;
+        }
+
+        .styled-card h3 {
+            color: var(--primary);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 10px 0 20px 0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--primary);
+            font-size: 0.95rem;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1rem;
+            background-color: #f8fafc;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--accent);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+        }
+
+        .btn-submit {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            background-color: #1d4ed8;
+        }
+
+        #messageSucces {
+            display: none;
+            margin-top: 15px;
+            padding: 12px;
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        #zone-connexion {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        #zone-connexion input {
+            max-width: 350px;
+            margin: 15px auto;
+            text-align: center;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border-color);
+            margin-top: 50px;
+        }
+
+        @media (max-width: 768px) {
+            .styled-card { margin: 20px; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-container">
+            <img src="logo.jpg" alt="Logo ShaolinApp">
+            <h1>ShaolinApp</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="eleves.html">Liste des Élèves</a></li>
+                <li><a href="apropos.html">À propos du Club</a></li>
+                <li><a href="taos.html">Regarder les Taos</a></li>
+                <li><a href="admin.html" class="actif">Espace Admin</a></li>
+                <li id="nav-deconnexion" style="display: none;">
+                    <button onclick="deconnecterAdmin()" style="background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600;">Déconnexion</button>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- ÉCRAN DE CONNEXION ADMIN -->
+    <div id="zone-connexion" class="styled-card">
+        <span class="badge-section">Sécurité Restreinte</span>
+        <h3>🔐 Connexion Administrateur Requise</h3>
+        <p style="color: var(--text-muted); margin-bottom: 20px;">Veuillez entrer le mot de passe administrateur pour accéder aux inscriptions et modifications.</p>
+        
+        <div class="form-group">
+            <input type="password" id="inputPassword" placeholder="Entrez le mot de passe">
+        </div>
+        <button onclick="verifierMotDepasse()" class="btn-submit" style="max-width: 350px; margin: 0 auto;">Se connecter</button>
+        <p id="erreurLogin" style="color: #ef4444; font-weight: 600; margin-top: 15px; display: none;">Mot de passe incorrect. Veuillez réessayer.</p>
+    </div>
+
+    <!-- CONTENU PRINCIPAL ADMIN -->
+    <div id="zone-admin-contenu" style="display: none;">
+        
+        <!-- SECTION 1 : ACTIVATION DES TAOS À DISTANCE -->
+        <div class="styled-card" style="margin-bottom: 30px;">
+            <span class="badge-section" style="background-color: #dcfce7; color: #166534; border-color: #bbf7d0;">Paiements & Abonnements</span>
+            <h3>🔓 Valider l'accès à un Tao (Abonnement 7 jours)</h3>
+            <p style="color: var(--text-muted); margin-bottom: 20px;">Après réception de l'Orange Money, activez le Tao pour le numéro de l'élève ci-dessous :</p>
+            
+            <form id="formActivationTao">
+                <div class="form-group">
+                    <label for="telEleveTao">Numéro de téléphone de l'élève :</label>
+                    <input type="tel" id="telEleveTao" placeholder="Ex: 70 00 00 00 ou +22370000000" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="selectTao">Sélectionner le Tao à débloquer :</label>
+                    <select id="selectTao" required>
+                        <option value="">-- Choisissez le Tao payé --</option>
+                        <optgroup label="1ère barrette">
+                            <option value="1ère barrette - A">1ère barrette - A</option>
+                            <option value="1ère barrette - B">1ère barrette - B</option>
+                            <option value="1ère barrette - C">1ère barrette - C</option>
+                        </optgroup>
+                        <optgroup label="2ème barrette">
+                            <option value="2ème barrette - A">2ème barrette - A</option>
+                            <option value="2ème barrette - B">2ème barrette - B</option>
+                            <option value="2ème barrette - C">2ème barrette - C</option>
+                        </optgroup>
+                        <optgroup label="3ème barrette">
+                            <option value="3ème barrette - A">3ème barrette - A</option>
+                            <option value="3ème barrette - B">3ème barrette - B</option>
+                            <option value="3ème barrette - C">3ème barrette - C</option>
+                        </optgroup>
+                        <optgroup label="4ème barrette">
+                            <option value="4ème barrette - A">4ème barrette - A</option>
+                            <option value="4ème barrette - B">4ème barrette - B</option>
+                            <option value="4ème barrette - C">4ème barrette - C</option>
+                        </optgroup>
+                        <optgroup label="5ème barrette">
+                            <option value="5ème barrette - A">5ème barrette - A</option>
+                            <option value="5ème barrette - B">5ème barrette - B</option>
+                            <option value="5ème barrette - C">5ème barrette - C</option>
+                        </optgroup>
+                        <optgroup label="6ème barrette">
+                            <option value="6ème barrette - A">6ème barrette - A</option>
+                            <option value="6ème barrette - B">6ème barrette - B</option>
+                            <option value="6ème barrette - C">6ème barrette - C</option>
+                        </optgroup>
+                        <optgroup label="7ème barrette">
+                            <option value="7ème barrette - A">7ème barrette - A</option>
+                            <option value="7ème barrette - B">7ème barrette - B</option>
+                            <option value="7ème barrette - C">7ème barrette - C</option>
+                        </optgroup>
+                        <optgroup label="8ème barrette">
+                            <option value="8ème barrette - A">8ème barrette - A</option>
+                            <option value="8ème barrette - B">8ème barrette - B</option>
+                            <option value="8ème barrette - C">8ème barrette - C</option>
+                        </optgroup>
+                        <optgroup label="9ème barrette">
+                            <option value="9ème barrette - A">9ème barrette - A</option>
+                            <option value="9ème barrette - B">9ème barrette - B</option>
+                            <option value="9ème barrette - C">9ème barrette - C</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-submit" id="btnActiverTao" style="background-color: #10b981;">✅ Activer pour 7 jours</button>
+            </form>
+            <div id="msgSuccesTao" style="display: none; margin-top: 15px; padding: 12px; background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; border-radius: 8px; text-align: center; font-weight: 600;">
+                Accès débloqué avec succès pour l'élève !
+            </div>
+        </div>
+
+        <!-- SECTION 2 : ENREGISTREMENT ÉLÈVES -->
+        <div class="styled-card">
+            <span class="badge-section">Administration</span>
+            <h3>Enregistrer un nouvel élève / membre</h3>
+            
+            <form id="formEnregistrement">
+                <div class="form-group">
+                    <label for="nom">Nom et Prénom de l'élève :</label>
+                    <input type="text" id="nom" placeholder="Ex: Moussa Traoré" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="naissance">Date de naissance :</label>
+                    <input type="date" id="naissance" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="dateInscription">Date d'inscription :</label>
+                    <input type="date" id="dateInscription" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="parent">Nom du Parent / Tuteur :</label>
+                    <input type="text" id="parent" placeholder="Ex: Amadou Traoré" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="telephoneEleve">Numéro de téléphone de l'élève :</label>
+                    <input type="tel" id="telephoneEleve" placeholder="Ex: +223 70 00 00 00" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="telephoneTuteur">Numéro de téléphone du Tuteur :</label>
+                    <input type="tel" id="telephoneTuteur" placeholder="Ex: +223 70 00 00 00" required>
+                </div>
+
+                <!-- NOUVEAU : Champ Code PIN confidentiel à 4 chiffres -->
+                <div class="form-group">
+                    <label for="codePin">Code PIN confidentiel (4 chiffres) :</label>
+                    <input type="text" id="codePin" maxlength="4" placeholder="Ex: 1234" pattern="[0-9]{4}" title="Veuillez entrer exactement 4 chiffres" required style="letter-spacing: 2px; font-weight: bold;">
+                </div>
+
+                <div class="form-group">
+                    <label for="club">Club partenaire affilié :</label>
+                    <select id="club" required>
+                        <option value="">Sélectionner un club</option>
+                        <option value="CLUB BAKO">CLUB BAKO</option>
+                        <option value="CLUB SEGA">CLUB SEGA</option>
+                        <option value="CLUB MEL">CLUB MEL</option>
+                        <option value="CLUB EURRO">CLUB EURRO</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="piece">Photo de la pièce (Acte de naissance / Carte biométrique) :</label>
+                    <input type="file" id="piece" accept="image/*" required>
+                </div>
+
+                <button type="submit" class="btn-submit" id="btnEnregistrer">Enregistrer l'élève</button>
+            </form>
+
+            <div id="messageSucces">
+                Enregistrement réussi dans Firebase ! Redirection...
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2027 - ShaolinApp & Services. Tous droits réservés.</p>
+    </footer>
+
+    <!-- Script Firebase & Admin -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyCb4isUEJUeHTiylyFrWEqP3WhU0A2Wc4A",
+          authDomain: "shaolinapp-466e8.firebaseapp.com",
+          projectId: "shaolinapp-466e8",
+          storageBucket: "shaolinapp-466e8.firebasestorage.app",
+          messagingSenderId: "715800083026",
+          appId: "1:715800083026:web:0a51748663f4fddd29bd8b",
+          measurementId: "G-5GGYZYMSB4"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const MDP_ADMIN = "kayes2005";
+
+        window.verifierMotDepasse = function() {
+            const saisi = document.getElementById("inputPassword").value;
+            const erreur = document.getElementById("erreurLogin");
+
+            if (saisi === MDP_ADMIN) {
+                sessionStorage.setItem("adminConnecte", "true");
+                afficherEspaceAdmin();
+            } else {
+                erreur.style.display = "block";
+            }
+        }
+
+        function afficherEspaceAdmin() {
+            document.getElementById("zone-connexion").style.display = "none";
+            document.getElementById("zone-admin-contenu").style.display = "block";
+            document.getElementById("nav-deconnexion").style.display = "block";
+        }
+
+        window.deconnecterAdmin = function() {
+            sessionStorage.removeItem("adminConnecte");
+            location.reload();
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            if (sessionStorage.getItem("adminConnecte") === "true") {
+                afficherEspaceAdmin();
+            }
+
+            // Mettre la date d'aujourd'hui par défaut
+            const champDateInscrip = document.getElementById("dateInscription");
+            if (champDateInscrip) {
+                const auj = new Date().toISOString().split('T')[0];
+                champDateInscrip.value = auj;
+            }
+
+            // GESTION DE L'ACTIVATION DES TAOS À DISTANCE
+            const formTao = document.getElementById("formActivationTao");
+            const msgTao = document.getElementById("msgSuccesTao");
+
+            if (formTao) {
+                formTao.addEventListener("submit", async function(e) {
+                    e.preventDefault();
+
+                    const tel = document.getElementById("telEleveTao").value.trim();
+                    const titreTao = document.getElementById("selectTao").value;
+
+                    if (!tel || !titreTao) return;
+
+                    const btn = document.getElementById("btnActiverTao");
+                    btn.disabled = true;
+                    btn.textContent = "Activation en cours...";
+
+                    try {
+                        const DUREE_ABONNEMENT_JOURS = 7;
+                        const maintenant = new Date();
+                        const dateExpiration = maintenant.getTime() + (DUREE_ABONNEMENT_JOURS * 24 * 60 * 60 * 1000);
+                        const dateExpFormatee = new Date(dateExpiration).toLocaleDateString('fr-FR');
+
+                        // Sauvegarde dans Firebase Firestore (Déblocage à distance pour l'élève)
+                        const idDoc = `${tel}_${titreTao}`;
+                        await setDoc(doc(db, "abonnements_taos", idDoc), {
+                            telephone: tel,
+                            titreTao: titreTao,
+                            datePaiement: maintenant.toLocaleDateString('fr-FR'),
+                            dateExpiration: dateExpiration,
+                            dateExpirationFormatee: dateExpFormatee
+                        });
+
+                        if (msgTao) {
+                            msgTao.style.display = "block";
+                            msgTao.textContent = `✅ Accès débloqué pour 7 jours (${titreTao}) pour le numéro ${tel} !`;
+                        }
+
+                        formTao.reset();
+                    } catch (err) {
+                        console.error("Erreur lors de l'activation :", err);
+                        alert("❌ Erreur lors de l'activation. Vérifie la connexion.");
+                    } finally {
+                        btn.disabled = false;
+                        btn.textContent = "✅ Activer pour 7 jours";
+                    }
+                });
+            }
+
+            // GESTION ENREGISTREMENT ÉLÈVES
+            const form = document.getElementById("formEnregistrement");
+            const messageSucces = document.getElementById("messageSucces");
+            const btnEnregistrer = document.getElementById("btnEnregistrer");
+
+            if (form) {
+                form.addEventListener("submit", async function(event) {
+                    event.preventDefault();
+
+                    const nomInput = document.getElementById("nom").value;
+                    const naissanceInput = document.getElementById("naissance").value;
+                    const dateInscriptionInput = document.getElementById("dateInscription").value;
+                    const parentInput = document.getElementById("parent").value;
+                    const telephoneEleveInput = document.getElementById("telephoneEleve").value;
+                    const telephoneTuteurInput = document.getElementById("telephoneTuteur").value;
+                    const codePinInput = document.getElementById("codePin").value; // Récupération du code PIN
+                    const clubInput = document.getElementById("club").value;
+                    const pieceInput = document.getElementById("piece").files[0];
+
+                    let dateFormatee = new Date().toLocaleDateString();
+                    if (dateInscriptionInput) {
+                        const parts = dateInscriptionInput.split('-');
+                        if (parts.length === 3) {
+                            dateFormatee = `${parts[2]}/${parts[1]}/${parts[0]}`;
+                        }
+                    }
+
+                    if (pieceInput) {
+                        btnEnregistrer.disabled = true;
+                        btnEnregistrer.textContent = "Enregistrement en cours...";
+
+                        const reader = new FileReader();
+                        reader.onload = async function(e) {
+                            try {
+                                const nouveauMembre = {
+                                    nom: nomInput,
+                                    naissance: naissanceInput,
+                                    parent: parentInput,
+                                    telephoneEleve: telephoneEleveInput,
+                                    telephoneTuteur: telephoneTuteurInput,
+                                    codePin: codePinInput, // Enregistrement du code PIN dans Firebase
+                                    club: clubInput,
+                                    pieceUrl: e.target.result, 
+                                    dateInscription: dateFormatee
+                                };
+
+                                await addDoc(collection(db, "membresShaolin"), nouveauMembre);
+
+                                if (messageSucces) {
+                                    messageSucces.style.display = "block";
+                                }
+
+                                setTimeout(() => {
+                                    window.location.href = "dashboard.html";
+                                }, 1500);
+                            } catch (error) {
+                                console.error("Erreur lors de l'enregistrement Firestore :", error);
+                                alert("Erreur lors de l'enregistrement. Vérifie ta connexion.");
+                                btnEnregistrer.disabled = false;
+                                btnEnregistrer.textContent = "Enregistrer l'élève";
+                            }
+                        };
+                        reader.readAsDataURL(pieceInput);
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShaolinApp - Regarder les Taos</title>
+    <link rel="stylesheet" href="taos.css">
+    <style>
+        :root {
+            --primary: #0f172a;
+            --accent: #38bdf8;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-body: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-body);
+            margin: 0;
+            padding: 0;
+            color: var(--text-main);
+            padding-top: 110px; /* Espace pour le menu sur 2 lignes sur mobile */
+            scroll-behavior: smooth;
+        }
+        
+        /* Navbar flexible identique à la page d'accueil */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(15, 23, 42, 0.98);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            gap: 10px;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-container img {
+            height: 38px;
+            width: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent);
+        }
+
+        .logo-container h1 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            white-space: nowrap;
+        }
+
+        nav {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px 20px;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav ul li a {
+            color: #cbd5e1;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.88rem;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 3px 0;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        nav ul li a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        nav ul li a:hover, nav ul li a.actif {
+            color: white;
+        }
+
+        nav ul li a:hover::after, nav ul li a.actif::after {
+            width: 100%;
+        }
+
+        /* Disposition sur écran PC (Largeur > 850px) */
+        @media (min-width: 850px) {
+            body {
+                padding-top: 80px;
+            }
+            header {
+                flex-direction: row;
+                justify-content: space-between;
+                padding: 15px 40px;
+            }
+            nav {
+                width: auto;
+            }
+            nav ul {
+                gap: 25px;
+            }
+            nav ul li a {
+                font-size: 0.95rem;
+            }
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border-color);
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header uniforme avec liens identiques -->
+    <header>
+        <div class="logo-container">
+            <img src="logo.jpg" alt="Logo ShaolinApp">
+            <h1>ShaolinApp</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="eleves.html">Liste des Élèves</a></li>
+                <li><a href="apropos.html">À propos du Club</a></li>
+                <li><a href="taos.html" class="actif">Regarder les Taos</a></li>
+                <li><a href="admin.html">Espace Admin</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="services-container" style="max-width: 1100px; margin: 30px auto; padding: 0 20px;">
+        <div class="styled-card" style="background: white; padding: 30px; border-radius: 16px; border: 1px solid var(--border-color, #e2e8f0); box-shadow: 0 4px 20px rgba(0,0,0,0.03); margin-bottom: 40px;">
+            <span class="badge-section" style="background: #e0f2fe; color: #0284c7; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 600;">Espace Multimédia / Cours</span>
+            <h2 style="color: #0f172a; margin: 12px 0 8px 0; font-size: 1.8rem;">📱 Visionnage et Téléchargement des Taos</h2>
+            <p class="section-desc" style="color: #64748b; margin-bottom: 25px;">
+                Retrouvez ici l'ensemble des modules de la salutation jusqu'à la 9ème barrette. Vous pouvez les visionner ou les télécharger pour réviser hors ligne.
+            </p>
+
+            <!-- Barre de recherche -->
+            <div class="search-container" style="margin-bottom: 20px;">
+                <input type="text" id="searchVideo" placeholder="🔍 Rechercher un Tao ou une barrette..." style="width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem;">
+            </div>
+
+            <!-- Boutons de filtres par barrette -->
+            <div class="filter-buttons" style="display: flex; gap: 8px; margin-bottom: 25px; flex-wrap: wrap; overflow-x: auto; padding-bottom: 5px;">
+                <button class="filter-btn active" onclick="filtrerParNiveau('Tous', this)" style="background: #2563eb; color: white; border: 1px solid #e2e8f0; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem;">Tous</button>
+                <button class="filter-btn" onclick="filtrerParNiveau('Salutation', this)" style="background: #f1f5f9; color: #1e293b; border: 1px solid #e2e8f0; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem;">Salutation</button>
+                <button class="filter-btn" onclick="filtrerParNiveau('1ère barrette', this)" style="background: #f1f5f9; color: #1e293b; border: 1px solid #e2e8f0; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem;">1ère barrette</button>
+                <button class="filter-btn" onclick="filtrerParNiveau('2ème barrette', this)" style="background: #f1f5f9; color: #1e293b; border: 1px solid #e2e8f0; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem;">2ème barrette</button>
+                <button class="filter-btn" onclick="filtrerParNiveau('3ème barrette', this)" style="background: #f1f5f9; color: #1e293b; border: 1px solid #e2e8f0; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem;">3ème barrette</button>
+                <button class="filter-btn" onclick="filtrerParNiveau('4ème barrette', this)" style="background: #f1f5f9; color: #1e293b; border: 1px solid #e2e8f0; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem;">4ème barrette</button>
+                <button class="filter-btn" onclick="filtrerParNiveau('5ème barrette', this)" style="background: #f1f5f9; color: #1e293b; border: 1px solid #e2e8f0; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem;">5ème barrette</button>
+                <button class="filter-btn" onclick="filtrerParNiveau('6ème barrette', this)" style="background: #f1f5f9; color: #1e293b; border: 1px solid #e2e8f0; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem;">6ème barrette</button>
+                <button class="filter-btn" onclick="filtrerParNiveau('7ème barrette', this)" style="background: #f1f5f9; color: #1e293b; border: 1px solid #e2e8f0; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem;">7ème barrette</button>
+                <button class="filter-btn" onclick="filtrerParNiveau('8ème barrette', this)" style="background: #f1f5f9; color: #1e293b; border: 1px solid #e2e8f0; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem;">8ème barrette</button>
+                <button class="filter-btn" onclick="filtrerParNiveau('9ème barrette', this)" style="background: #f1f5f9; color: #1e293b; border: 1px solid #e2e8f0; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem;">9ème barrette</button>
+            </div>
+
+            <!-- Grille des vidéos -->
+            <div class="video-grid" id="gridVideos" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;"></div>
+        </div>
+
+        <!-- SECTION : GALERIE PHOTOS DU CLUB -->
+        <div class="styled-card" style="background: white; padding: 30px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 20px rgba(0,0,0,0.03);">
+            <span class="badge-section" style="background: #dcfce7; color: #16a34a; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 600;">Souvenirs & Entraînements</span>
+            <h2 style="color: #0f172a; margin: 12px 0 8px 0; font-size: 1.6rem;">📸 Galerie Photos du Club Youze</h2>
+            <p style="color: #64748b; margin-bottom: 25px;">
+                Plongez dans l'ambiance de nos sessions d'entraînement et téléchargez vos photos souvenirs.
+            </p>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px;">
+                <!-- Emplacement Photo 1 (Corrigé : object-fit: contain pour ne plus couper l'image + Bouton Afficher) -->
+                <div style="border-radius: 10px; overflow: hidden; border: 1px solid #e2e8f0; background: #f8fafc; text-align: center;">
+                    <div style="height: 220px; overflow: hidden; background: #0f172a; display: flex; align-items: center; justify-content: center;">
+                        <img src="Emplacement1.jpg" alt="Maître Sidi Yaya - Entraînement dojo" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                    </div>
+                    <div style="padding: 12px; background: white; border-top: 1px solid #e2e8f0; text-align: left; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h4 style="margin: 0 0 2px 0; color: #0f172a; font-size: 0.95rem;">Entraînement dojo</h4>
+                            <p style="margin: 0; color: #64748b; font-size: 0.8rem;">Maître Sidi Yaya Boirè</p>
+                        </div>
+                        <div style="display: flex; gap: 5px;">
+                            <button onclick="ouvrirImageModal('Emplacement1.jpg', 'Maître Sidi Yaya - Entraînement dojo')" style="background: #2563eb; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: 600;">👁️ Afficher</button>
+                            <a href="Emplacement1.jpg" download style="background: #10b981; color: white; padding: 6px 10px; border-radius: 6px; text-decoration: none; font-size: 0.75rem; font-weight: 600;">📥 Télécharger</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="border-radius: 10px; overflow: hidden; border: 2px dashed #cbd5e1; background: #f8fafc; text-align: center;">
+                    <div style="height: 220px; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #94a3b8; padding: 20px;">
+                        <span style="font-size: 2rem; margin-bottom: 5px;">🖼️</span>
+                        <span style="font-size: 0.85rem; font-weight: 600;">Emplacement Photo 2</span>
+                        <span style="font-size: 0.75rem; color: #cbd5e1;">(Insérez votre image ici)</span>
+                    </div>
+                    <div style="padding: 12px; background: white; border-top: 1px solid #e2e8f0; text-align: left; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h4 style="margin: 0 0 2px 0; color: #0f172a; font-size: 0.95rem;">Passage de grades</h4>
+                            <p style="margin: 0; color: #64748b; font-size: 0.8rem;">Remise des ceintures</p>
+                        </div>
+                        <a href="#" download style="background: #10b981; color: white; padding: 6px 10px; border-radius: 6px; text-decoration: none; font-size: 0.75rem; font-weight: 600;">📥 Télécharger</a>
+                    </div>
+                </div>
+
+                <div style="border-radius: 10px; overflow: hidden; border: 2px dashed #cbd5e1; background: #f8fafc; text-align: center;">
+                    <div style="height: 220px; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #94a3b8; padding: 20px;">
+                        <span style="font-size: 2rem; margin-bottom: 5px;">🖼️</span>
+                        <span style="font-size: 0.85rem; font-weight: 600;">Emplacement Photo 3</span>
+                        <span style="font-size: 0.75rem; color: #cbd5e1;">(Insérez votre image ici)</span>
+                    </div>
+                    <div style="padding: 12px; background: white; border-top: 1px solid #e2e8f0; text-align: left; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h4 style="margin: 0 0 2px 0; color: #0f172a; font-size: 0.95rem;">Démonstration</h4>
+                            <p style="margin: 0; color: #64748b; font-size: 0.8rem;">Membres en action</p>
+                        </div>
+                        <a href="#" download style="background: #10b981; color: white; padding: 6px 10px; border-radius: 6px; text-decoration: none; font-size: 0.75rem; font-weight: 600;">📥 Télécharger</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Fenêtre Modale pour le lecteur vidéo -->
+    <div id="videoModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center;">
+        <div style="background: white; padding: 25px; border-radius: 12px; width: 90%; max-width: 700px; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.3);">
+            <button type="button" onclick="fermerLecteur()" style="position: absolute; top: 15px; right: 15px; background: #ef4444; color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.9rem; z-index: 10;">✕ Fermer</button>
+            <h3 id="modalTitle" style="margin-top: 0; color: #0f172a;">Titre de la vidéo</h3>
+            <div style="background: #000; border-radius: 8px; overflow: hidden; margin-top: 15px; display: flex; justify-content: center; align-items: center; height: 350px;">
+                <video id="modalVideoPlayer" controls style="width: 100%; height: 100%;">
+                    <source src="" type="video/mp4">
+                    Votre navigateur ne supporte pas la lecture de vidéos.
+                </video>
+            </div>
+            <p id="modalDesc" style="color: #64748b; margin-top: 15px; font-size: 0.9rem;"></p>
+        </div>
+    </div>
+
+    <!-- Fenêtre Modale pour afficher une image en grand -->
+    <div id="imageModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2500; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box;" onclick="fermerImageModal()">
+        <div style="background: white; padding: 20px; border-radius: 12px; max-width: 900px; max-height: 90vh; position: relative; display: flex; flex-direction: column; align-items: center;" onclick="event.stopPropagation()">
+            <button type="button" onclick="fermerImageModal()" style="position: absolute; top: 10px; right: 10px; background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; z-index: 10;">✕ Fermer</button>
+            <h3 id="imageModalTitle" style="margin: 0 0 15px 0; color: #0f172a; font-size: 1.1rem; text-align: center;">Titre de l'image</h3>
+            <div style="max-height: 70vh; overflow: hidden; display: flex; justify-content: center; align-items: center;">
+                <img id="modalImageDisplay" src="" alt="Aperçu grand format" style="max-width: 100%; max-height: 65vh; object-fit: contain; border-radius: 8px;">
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2027 - ShaolinApp & Services. Tous droits réservés.</p>
+    </footer>
+
+    <script>
+        // Fonctions pour la modale photo
+        function ouvrirImageModal(srcImage, titreImage) {
+            const modal = document.getElementById('imageModal');
+            const imgDisplay = document.getElementById('modalImageDisplay');
+            const titleDisplay = document.getElementById('imageModalTitle');
+            
+            if (modal && imgDisplay && titleDisplay) {
+                imgDisplay.src = srcImage;
+                titleDisplay.innerText = titreImage;
+                modal.style.display = 'flex';
+            }
+        }
+
+        function fermerImageModal() {
+            const modal = document.getElementById('imageModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+    <script type="module" src="taos.js"></script>
+</body>
+</html>

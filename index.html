@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShaolinApp - Club Youze</title>
+    <style>
+        :root {
+            --primary: #0f172a;
+            --accent: #38bdf8;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-body: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-body);
+            margin: 0;
+            padding: 0;
+            color: var(--text-main);
+            padding-top: 110px;
+            scroll-behavior: smooth;
+        }
+        
+        /* Navbar flexible */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(15, 23, 42, 0.98);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            gap: 10px;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-container img {
+            height: 38px;
+            width: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent);
+        }
+
+        .logo-container h1 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            white-space: nowrap;
+        }
+
+        nav {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px 20px;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav ul li a {
+            color: #cbd5e1;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.88rem;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 3px 0;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        nav ul li a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        nav ul li a:hover, nav ul li a.actif {
+            color: white;
+        }
+
+        nav ul li a:hover::after, nav ul li a.actif::after {
+            width: 100%;
+        }
+
+        @media (min-width: 850px) {
+            body {
+                padding-top: 80px;
+            }
+            header {
+                flex-direction: row;
+                justify-content: space-between;
+                padding: 15px 40px;
+            }
+            nav {
+                width: auto;
+            }
+            nav ul {
+                gap: 25px;
+            }
+            nav ul li a {
+                font-size: 0.95rem;
+            }
+        }
+
+        /* Bannière Image */
+        .hero-banner {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 0 15px;
+            text-align: center;
+        }
+
+        .hero-banner img {
+            width: 100%;
+            max-height: 550px;
+            object-fit: cover;
+            display: block;
+            border-radius: 16px;
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.15);
+            border: 1px solid var(--border-color);
+        }
+
+        /* Style commun Carte pro */
+        .styled-card {
+            max-width: 900px;
+            margin: 0 15px 25px 15px;
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .styled-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(15, 23, 42, 0.08);
+        }
+
+        @media (min-width: 930px) {
+            .styled-card {
+                margin: 0 auto 30px auto;
+                padding: 40px;
+            }
+        }
+
+        .styled-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #2563eb, #38bdf8);
+        }
+
+        .badge-section {
+            display: inline-block;
+            background-color: #eff6ff;
+            color: #2563eb;
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            border: 1px solid #bfdbfe;
+        }
+
+        .hero-text-section {
+            text-align: center;
+        }
+
+        .hero-text-section h1 {
+            color: var(--primary);
+            font-size: 2rem;
+            font-weight: 800;
+            margin: 0 0 10px 0;
+            letter-spacing: -0.5px;
+        }
+
+        .hero-text-section h2 {
+            color: #2563eb;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0 0 18px 0;
+        }
+
+        .hero-text-section p, .presentation p {
+            color: var(--text-muted);
+            font-size: 1rem;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .hero-text-section p {
+            max-width: 750px;
+            margin: 0 auto;
+        }
+
+        .presentation h3, .domaines h3, .partenaires h3, .annonces h3 {
+            color: var(--primary);
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin: 10px 0 15px 0;
+        }
+
+        .grid-domaines {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .carte-domaine {
+            background-color: #f8fafc;
+            border: 1px solid var(--border-color);
+            padding: 20px 15px;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .carte-domaine:hover {
+            transform: translateY(-5px);
+            background-color: #ffffff;
+            border-color: var(--accent);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+        }
+
+        .carte-domaine h4 {
+            color: var(--primary);
+            margin: 10px 0 6px 0;
+            font-size: 1rem;
+        }
+
+        .carte-domaine p {
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            line-height: 1.4;
+            margin: 0;
+        }
+
+        /* Cartes Annonces interactives */
+        .annonce-card {
+            background: #f8fafc;
+            border-left: 4px solid #2563eb;
+            border-radius: 0 8px 8px 0;
+            padding: 18px;
+            margin-bottom: 15px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .annonce-card:hover {
+            transform: translateX(8px) scale(1.01);
+            background: #ffffff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .annonce-card.urgent {
+            border-left-color: #e11d48;
+            background: #fff1f2;
+        }
+
+        .annonce-card.urgent:hover {
+            background: #ffe4e6;
+        }
+
+        .annonce-card.info-site {
+            border-left-color: #0f172a;
+            background: #f1f5f9;
+        }
+
+        .annonce-card.info-site:hover {
+            background: #ffffff;
+        }
+
+        .annonce-badge {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 4px;
+            color: white;
+            margin-bottom: 6px;
+        }
+
+        .badge-urgent { background: #e11d48; }
+        .badge-event { background: #d97706; }
+        .badge-platform { background: #0f172a; color: #38bdf8; }
+
+        .grid-clubs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .carte-club {
+            background-color: #f8fafc;
+            border: 1px solid var(--border-color);
+            padding: 15px 10px;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .carte-club:hover {
+            transform: scale(1.05);
+            background-color: #ffffff;
+            border-color: var(--accent);
+        }
+
+        .carte-club .club-icon {
+            font-size: 24px;
+            margin-bottom: 6px;
+        }
+
+        .carte-club h4 {
+            color: var(--primary);
+            margin: 0;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border-color);
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-container">
+            <img src="logo.jpg" alt="Logo ShaolinApp">
+            <h1>ShaolinApp</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html" class="actif">Accueil</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="eleves.html">Liste des Élèves</a></li>
+                <li><a href="apropos.html">À propos du Club</a></li>
+                <li><a href="taos.html">Regarder les Taos</a></li>
+                <li><a href="admin.html">Espace Admin</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="hero-banner">
+        <img src="fond-kungfu.jpg" alt="Bannière Club Youze">
+    </div>
+
+    <!-- 1. CARTE PRÉSENTATION OFFICIELLE -->
+    <div class="styled-card hero-text-section">
+        <span class="badge-section">Présentation Officielle</span>
+        <h1>CLUB YOUZE</h1>
+        <h2>L'excellence dans la Discipline et la Gestion Scolaire</h2>
+        <p>ShaolinApp accompagne les structures, écoles et clubs dans le suivi moderne des élèves, la gestion des bulletins et la sécurité numérique à Bamako et partout au Mali.</p>
+    </div>
+
+    <!-- 2. SECTION EXPERTISE (NOS DOMAINES D'ACTIVITÉS) -->
+    <section id="services" class="styled-card domaines">
+        <span class="badge-section">Expertise</span>
+        <h3>Nos Domaines d'Activités & Services</h3>
+        <div class="grid-domaines">
+            <div class="carte-domaine">
+                <div style="font-size: 32px; margin-bottom: 5px;">📚</div>
+                <h4>Gestion des Élèves</h4>
+                <p>Suivi rigoureux des dossiers, des cotisations et des inscriptions en toute sécurité.</p>
+            </div>
+            <div class="carte-domaine">
+                <div style="font-size: 32px; margin-bottom: 5px;">📜</div>
+                <h4>Bulletins & Attestations</h4>
+                <p>Génération, consultation et impression des fiches de passation et certificats officiels.</p>
+            </div>
+            <div class="carte-domaine">
+                <div style="font-size: 32px; margin-bottom: 5px;">🔒</div>
+                <h4>Administration Sécurisée</h4>
+                <p>Espace d'inscription et de modification strictly réservé aux administrateurs habilités.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. SECTION À PROPOS (QUI SOMMES-NOUS) -->
+    <section id="about" class="styled-card presentation">
+        <span class="badge-section">À propos</span>
+        <h3>Qui sommes-nous ?</h3>
+        <p>Basée à Bamako, ShaolinApp est une plateforme spécialisée dans l'optimisation de la gestion académique, les technologies de l'information et la sécurité numérique. Notre mission est d'offrir des solutions de pointe adaptées aux exigences des professionnels et des établissements scolaires.</p>
+    </section>
+
+    <!-- 4. SECTION ANNONCES & ÉVÉNEMENTS (ACTUALITÉS) -->
+    <section class="styled-card annonces">
+        <span class="badge-section">Actualités</span>
+        <h3>📢 Annonces & Événements du Club</h3>
+        
+        <div class="annonce-card urgent" style="margin-top: 15px;">
+            <span class="annonce-badge badge-urgent">INFORMATIONS DE PASSATION</span>
+            <h4 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1rem;">🥋 Passage de Ceintures & Barrettes</h4>
+            <p style="margin: 0; font-size: 0.9rem; color: #334155; line-height: 1.4;">
+                La date du prochain passage de grades vous sera directement communiquée en salle d'entraînement par les Maîtres. Elle sera également publiée ici sur le site. <strong>Soyez attentifs et restez à l'écoute !</strong>
+            </p>
+        </div>
+
+        <div class="annonce-card">
+            <span class="annonce-badge badge-event">COMPÉTITION</span>
+            <h4 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1rem;">🥊 Ouverture des Inscriptions : Championnat Communal de Sanda</h4>
+            <p style="margin: 0; font-size: 0.9rem; color: #334155; line-height: 1.4;">
+                Les inscriptions pour le <strong>Championnat Communal de Sanda</strong> sont désormais ouvertes auprès de Maître Sidi Yaya Boirè. Préparez-vous bien !
+            </p>
+        </div>
+
+        <!-- NOUVELLE ANNONCE DU SITE SHAOLINAPP -->
+        <div class="annonce-card info-site">
+            <span class="annonce-badge badge-platform">📢 ANNONCE SHAOLINAPP</span>
+            <h4 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1rem;">🔄 Mises à jour Mensuelles & Accès Restreint</h4>
+            <p style="margin: 0; font-size: 0.9rem; color: #334155; line-height: 1.5;">
+                • <strong>Mises à jour du site :</strong> La plateforme <strong>ShaolinApp</strong> sera mise à jour régulièrement chaque mois. Vous recevrez systématiquement le nouveau lien d'accès à chaque nouvelle version.<br>
+                • <strong>Accès Administration :</strong> L'<em>Espace Admin</em> est une zone strictement privée. Elle est réservée uniquement aux administrateurs du club et ne concerne personne d'autre.<br>
+                • <strong>Vidéos des Taos :</strong> Pour accéder aux Taos payants ("- B" et "- C"), pensez à activer votre souscription temporaire de 7 jours.
+            </p>
+        </div>
+    </section>
+
+    <!-- 5. SECTION PARTENAIRES (RÉSEAU) -->
+    <section class="styled-card partenaires">
+        <span class="badge-section">Réseau</span>
+        <h3>Nos Clubs Partenaires</h3>
+        <div class="grid-clubs">
+            <div class="carte-club">
+                <div class="club-icon">🛡️</div>
+                <h4>CLUB BAK0</h4>
+            </div>
+            <div class="carte-club">
+                <div class="club-icon">⚡</div>
+                <h4>CLUB SEGA</h4>
+            </div>
+            <div class="carte-club">
+                <div class="club-icon">🏆</div>
+                <h4>CLUB MEL</h4>
+            </div>
+            <div class="carte-club">
+                <div class="club-icon">🐉</div>
+                <h4>CLUB EURRO</h4>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2027 - ShaolinApp & Services. Tous droits réservés.</p>
+    </footer>
+</body>
+</html>

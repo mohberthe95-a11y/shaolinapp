@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShaolinApp - Liste des Élèves</title>
+    <!-- Inclusion de la bibliothèque jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Liaison de la feuille de style externe -->
+    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            --primary: #0f172a;
+            --accent: #38bdf8;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-body: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-body);
+            margin: 0;
+            padding: 0;
+            color: var(--text-main);
+            padding-top: 110px;
+            scroll-behavior: smooth;
+        }
+
+        /* Navbar flexible uniforme */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(15, 23, 42, 0.98);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            gap: 10px;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-container img {
+            height: 38px;
+            width: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent);
+        }
+
+        .logo-container h1 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            white-space: nowrap;
+        }
+
+        nav {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px 20px;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav ul li a {
+            color: #cbd5e1;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.88rem;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 3px 0;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        nav ul li a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        nav ul li a:hover,
+        nav ul li a.actif {
+            color: white;
+        }
+
+        nav ul li a:hover::after,
+        nav ul li a.actif::after {
+            width: 100%;
+        }
+
+        @media (min-width: 850px) {
+            body {
+                padding-top: 80px;
+            }
+
+            header {
+                flex-direction: row;
+                justify-content: space-between;
+                padding: 15px 40px;
+            }
+
+            nav {
+                width: auto;
+            }
+
+            nav ul {
+                gap: 25px;
+            }
+
+            nav ul li a {
+                font-size: 0.95rem;
+            }
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border-color);
+            margin-top: 40px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- En-tête avec les liens uniformisés -->
+    <header>
+        <div class="logo-container">
+            <img src="logo.jpg" alt="Logo ShaolinApp">
+            <h1>ShaolinApp</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="eleves.html" class="actif">Liste des Élèves</a></li>
+                <li><a href="apropos.html">À propos du Club</a></li>
+                <li><a href="taos.html">Regarder les Taos</a></li>
+                <li><a href="admin.html">Espace Admin</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="services-container">
+
+        <!-- VUE 1 : LISTE DES ELEVES -->
+        <div id="zone-liste-principale">
+            <h2>Registre des Élèves Inscrits</h2>
+            <p style="color: #475569; margin-bottom: 20px;">Cliquez sur un élève pour accéder à son dossier complet, ses bulletins et ses informations.</p>
+
+            <div class="liste-eleves-container">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 15px;">
+                    <h3 style="margin: 0; font-size: 1.2rem; color: #0f172a;">📋 Liste des Élèves</h3>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button class="btn-export-liste" onclick="imprimerListeEleves()" style="background-color: #0f172a; color: white; border: none; padding: 8px 14px; border-radius: 6px; font-size: 0.9rem; font-weight: 600; cursor: pointer;">🖨️ Imprimer la liste</button>
+                        <button class="btn-export-liste" onclick="telechargerListePDF()" style="background-color: #e11d48; color: white; border: none; padding: 8px 14px; border-radius: 6px; font-size: 0.9rem; font-weight: 600; cursor: pointer;">📥 Télécharger PDF</button>
+                        <a href="admin.html" style="background-color: #10b981; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 0.9rem; font-weight: 600;">+ Inscrire un élève</a>
+                    </div>
+                </div>
+
+                <!-- Barre de recherche -->
+                <div class="recherche-box">
+                    <input type="text" id="input-recherche" placeholder="🔍 Rechercher un élève par son nom (ex: Berthé)..." onkeyup="filtrerEleves()">
+                </div>
+
+                <!-- Liste dynamique -->
+                <div id="conteneur-liste">
+                    <!-- Les éléments seront injectés ici automatiquement par le script -->
+                </div>
+            </div>
+        </div>
+
+        <!-- VUE 2 : DOSSIER INDIVIDUEL DE L'ELEVE -->
+        <div id="zone-dossier-eleve" style="display: none;">
+            <div class="dossier-header">
+                <div>
+                    <button class="btn-retour" onclick="retournerAListe()">⬅️ Retour à la liste des élèves</button>
+                    <h2 id="titre-dossier-nom" style="margin: 10px 0 0 0; color: #0f172a;">Nom de l'élève</h2>
+                </div>
+            </div>
+
+            <!-- Barre d'actions du dossier -->
+            <div class="dossier-actions-bar">
+                <button class="btn-action btn-info" onclick="afficherSection('zone-infos')">ℹ Infos & Médical</button>
+                <button class="btn-action btn-creer" onclick="ouvrirNouveauBulletin()">➕ Créer Bulletin</button>
+                <button class="btn-action btn-anciens" onclick="ouvrirAnciensBulletins()">📂 Anciens Bulletins</button>
+                <button class="btn-action btn-mensualites" onclick="ouvrirMensualites()">💳 Mensualités & Reçu</button>
+                <button class="btn-action btn-certificat" onclick="ouvrirCertificat()">📜 Certificat</button>
+                <button class="btn-action" onclick="ouvrirFicheMembre()" style="background-color: #2563eb; color: white;">📋 Fiche de Membre</button>
+                <button class="btn-action btn-dossier-piece" onclick="ouvrirPieceJustificative()">📁 Voir le dossier (Pièce)</button>
+                <button class="btn-action btn-supprimer" onclick="supprimerEleveActuel()">🗑 Supprimer</button>
+            </div>
+
+            <div class="liste-eleves-container">
+                <!-- 1. SECTION INFOS -->
+                <div id="zone-infos" class="section-box" style="display: block;">
+                    <h4 style="margin-top: 0; color: #0f172a; border-bottom: 2px solid #cbd5e1; padding-bottom: 8px;">👤 Informations Personnelles & Administratives</h4>
+                    <p><strong>N° de l'élève (Matricule) :</strong> <span id="info-matricule"></span></p>
+                    <p><strong>Nom & Prénom :</strong> <span id="info-nom"></span></p>
+                    <p><strong>Date de naissance :</strong> <span id="info-naissance"></span></p>
+                    <p><strong>Date d'inscription :</strong> <span id="info-inscription" style="color: #0284c7; font-weight: bold;"></span></p>
+                    <p><strong>Contact de l'élève :</strong> <span id="info-contact-eleve"></span></p>
+                    <p><strong>Nom des parents :</strong> <span id="info-parents"></span></p>
+                    <p><strong>Contact Titulaire :</strong> <span id="info-contact-tuteur"></span></p>
+
+                    <!-- AJOUT DU CHAMP CODE PIN MODIFIABLE PAR L'ADMIN -->
+                    <div class="form-grid" style="margin-top: 15px;">
+                        <div class="form-group">
+                            <label>Code PIN confidentiel (4 chiffres) :</label>
+                            <input type="text" id="info-codepin" maxlength="4" placeholder="Ex: 1234" style="letter-spacing: 2px; font-weight: bold;">
+                        </div>
+                    </div>
+
+                    <h4 style="margin-top: 25px; color: #0f172a; border-bottom: 2px solid #cbd5e1; padding-bottom: 8px;">🥋 Parcours & Grades (Ceinture Actuelle)</h4>
+                    <div class="form-grid" style="margin-top: 15px;">
+                        <div class="form-group">
+                            <label>Ceinture / Grade Actuel :</label>
+                            <input type="text" id="info-grade-actuel" placeholder="Ex: Ceinture Verte / 1ère Barrette">
+                        </div>
+                        <div class="form-group">
+                            <label>Dernière Passation :</label>
+                            <input type="date" id="info-date-grade">
+                        </div>
+                    </div>
+
+                    <h4 style="margin-top: 25px; color: #0f172a; border-bottom: 2px solid #cbd5e1; padding-bottom: 8px;">🏥 Suivi Médical & Aptitude Sportive</h4>
+                    <div class="form-grid" style="margin-top: 15px;">
+                        <div class="form-group">
+                            <label>Certificat Médical :</label>
+                            <select id="info-certif-medical">
+                                <option value="À jour">À jour (Fourni)</option>
+                                <option value="En attente">En attente de fourniture</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Assurance / Licence :</label>
+                            <select id="info-assurance">
+                                <option value="Validée">Validée</option>
+                                <option value="Non validée">Non validée</option>
+                            </select>
+                        </div>
+                        <div class="form-group plein">
+                            <label>Observations médicales / Allergies / Antécédents :</label>
+                            <textarea id="info-obs-medicales" rows="3" placeholder="Précisez ici les informations médicales utiles..."></textarea>
+                        </div>
+                    </div>
+
+                    <button class="btn-valider" style="margin-top: 15px;" onclick="enregistrerInfosSupplementaires()">Enregistrer les modifications du dossier</button>
+                </div>
+
+                <!-- 2. SECTION MENSUALITES & REÇUS -->
+                <div id="zone-mensualites" class="section-box" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h4 style="margin: 0; color: #0f172a;">💳 Suivi des Mensualités & Reçu Officiel</h4>
+                        <button class="btn-retour" onclick="afficherSection('zone-infos')">⬅️ Retour au dossier</button>
+                    </div>
+
+                    <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 15px;">Cochez un mois pour enregistrer le paiement et pré-remplir automatiquement le reçu ci-dessous :</p>
+
+                    <table class="tableau-techniques" style="margin-bottom: 25px;">
+                        <thead>
+                            <tr>
+                                <th style="width: 50%;">Mois concerné</th>
+                                <th style="width: 50%; text-align: center;">Statut de Paiement</th>
+                            </tr>
+                        </thead>
+                        <tbody id="corps-tableau-mensualites"></tbody>
+                    </table>
+
+                    <div style="text-align: right; margin-bottom: 25px;">
+                        <button class="btn-valider" onclick="enregistrerMensualites()" style="display: inline-block; width: auto; padding: 10px 20px;">Enregistrer les modifications</button>
+                    </div>
+
+                    <!-- MODÈLE DU REÇU OFFICIEL -->
+                    <div style="background: #ffffff; border: 2px solid #2563eb; border-radius: 12px; padding: 25px; position: relative; max-width: 650px; margin: 0 auto; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 15px;">
+                            <div>
+                                <h3 style="margin: 0; color: #b91c1c; font-size: 1.5rem; letter-spacing: 1px;">CLUB YOUZE</h3>
+                                <p style="margin: 3px 0 0 0; font-size: 0.8rem; color: #64748b;">Kung Fu Wushu - Bamako Yirimadio</p>
+                                <p style="margin: 2px 0 0 0; font-size: 0.78rem; color: #0f172a; font-weight: 600;">Tél : +223 71 62 15 36</p>
+                            </div>
+                            <div style="text-align: right;">
+                                <span style="background: #2563eb; color: white; padding: 6px 14px; border-radius: 6px; font-weight: bold; font-size: 1.05rem;">B.P.F : 2 000 FCFA</span>
+                            </div>
+                        </div>
+
+                        <h2 style="text-align: center; color: #0f172a; font-size: 1.3rem; margin: 15px 0; text-transform: uppercase; letter-spacing: 1px;">REÇU DE PAIEMENT</h2>
+
+                        <div style="font-size: 0.95rem; color: #1e293b; line-height: 2.3;">
+                            <p style="margin: 0 0 10px 0; border-bottom: 1px dotted #cbd5e1; padding-bottom: 4px;">
+                                <strong>De M. / Élève :</strong> <span id="recu-nom-eleve" style="color: #2563eb; font-weight: bold;"></span>
+                            </p>
+                            <p style="margin: 0 0 10px 0; border-bottom: 1px dotted #cbd5e1; padding-bottom: 4px;">
+                                <strong>La Somme de :</strong> <span style="font-style: italic; font-weight: 600;">Deux mille francs CFA (2 000 FCFA)</span>
+                            </p>
+                            <p style="margin: 0 0 10px 0; border-bottom: 1px dotted #cbd5e1; padding-bottom: 4px;">
+                                <strong>Motif :</strong> <span id="recu-motif" style="font-weight: 600; color: #0284c7;">Cochez un mois ci-dessus...</span>
+                            </p>
+                            <div style="display: flex; justify-content: space-between; margin-top: 15px;">
+                                <p style="margin: 0;"><strong>N° :</strong> <span id="recu-numero">#001</span></p>
+                                <p style="margin: 0;"><strong>Le :</strong> <span id="recu-date"></span></p>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 25px; padding-top: 15px; border-top: 1px solid #e2e8f0;">
+                            <div style="font-size: 0.85rem; color: #64748b;">
+                                <p style="margin: 0;">Cachet & Visa du Club</p>
+                            </div>
+                            <div style="text-align: center;">
+                                <p style="margin: 0; font-weight: bold; font-size: 0.9rem;">Le Trésorier / Maître</p>
+                                <br>
+                                <p style="margin: 0; font-size: 0.85rem; color: #94a3b8;">............................................</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 20px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                        <button class="btn-valider" onclick="enregistrerEtFigerRecu()" style="background-color: #10b981; width: auto; padding: 10px 20px;">💾 Enregistrer et Figer ce Reçu</button>
+                        <button class="btn-cert-pdf" onclick="telechargerRecuPDF()" style="background-color: #e11d48; width: auto; padding: 10px 20px; border: none; color: white; border-radius: 6px; font-weight: 600; cursor: pointer;">📥 Télécharger le Reçu PDF</button>
+                        <button class="btn-action" onclick="ouvrirAnciensRecus()" style="background: #0f172a; color: white; padding: 10px 20px; border-radius: 6px; border: none; font-weight: 600; cursor: pointer;">📂 Anciens Reçus</button>
+                    </div>
+                </div>
+
+                <!-- 3. SECTION CERTIFICAT -->
+                <div id="zone-certificat" class="section-box" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h4 style="margin: 0; color: #0f172a;">📜 Certificat de Fréquentation Officiel</h4>
+                        <button class="btn-retour" onclick="afficherSection('zone-infos')">⬅️ Retour au dossier</button>
+                    </div>
+
+                    <div class="certificat-cadre-externe">
+                        <div class="certificat-cadre-interne">
+                            <div class="certificat-en-tete">
+                                <p style="font-size: 0.8rem; letter-spacing: 1.5px; margin: 0; color: #64748b; font-weight: 600;">FÉDÉRATION MALIENNE DE KUNG FU WUSHU</p>
+                                <h3 style="color: #b91c1c; margin: 8px 0; font-size: 1.8rem; letter-spacing: 1px;">CLUB YOUZE</h3>
+                                <p style="font-size: 0.85rem; margin: 0; color: #475569;">Bamako - Yirimadio &nbsp;|&nbsp; Tél: +223 71 62 15 36</p>
+                            </div>
+
+                            <h2 class="certificat-titre-principal">Certificat de Fréquentation</h2>
+                            <div class="certificat-ligne-or"></div>
+
+                            <p class="certificat-corps-texte">
+                                Nous soussignés, Direction technique et administrative du <strong>Club Youze</strong> de Kung Fu Wushu, sis à Bamako Yirimadio, certifions par la présente que l’élève dont les références suivent :
+                            </p>
+
+                            <div class="certificat-infos-box">
+                                <ul>
+                                    <li><span>🥋 <strong>Nom et Prénom :</strong></span> <strong id="cert-nom" style="color: #0f172a;"></strong></li>
+                                    <li><span>🆔 <strong>Matricule :</strong></span> <span id="cert-matricule"></span></li>
+                                    <li><span>📅 <strong>Date de naissance :</strong></span> <span id="cert-naissance"></span></li>
+                                    <li><span>👥 <strong>Nom des parents :</strong></span> <span id="cert-parents"></span></li>
+                                </ul>
+                            </div>
+
+                            <p class="certificat-corps-texte">
+                                Est régulièrement inscrit(e) au sein de notre structure et fréquente assidûment les entraînements et cours d'arts martiaux dispensés au titre de la saison sportive en cours.
+                            </p>
+
+                            <div class="certificat-signature-section">
+                                <div>
+                                    <p style="margin: 0; font-size: 0.9rem; color: #475569;">Fait à Bamako, le <strong id="cert-date" style="color: #0f172a;"></strong></p>
+                                </div>
+                                <div class="certificat-tampon">Cachet & Visa</div>
+                                <div style="text-align: center;">
+                                    <p style="margin: 0; font-weight: bold; font-size: 0.95rem; color: #0f172a;">Le Maître d'Armes</p>
+                                    <br><br>
+                                    <p style="margin: 0; font-size: 0.85rem; color: #94a3b8;">............................................</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="certificat-actions-container">
+                        <button class="btn-cert-pdf" onclick="telechargerCertificatPDF()">📥 Télécharger le PDF</button>
+                        <button class="btn-cert-imprimer" onclick="imprimerCertificat()">🖨️ Imprimer</button>
+                    </div>
+                </div>
+
+                <!-- 3. BIS - SECTION FICHE DE MEMBRE / ATTESTATION -->
+                <div id="zone-fiche-membre" class="section-box" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h4 style="margin: 0; color: #0f172a;">📋 Fiche de Membre & Attestation d'Inscription</h4>
+                        <button class="btn-retour" onclick="afficherSection('zone-infos')">⬅️ Retour au dossier</button>
+                    </div>
+
+                    <div class="certificat-cadre-externe" style="border: 2px solid #0f172a; padding: 30px; background: #fff; border-radius: 12px;">
+                        <div style="display: flex; justify-content: space-between; border-bottom: 2px solid #0f172a; padding-bottom: 15px; margin-bottom: 20px;">
+                            <div>
+                                <h3 style="margin: 0; color: #b91c1c; font-size: 1.6rem;">CLUB YOUZE</h3>
+                                <p style="margin: 3px 0 0 0; font-size: 0.85rem; color: #64748b;">Kung Fu Wushu - Bamako Yirimadio</p>
+                                <p style="margin: 2px 0 0 0; font-size: 0.8rem; font-weight: 600;">Maître Sidi Yaya Boirè & Maître Harouna Konaté</p>
+                            </div>
+                            <div style="text-align: right;">
+                                <span style="background: #0f172a; color: white; padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 0.9rem;">SAISON 2026</span>
+                            </div>
+                        </div>
+
+                        <h2 style="text-align: center; color: #0f172a; font-size: 1.4rem; text-transform: uppercase; margin-bottom: 25px;">FICHE D'INSCRIPTION & DOSSIER MEMBRE</h2>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 0.95rem; line-height: 2;">
+                            <p style="margin: 0;"><strong>Matricule :</strong> <span id="fiche-matricule" style="color: #2563eb; font-weight: bold;"></span></p>
+                            <p style="margin: 0;"><strong>Nom & Prénom :</strong> <span id="fiche-nom" style="font-weight: bold; color: #0f172a;"></span></p>
+                            <p style="margin: 0;"><strong>Date de naissance :</strong> <span id="fiche-naissance"></span></p>
+                            <p style="margin: 0;"><strong>Date d'inscription :</strong> <span id="fiche-inscription" style="color: #0284c7; font-weight: bold;"></span></p>
+                            <p style="margin: 0;"><strong>Contact Élève :</strong> <span id="fiche-contact-eleve"></span></p>
+                            <p style="margin: 0;"><strong>Parents / Tuteur :</strong> <span id="fiche-parents"></span></p>
+                            <p style="margin: 0;"><strong>Contact Titulaire :</strong> <span id="fiche-contact-tuteur"></span></p>
+                            <p style="margin: 0;"><strong>Certificat Médical :</strong> <span id="fiche-certif"></span></p>
+                        </div>
+
+                        <div style="margin-top: 30px; border-top: 1px dashed #cbd5e1; padding-top: 20px; display: flex; justify-content: space-between;">
+                            <div>
+                                <p style="margin: 0; font-size: 0.85rem; color: #64748b;">Visa de l'Administration</p>
+                                <br><br>
+                                <p style="margin: 0; font-size: 0.85rem;">...................................................</p>
+                            </div>
+                            <div style="text-align: right;">
+                                <p style="margin: 0; font-size: 0.85rem; color: #64748b;">Signature du Pratiquant / Parent</p>
+                                <br><br>
+                                <p style="margin: 0; font-size: 0.85rem;">...................................................</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BOUTONS IMPRIMER ET TÉLÉCHARGER CÔTE À CÔTE -->
+                    <div style="text-align: center; margin-top: 20px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                        <button class="btn-cert-imprimer" onclick="imprimerFicheMembre()" style="background-color: #0f172a; color: white; padding: 10px 20px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">🖨️ Imprimer la Fiche</button>
+                        <button class="btn-cert-pdf" onclick="telechargerFicheMembrePDF()" style="background-color: #e11d48; color: white; padding: 10px 20px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">📥 Télécharger PDF</button>
+                    </div>
+                </div>
+
+                <!-- 4. SECTION BULLETIN -->
+                <div id="zone-creation-bulletin" class="section-box" style="display: none;">
+                    <button type="button" id="btn-retour-archives" class="btn-retour" style="display: none; margin-bottom: 15px;" onclick="ouvrirAnciensBulletins()">⬅ Retour aux anciens bulletins</button>
+
+                    <div class="entete-club">
+                        <p style="font-size: 0.8rem; margin: 0; color: #64748b;">FEDERATION MALIENNE DE KUNG FU WUSHU</p>
+                        <h3>CLUB YOUZE</h3>
+                        <p style="font-size: 0.85rem; margin: 3px 0; color: #334155;">Bamako - Yirimadio &nbsp;|&nbsp; Tél: +223 71 62 15 36</p>
+                    </div>
+
+                    <h4 id="titre-form-bulletin" style="text-align: center; background-color: #10b981; color: white; padding: 10px; border-radius: 6px; margin-bottom: 20px;">NOUVELLE FICHE DE PASSATION</h4>
+
+                    <input type="hidden" id="bul-index-modif" value="-1">
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Élève :</label>
+                            <input type="text" id="bul-nom" readonly style="background-color: #e2e8f0; font-weight: bold;">
+                        </div>
+                        <div class="form-group">
+                            <label>Grade / Ceinture :</label>
+                            <input type="text" id="bul-grade" placeholder="Ex: 7e Barrette">
+                        </div>
+                    </div>
+
+                    <table class="tableau-techniques">
+                        <thead>
+                            <tr>
+                                <th style="width: 75%;">TECHNIQUES DE BASE</th>
+                                <th style="width: 25%; text-align: center;">Note / 20</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Marches de shaolin</td>
+                                <td style="text-align: center;"><input type="number" class="note-input" min="0" max="20" placeholder="0" oninput="calculerTotaux()"></td>
+                            </tr>
+                            <tr>
+                                <td>Pieds - Poings</td>
+                                <td style="text-align: center;"><input type="number" class="note-input" min="0" max="20" placeholder="0" oninput="calculerTotaux()"></td>
+                            </tr>
+                            <tr>
+                                <td>Tao</td>
+                                <td style="text-align: center;"><input type="number" class="note-input" min="0" max="20" placeholder="0" oninput="calculerTotaux()"></td>
+                            </tr>
+                            <tr>
+                                <td>Kwen</td>
+                                <td style="text-align: center;"><input type="number" class="note-input" min="0" max="20" placeholder="0" oninput="calculerTotaux()"></td>
+                            </tr>
+                            <tr>
+                                <td>Solt</td>
+                                <td style="text-align: center;"><input type="number" class="note-input" min="0" max="20" placeholder="0" oninput="calculerTotaux()"></td>
+                            </tr>
+                            <tr>
+                                <td>Acrobatie</td>
+                                <td style="text-align: center;"><input type="number" class="note-input" min="0" max="20" placeholder="0" oninput="calculerTotaux()"></td>
+                            </tr>
+                            <tr>
+                                <td>Combat</td>
+                                <td style="text-align: center;"><input type="number" class="note-input" min="0" max="20" placeholder="0" oninput="calculerTotaux()"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="resultats-grid">
+                        <div class="form-group">
+                            <label>Total :</label>
+                            <input type="text" id="total-notes" readonly style="font-weight: bold; text-align: center;">
+                        </div>
+                        <div class="form-group">
+                            <label>Moyenne (/20) :</label>
+                            <input type="text" id="moyenne-notes" readonly style="font-weight: bold; color: #b91c1c; text-align: center;">
+                        </div>
+                        <div class="form-group">
+                            <label>Rang :</label>
+                            <input type="text" id="rang" placeholder="Ex: 1er / 15" style="text-align: center;">
+                        </div>
+                        <div class="form-group plein">
+                            <label>Observation :</label>
+                            <input type="text" id="observation" placeholder="Appréciation du maître...">
+                        </div>
+                        <div class="form-group">
+                            <label>Bamako, le :</label>
+                            <input type="date" id="date-passation">
+                        </div>
+                        <div class="form-group">
+                            <label>Nom et Signature du maître :</label>
+                            <input type="text" id="signature" value="Maître Youze">
+                        </div>
+                    </div>
+
+                    <button id="btn-soumettre-bulletin" class="btn-valider" onclick="enregistrerBulletin()">Enregistrer et Fixer le Bulletin</button>
+                </div>
+
+                <!-- 5. SECTION ANCIENS BULLETINS -->
+                <div id="zone-anciens-bulletins" class="section-box" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h4 style="margin: 0; color: #0f172a;">📂 Historique des Anciens Bulletins</h4>
+                        <button class="btn-retour" onclick="afficherSection('zone-infos')">⬅ Retour au dossier</button>
+                    </div>
+                    <div id="archives-conteneur">
+                        <p style="color: #64748b; font-style: italic;">Aucun bulletin enregistré pour cet élève pour le moment.</p>
+                    </div>
+                </div>
+
+                <!-- 6. SECTION HISTORIQUE DES ANCIENS REÇUS -->
+                <div id="zone-anciens-recus" class="section-box" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h4 style="margin: 0; color: #0f172a;">📂 Historique des Reçus de Paiement</h4>
+                        <button class="btn-retour" onclick="ouvrirMensualites()">⬅ Retour aux mensualités</button>
+                    </div>
+                    <div id="archives-recus-conteneur">
+                        <p style="color: #64748b; font-style: italic;">Aucun reçu archivé pour cet élève.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- FENÊTRE MODALE PIÈCE -->
+    <div id="modalDossierPiece">
+        <div class="modal-piece-content">
+            <h3 id="modalTitrePiece" style="margin-top:0; color:#0f172a;">Pièce Justificative de l'élève</h3>
+            <div id="conteneurImagePiece">
+                <p id="msgAucunePiece" style="color: #64748b; font-style: italic;">Aucune image enregistrée.</p>
+            </div>
+            <button class="close-modal-btn" onclick="fermerModalPiece()">Fermer</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2027 - ShaolinApp & Services. Tous droits réservés.</p>
+    </footer>
+
+    <!-- ORDRE DE CHARGEMENT CORRIGÉ DES MODULES JS -->
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="bulletins-certificats.js"></script>
+    <script type="module" src="paiements-recus.js"></script>
+    <script type="module" src="dossier-eleve.js"></script>
+</body>
+
+</html>
