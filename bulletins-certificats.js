@@ -69,13 +69,8 @@ export function telechargerCertificatPDF() {
 
     docPdf.setFont("helvetica", "bold");
     docPdf.text("Le Maître d'Armes", 140, 185);
-
-    // Insertion de l'image signature.jpg sur le certificat PDF
-    try {
-        docPdf.addImage("signature.jpg", "JPEG", 130, 190, 50, 30);
-    } catch (e) {
-        console.log("Image de signature non chargée", e);
-    }
+    docPdf.setFont("helvetica", "normal");
+    docPdf.text("............................................", 130, 205);
 
     let nomFichier = (eleveActuel.nom || 'Eleve').replace(/\s+/g, '_');
     docPdf.save(`Certificat_${nomFichier}.pdf`);
@@ -329,17 +324,6 @@ export function telechargerPDF(index) {
     docPdf.text(`Grade : ${bul.grade}`, 20, 73);
     docPdf.text(`Date : ${bul.date}`, 120, 65);
     docPdf.text(`Rang : ${bul.rang}`, 120, 73);
-
-    // Ajout des observations et de la signature sur le PDF du bulletin
-    docPdf.text(`Observation : ${bul.observation}`, 20, 95);
-    docPdf.text("Bamako, le " + bul.date, 120, 130);
-    docPdf.text("Le Maître d'Armes", 130, 140);
-
-    try {
-        docPdf.addImage("signature.jpg", "JPEG", 125, 145, 50, 30);
-    } catch (e) {
-        console.log("Image de signature non chargée", e);
-    }
 
     docPdf.save(`Bulletin_${nom.replace(/\s+/g, '_')}_${bul.grade.replace(/\s+/g, '_')}.pdf`);
 }
