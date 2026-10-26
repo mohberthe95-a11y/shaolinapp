@@ -171,6 +171,10 @@ export function ouvrirNouveauBulletin() {
     document.getElementById('total-notes').value = '';
     document.getElementById('moyenne-notes').value = '';
 
+    // S'assurer qu'un éventuel bouton retour dynamique est masqué en mode création
+    let btnRetour = document.getElementById('btn-retour-archives');
+    if (btnRetour) btnRetour.style.display = 'none';
+
     window.afficherSection('zone-creation-bulletin');
 }
 
@@ -287,6 +291,23 @@ export function afficherBulletin(index) {
 
     document.getElementById('total-notes').value = bul.total;
     document.getElementById('moyenne-notes').value = bul.moyenne;
+
+    // --- AJOUT D'UN BOUTON RETOUR DYNAMIQUE ---
+    let zoneCreation = document.getElementById('zone-creation-bulletin');
+    let btnRetour = document.getElementById('btn-retour-archives');
+    
+    if (!btnRetour) {
+        btnRetour = document.createElement('button');
+        btnRetour.id = 'btn-retour-archives';
+        btnRetour.innerHTML = '⬅ Retour aux anciens bulletins';
+        btnRetour.style.cssText = "background: #475569; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; margin-bottom: 15px; font-weight: bold;";
+        
+        // Insérer le bouton tout en haut de la zone de création/consultation
+        zoneCreation.insertBefore(btnRetour, zoneCreation.firstChild);
+    }
+    
+    btnRetour.style.display = 'inline-block';
+    btnRetour.onclick = () => ouvrirAnciensBulletins();
 
     window.afficherSection('zone-creation-bulletin');
 }
