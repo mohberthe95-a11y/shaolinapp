@@ -14,6 +14,22 @@ export function ouvrirCertificat() {
     document.getElementById('cert-parents').textContent = eleveActuel.parents || "";
     document.getElementById('cert-date').textContent = new Date().toLocaleDateString('fr-FR');
 
+    // Afficher ou ajouter le cachet/signature dans la zone du certificat web
+    let zoneCertificat = document.getElementById('zone-certificat');
+    if (zoneCertificat) {
+        let imgCert = document.getElementById('apercu-signature-certificat');
+        if (!imgCert) {
+            imgCert = document.createElement('img');
+            imgCert.id = 'apercu-signature-certificat';
+            imgCert.src = 'signature.jpg';
+            imgCert.alt = 'Cachet et Signature';
+            imgCert.style.cssText = "display: block; max-width: 180px; margin: 20px auto 10px auto; border-radius: 4px;";
+            zoneCertificat.appendChild(imgCert);
+        } else {
+            imgCert.style.display = 'block';
+        }
+    }
+
     window.afficherSection('zone-certificat');
 }
 
@@ -67,13 +83,28 @@ export function telechargerCertificatPDF() {
     let aujourdHui = new Date().toLocaleDateString('fr-FR');
     docPdf.text(`Fait à Bamako, le ${aujourdHui}`, 20, 190);
 
+    // Signature et nom officiel sur le PDF du certificat
     docPdf.setFont("helvetica", "bold");
-    docPdf.text("Le Maître d'Armes", 140, 185);
-    docPdf.setFont("helvetica", "normal");
-    docPdf.text("............................................", 130, 205);
+    docPdf.text("Le Maître d'Armes", 135, 180);
+    docPdf.text("Sidi Yaya Boire", 135, 186);
 
-    let nomFichier = (eleveActuel.nom || 'Eleve').replace(/\s+/g, '_');
-    docPdf.save(`Certificat_${nomFichier}.pdf`);
+    const img = new Image();
+    img.src = "signature.jpg";
+    img.onload = function() {
+        try {
+            docPdf.addImage(img, 'JPEG', 125, 190, 40, 25);
+        } catch (err) {
+            console.error("Erreur d'insertion du cachet/signature :", err);
+        }
+        let nomFichier = (eleveActuel.nom || 'Eleve').replace(/\s+/g, '_');
+        docPdf.save(`Certificat_${nomFichier}.pdf`);
+    };
+    
+    img.onerror = function() {
+        docPdf.text("............................................", 125, 205);
+        let nomFichier = (eleveActuel.nom || 'Eleve').replace(/\s+/g, '_');
+        docPdf.save(`Certificat_${nomFichier}.pdf`);
+    };
 }
 
 // --- 2. FICHE DE MEMBRE ---
@@ -174,7 +205,6 @@ export function ouvrirNouveauBulletin() {
     let btnRetour = document.getElementById('btn-retour-archives');
     if (btnRetour) btnRetour.style.display = 'none';
 
-    // Masquer l'image de signature en mode création de nouveau bulletin
     let imgSignature = document.getElementById('apercu-signature-form');
     if (imgSignature) imgSignature.style.display = 'none';
 
@@ -323,7 +353,6 @@ export function afficherBulletin(index) {
 
     let zoneCreation = document.getElementById('zone-creation-bulletin');
     
-    // Bouton de retour
     let btnRetour = document.getElementById('btn-retour-archives');
     if (!btnRetour) {
         btnRetour = document.createElement('button');
@@ -335,7 +364,6 @@ export function afficherBulletin(index) {
     btnRetour.style.display = 'inline-block';
     btnRetour.onclick = () => ouvrirAnciensBulletins();
 
-    // Affichage de l'image de la signature/cachet dans le formulaire de consultation
     let imgSignature = document.getElementById('apercu-signature-form');
     if (!imgSignature) {
         imgSignature = document.createElement('img');
@@ -357,7 +385,6 @@ export function telechargerPDF(index) {
     const { jsPDF } = window.jspdf;
     const docPdf = new jsPDF();
 
-    // En-tête
     docPdf.setFont("helvetica", "bold");
     docPdf.setFontSize(10);
     docPdf.setTextColor(100, 100, 100);
@@ -382,7 +409,6 @@ export function telechargerPDF(index) {
     docPdf.setFont("helvetica", "bold");
     docPdf.text("FICHE DE PASSATION DE GRADES", 105, 54, { align: "center" });
 
-    // Infos générales élève
     docPdf.setDrawColor(203, 213, 225);
     docPdf.setFillColor(248, 250, 252);
     docPdf.roundedRect(20, 61, 170, 22, 2, 2, "FD");
@@ -409,7 +435,6 @@ export function telechargerPDF(index) {
     docPdf.setFont("helvetica", "normal");
     docPdf.text(`${bul.rang}`, 135, 76);
 
-    // Tableau des notes
     let startY = 90;
     
     docPdf.setFillColor(30, 41, 59);
@@ -458,7 +483,6 @@ export function telechargerPDF(index) {
         currentY += 7.5;
     });
 
-    // Totaux et Moyenne
     currentY += 4;
     docPdf.setFillColor(241, 245, 249);
     docPdf.setDrawColor(203, 213, 225);
@@ -469,23 +493,23 @@ export function telechargerPDF(index) {
     docPdf.text(`Total : ${bul.total || '0 / 70'}`, 26, currentY + 6.5);
     docPdf.text(`Moyenne Générale : ${bul.moyenne || '0 / 10'}`, 115, currentY + 6.5);
 
-    // Observation
     currentY += 15;
     docPdf.setFont("helvetica", "bold");
     docPdf.text("Observation :", 20, currentY);
     docPdf.setFont("helvetica", "normal");
     docPdf.text(`${bul.observation || 'Aucune observation'}`, 48, currentY);
 
-    // Signature et Cachet (Image signature.jpg)
+    // Signature et Nom (Sidi Yaya Boire) sur le PDF du bulletin
     currentY += 18;
     docPdf.setFont("helvetica", "bold");
     docPdf.text("Le Maître d'Armes", 135, currentY);
+    docPdf.text("Sidi Yaya Boire", 135, currentY + 6);
 
     const img = new Image();
     img.src = "signature.jpg";
     img.onload = function() {
         try {
-            docPdf.addImage(img, 'JPEG', 125, currentY + 3, 40, 25);
+            docPdf.addImage(img, 'JPEG', 125, currentY + 8, 40, 25);
         } catch (err) {
             console.error("Erreur d'insertion du cachet/signature :", err);
         }
@@ -493,7 +517,7 @@ export function telechargerPDF(index) {
     };
     
     img.onerror = function() {
-        docPdf.text("............................................", 125, currentY + 12);
+        docPdf.text("............................................", 125, currentY + 16);
         docPdf.save(`Bulletin_${nom.replace(/\s+/g, '_')}_${bul.grade.replace(/\s+/g, '_')}.pdf`);
     };
 }
@@ -505,7 +529,7 @@ window.telechargerCertificatPDF = telechargerCertificatPDF;
 window.ouvrirFicheMembre = ouvrirFicheMembre;
 window.imprimerFicheMembre = imprimerFicheMembre;
 window.telechargerFicheMembrePDF = telechargerFicheMembrePDF;
-window.ouvrirNouveauBulletin = ouvrirNouveauBulletin;
+window.ouvrirNouveauBulletin = ouvrirNouveauNouveauBulletin || ouvrirNouveauBulletin;
 window.calculerTotaux = calculerTotaux;
 window.enregistrerBulletin = enregistrerBulletin;
 window.ouvrirAnciensBulletins = ouvrirAnciensBulletins;
