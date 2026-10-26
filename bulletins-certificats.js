@@ -182,7 +182,7 @@ export function calculerTotaux() {
     inputs.forEach(input => {
         let val = parseFloat(input.value);
         if (!isNaN(val)) {
-            if (val > 20) { input.value = 10; val = 10; }
+            if (val > 10) { input.value = 10; val = 10; }
             else if (val < 0) { input.value = 0; val = 0; }
             somme += val;
             remplies++;
@@ -199,7 +199,7 @@ export async function enregistrerBulletin() {
 
     const nomEleve = eleveActuel.nom;
     const grade = document.getElementById('bul-grade').value || "Grade non spécifié";
-    const total = document.getElementById('total-notes').value || "0 / 140";
+    const total = document.getElementById('total-notes').value || "0 / 70";
     const moyenne = document.getElementById('moyenne-notes').value || "0 / 10";
     const date = document.getElementById('date-passation').value;
     const rang = document.getElementById('rang').value || "-";
@@ -297,12 +297,7 @@ export function telechargerPDF(index) {
     const { jsPDF } = window.jspdf;
     const docPdf = new jsPDF();
 
-    // -------------------------------------------------------------------------
-    // ESPACE RÉSERVÉ EN HAUT (Laissé libre pour ton icône / logo à venir)
-    // -------------------------------------------------------------------------
-    // (Tu pourras insérer ton icône ici plus tard avec : docPdf.addImage(...) vers Y=12)
-
-    // En-tête du club (décalé légèrement vers le bas pour laisser respirer l'icône)
+    // Espace réservé en haut pour ton logo/icône à venir
     docPdf.setFont("helvetica", "bold");
     docPdf.setFontSize(10);
     docPdf.setTextColor(100, 100, 100);
@@ -316,12 +311,10 @@ export function telechargerPDF(index) {
     docPdf.setTextColor(71, 85, 105);
     docPdf.text("Bamako - Yirimadio  |  Tél: +223 71 62 15 36", 105, 37, { align: "center" });
 
-    // Ligne de séparation dorée/sombre élégante
     docPdf.setDrawColor(217, 119, 6);
     docPdf.setLineWidth(0.8);
     docPdf.line(20, 43, 190, 43);
 
-    // Titre du document dans un encadré professionnel
     docPdf.setFillColor(15, 23, 42);
     docPdf.roundedRect(20, 48, 170, 9, 1.5, 1.5, "F");
     docPdf.setTextColor(255, 255, 255);
@@ -329,7 +322,7 @@ export function telechargerPDF(index) {
     docPdf.setFont("helvetica", "bold");
     docPdf.text("FICHE DE PASSATION DE GRADES", 105, 54, { align: "center" });
 
-    // Informations générales de l'élève (Encadré propre)
+    // Infos générales élève
     docPdf.setDrawColor(203, 213, 225);
     docPdf.setFillColor(248, 250, 252);
     docPdf.roundedRect(20, 61, 170, 22, 2, 2, "FD");
@@ -356,13 +349,10 @@ export function telechargerPDF(index) {
     docPdf.setFont("helvetica", "normal");
     docPdf.text(`${bul.rang}`, 135, 76);
 
-    // -------------------------------------------------------------------------
-    // TABLEAU DES NOTES PROFESSIONNEL (Bordures nettes & en-tête stylisé)
-    // -------------------------------------------------------------------------
+    // Tableau des notes avec les vraies matières de ton application
     let startY = 90;
     
-    // En-tête du tableau
-    docPdf.setFillColor(30, 41, 59); // Fond sombre pro
+    docPdf.setFillColor(30, 41, 59);
     docPdf.setDrawColor(30, 41, 59);
     docPdf.rect(20, startY, 170, 8, "FD");
     
@@ -370,17 +360,18 @@ export function telechargerPDF(index) {
     docPdf.setFont("helvetica", "bold");
     docPdf.setFontSize(9);
     docPdf.text("N°", 24, startY + 5.5);
-    docPdf.text("ÉLÉMENT D'ÉVALUATION (TECHNIQUE / PHYSIQUE)", 45, startY + 5.5);
-    docPdf.text("NOTE", 165, startY + 5.5, { align: "center" });
+    docPdf.text("ÉLÉMENT D'ÉVALUATION", 45, startY + 5.5);
+    docPdf.text("NOTE (/10)", 165, startY + 5.5, { align: "center" });
 
+    // Vrais libellés de ton application web
     const intitulesCriteres = [
-        "1. Salutation & Posture martiale",
-        "2. Taolu / Forme technique",
-        "3. Applications martiales (Bunkai/Sanshou)",
-        "4. Souplesse & Amplitude",
-        "5. Puissance & Impact",
-        "6. Équilibre & Stabilité",
-        "7. Concentration & Esprit martial"
+        "Marches de shaolin",
+        "Pieds - Poings",
+        "Tao",
+        "Kwen",
+        "Solt",
+        "Acrobatie",
+        "Combat"
     ];
 
     docPdf.setFont("helvetica", "normal");
@@ -390,14 +381,13 @@ export function telechargerPDF(index) {
     intitulesCriteres.forEach((intitule, i) => {
         let noteValeur = (bul.notes && bul.notes[i] !== undefined && bul.notes[i] !== "") ? bul.notes[i] + " / 10" : "-";
         
-        // Alternance de couleur de fond pour une lisibilité parfaite (effet zébré léger)
         if (i % 2 === 0) {
             docPdf.setFillColor(255, 255, 255);
         } else {
             docPdf.setFillColor(248, 250, 252);
         }
         
-        docPdf.setDrawColor(203, 213, 225); // Bordure grise subtile
+        docPdf.setDrawColor(203, 213, 225);
         docPdf.rect(20, currentY, 170, 7.5, "FD");
 
         docPdf.text(`${i + 1}`, 24, currentY + 5);
@@ -409,9 +399,7 @@ export function telechargerPDF(index) {
         currentY += 7.5;
     });
 
-    // -------------------------------------------------------------------------
-    // TOTAUX ET MOYENNE (Encadré récapitulatif)
-    // -------------------------------------------------------------------------
+    // Totaux et Moyenne
     currentY += 4;
     docPdf.setFillColor(241, 245, 249);
     docPdf.setDrawColor(203, 213, 225);
@@ -429,7 +417,7 @@ export function telechargerPDF(index) {
     docPdf.setFont("helvetica", "normal");
     docPdf.text(`${bul.observation || 'Aucune observation'}`, 48, currentY);
 
-    // Signature en bas de page
+    // Signature
     currentY += 18;
     docPdf.setFont("helvetica", "bold");
     docPdf.text("Le Maître d'Armes", 135, currentY);
