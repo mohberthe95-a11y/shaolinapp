@@ -69,8 +69,13 @@ export function telechargerCertificatPDF() {
 
     docPdf.setFont("helvetica", "bold");
     docPdf.text("Le Maître d'Armes", 140, 185);
-    docPdf.setFont("helvetica", "normal");
-    docPdf.text("............................................", 130, 205);
+
+    // Insertion de l'image signature.jpg sur le certificat PDF
+    try {
+        docPdf.addImage("signature.jpg", "JPEG", 130, 190, 50, 30);
+    } catch (e) {
+        console.log("Image de signature non chargée", e);
+    }
 
     let nomFichier = (eleveActuel.nom || 'Eleve').replace(/\s+/g, '_');
     docPdf.save(`Certificat_${nomFichier}.pdf`);
@@ -182,7 +187,7 @@ export function calculerTotaux() {
     inputs.forEach(input => {
         let val = parseFloat(input.value);
         if (!isNaN(val)) {
-            if (val > 20) { input.value = 20; val = 20; }
+            if (val > 20) { input.value = 10; val = 10; }
             else if (val < 0) { input.value = 0; val = 0; }
             somme += val;
             remplies++;
@@ -190,8 +195,8 @@ export function calculerTotaux() {
     });
 
     let moyenne = remplies > 0 ? somme / inputs.length : 0;
-    document.getElementById('total-notes').value = somme + ' / ' + (inputs.length * 20);
-    document.getElementById('moyenne-notes').value = moyenne.toFixed(2) + ' / 20';
+    document.getElementById('total-notes').value = somme + ' / ' + (inputs.length * 10);
+    document.getElementById('moyenne-notes').value = moyenne.toFixed(2) + ' / 10';
 }
 
 export async function enregistrerBulletin() {
@@ -200,7 +205,7 @@ export async function enregistrerBulletin() {
     const nomEleve = eleveActuel.nom;
     const grade = document.getElementById('bul-grade').value || "Grade non spécifié";
     const total = document.getElementById('total-notes').value || "0 / 140";
-    const moyenne = document.getElementById('moyenne-notes').value || "0 / 20";
+    const moyenne = document.getElementById('moyenne-notes').value || "0 / 10";
     const date = document.getElementById('date-passation').value;
     const rang = document.getElementById('rang').value || "-";
     const observation = document.getElementById('observation').value || "Aucune observation";
@@ -324,6 +329,17 @@ export function telechargerPDF(index) {
     docPdf.text(`Grade : ${bul.grade}`, 20, 73);
     docPdf.text(`Date : ${bul.date}`, 120, 65);
     docPdf.text(`Rang : ${bul.rang}`, 120, 73);
+
+    // Ajout des observations et de la signature sur le PDF du bulletin
+    docPdf.text(`Observation : ${bul.observation}`, 20, 95);
+    docPdf.text("Bamako, le " + bul.date, 120, 130);
+    docPdf.text("Le Maître d'Armes", 130, 140);
+
+    try {
+        docPdf.addImage("signature.jpg", "JPEG", 125, 145, 50, 30);
+    } catch (e) {
+        console.log("Image de signature non chargée", e);
+    }
 
     docPdf.save(`Bulletin_${nom.replace(/\s+/g, '_')}_${bul.grade.replace(/\s+/g, '_')}.pdf`);
 }
