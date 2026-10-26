@@ -297,6 +297,7 @@ export function telechargerPDF(index) {
     const { jsPDF } = window.jspdf;
     const docPdf = new jsPDF();
 
+    // En-tête
     docPdf.setFont("helvetica", "bold");
     docPdf.setFontSize(10);
     docPdf.setTextColor(100, 100, 100);
@@ -318,12 +319,62 @@ export function telechargerPDF(index) {
     docPdf.setFontSize(11);
     docPdf.text("FICHE DE PASSATION DE GRADES", 105, 49, { align: "center" });
 
+    // Infos élève
     docPdf.setTextColor(15, 23, 42);
-    docPdf.setFontSize(11);
-    docPdf.text(`Elève : ${nom}`, 20, 65);
-    docPdf.text(`Grade : ${bul.grade}`, 20, 73);
-    docPdf.text(`Date : ${bul.date}`, 120, 65);
-    docPdf.text(`Rang : ${bul.rang}`, 120, 73);
+    docPdf.setFontSize(10);
+    docPdf.text(`Elève : ${nom}`, 20, 62);
+    docPdf.text(`Grade : ${bul.grade}`, 20, 69);
+    docPdf.text(`Date : ${bul.date}`, 120, 62);
+    docPdf.text(`Rang : ${bul.rang}`, 120, 69);
+
+    // Tableau des notes
+    let startY = 78;
+    docPdf.setFillColor(241, 245, 249);
+    docPdf.rect(20, startY, 170, 8, "F");
+    docPdf.setFont("helvetica", "bold");
+    docPdf.text("N°", 25, startY + 5.5);
+    docPdf.text("ÉLÉMENT D'ÉVALUATION (TECHNIQUE / PHYSIQUE)", 45, startY + 5.5);
+    docPdf.text("NOTE", 160, startY + 5.5);
+
+    const intitulesCriteres = [
+        "1. Salutation & Posture martiale",
+        "2. Taolu / Forme technique",
+        "3. Applications martiales (Bunkai/Sanshou)",
+        "4. Souplesse & Amplitude",
+        "5. Puissance & Impact",
+        "6. Équilibre & Stabilité",
+        "7. Concentration & Esprit martial"
+    ];
+
+    docPdf.setFont("helvetica", "normal");
+    let currentY = startY + 8;
+
+    intitulesCriteres.forEach((intitule, i) => {
+        let noteValeur = (bul.notes && bul.notes[i] !== undefined && bul.notes[i] !== "") ? bul.notes[i] + " / 10" : "-";
+        
+        docPdf.rect(20, currentY, 170, 7);
+        docPdf.text(`${i + 1}`, 25, currentY + 5);
+        docPdf.text(intitule, 45, currentY + 5);
+        docPdf.text(noteValeur, 160, currentY + 5);
+
+        currentY += 7;
+    });
+
+    // Totaux et Moyenne
+    currentY += 6;
+    docPdf.setFont("helvetica", "bold");
+    docPdf.text(`Total des notes : ${bul.total || '0 / 70'}`, 20, currentY);
+    docPdf.text(`Moyenne : ${bul.moyenne || '0 / 10'}`, 120, currentY);
+
+    // Observation
+    currentY += 10;
+    docPdf.setFont("helvetica", "normal");
+    docPdf.text(`Observation : ${bul.observation || 'Aucune'}`, 20, currentY);
+
+    // Signature
+    currentY += 15;
+    docPdf.text("Le Maître d'Armes", 135, currentY);
+    docPdf.text("............................................", 125, currentY + 12);
 
     docPdf.save(`Bulletin_${nom.replace(/\s+/g, '_')}_${bul.grade.replace(/\s+/g, '_')}.pdf`);
 }
