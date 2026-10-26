@@ -340,6 +340,7 @@ export function telechargerPDF(index) {
     const { jsPDF } = window.jspdf;
     const docPdf = new jsPDF();
 
+    // En-tête
     docPdf.setFont("helvetica", "bold");
     docPdf.setFontSize(10);
     docPdf.setTextColor(100, 100, 100);
@@ -364,6 +365,7 @@ export function telechargerPDF(index) {
     docPdf.setFont("helvetica", "bold");
     docPdf.text("FICHE DE PASSATION DE GRADES", 105, 54, { align: "center" });
 
+    // Infos générales élève
     docPdf.setDrawColor(203, 213, 225);
     docPdf.setFillColor(248, 250, 252);
     docPdf.roundedRect(20, 61, 170, 22, 2, 2, "FD");
@@ -390,6 +392,7 @@ export function telechargerPDF(index) {
     docPdf.setFont("helvetica", "normal");
     docPdf.text(`${bul.rang}`, 135, 76);
 
+    // Tableau des notes
     let startY = 90;
     
     docPdf.setFillColor(30, 41, 59);
@@ -438,6 +441,7 @@ export function telechargerPDF(index) {
         currentY += 7.5;
     });
 
+    // Totaux et Moyenne
     currentY += 4;
     docPdf.setFillColor(241, 245, 249);
     docPdf.setDrawColor(203, 213, 225);
@@ -448,19 +452,36 @@ export function telechargerPDF(index) {
     docPdf.text(`Total : ${bul.total || '0 / 70'}`, 26, currentY + 6.5);
     docPdf.text(`Moyenne Générale : ${bul.moyenne || '0 / 10'}`, 115, currentY + 6.5);
 
+    // Observation
     currentY += 15;
     docPdf.setFont("helvetica", "bold");
     docPdf.text("Observation :", 20, currentY);
     docPdf.setFont("helvetica", "normal");
     docPdf.text(`${bul.observation || 'Aucune observation'}`, 48, currentY);
 
+    // Signature et Cachet (Image signature.jpg)
     currentY += 18;
     docPdf.setFont("helvetica", "bold");
     docPdf.text("Le Maître d'Armes", 135, currentY);
-    docPdf.setFont("helvetica", "normal");
-    docPdf.text("............................................", 125, currentY + 12);
 
-    docPdf.save(`Bulletin_${nom.replace(/\s+/g, '_')}_${bul.grade.replace(/\s+/g, '_')}.pdf`);
+    // Chargement et insertion de l'image signature.jpg
+    const img = new Image();
+    img.src = "signature.jpg"; // Assure-toi que l'image est bien à la racine du projet
+    img.onload = function() {
+        try {
+            // Paramètres : (image, format, x, y, largeur, hauteur)
+            docPdf.addImage(img, 'JPEG', 125, currentY + 3, 40, 25);
+        } catch (err) {
+            console.error("Erreur d'insertion du cachet/signature :", err);
+        }
+        docPdf.save(`Bulletin_${nom.replace(/\s+/g, '_')}_${bul.grade.replace(/\s+/g, '_')}.pdf`);
+    };
+    
+    // Fallback au cas où l'image met du temps à charger ou est introuvable
+    img.onerror = function() {
+        docPdf.text("............................................", 125, currentY + 12);
+        docPdf.save(`Bulletin_${nom.replace(/\s+/g, '_')}_${bul.grade.replace(/\s+/g, '_')}.pdf`);
+    };
 }
 
 // ATTACHEMENT GLOBAL SUR WINDOW POUR RÉPONDRE AUX CLICS HTML
