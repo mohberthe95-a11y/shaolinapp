@@ -270,11 +270,28 @@ function telechargerRecuPDF() {
     docPdf.text(`N° : ${numRecu}`, 20, 108);
     docPdf.text(`Le : ${dateRecu}`, 130, 108);
 
-    docPdf.rect(130, 120, 60, 25);
-    docPdf.setFontSize(9);
-    docPdf.text("Cachet & Visa du Trésorier", 140, 128);
+    // Signature et Nom (Harouna Konaré)
+    docPdf.setFont("helvetica", "bold");
+    docPdf.setTextColor(15, 23, 42);
+    docPdf.setFontSize(10);
+    docPdf.text("Le Trésorier", 145, 120);
+    docPdf.text("Harouna Konaré", 140, 126);
 
-    docPdf.save(`Recu_${numRecu}_${(eleveActuel.nom || 'Eleve').replace(/\s+/g, '_')}.pdf`);
+    const img = new Image();
+    img.src = "signature.jpg";
+    img.onload = function() {
+        try {
+            docPdf.addImage(img, 'JPEG', 132, 130, 40, 22);
+        } catch (err) {
+            console.error("Erreur d'insertion du cachet/signature :", err);
+        }
+        docPdf.save(`Recu_${numRecu}_${(eleveActuel.nom || 'Eleve').replace(/\s+/g, '_')}.pdf`);
+    };
+
+    img.onerror = function() {
+        docPdf.text("............................................", 130, 145);
+        docPdf.save(`Recu_${numRecu}_${(eleveActuel.nom || 'Eleve').replace(/\s+/g, '_')}.pdf`);
+    };
 }
 
 function telechargerRecuArchivePDF(nomEleve, index) {
@@ -329,11 +346,28 @@ function telechargerRecuArchivePDF(nomEleve, index) {
     docPdf.text(`N° : ${recu.numero}`, 20, 108);
     docPdf.text(`Le : ${recu.date}`, 130, 108);
 
-    docPdf.rect(130, 120, 60, 25);
-    docPdf.setFontSize(9);
-    docPdf.text("Cachet & Visa du Trésorier", 140, 128);
+    // Signature et Nom (Harouna Konaré)
+    docPdf.setFont("helvetica", "bold");
+    docPdf.setTextColor(15, 23, 42);
+    docPdf.setFontSize(10);
+    docPdf.text("Le Trésorier", 145, 120);
+    docPdf.text("Harouna Konaré", 140, 126);
 
-    docPdf.save(`Recu_${recu.numero}_${nomEleve.replace(/\s+/g, '_')}.pdf`);
+    const img = new Image();
+    img.src = "signature.jpg";
+    img.onload = function() {
+        try {
+            docPdf.addImage(img, 'JPEG', 132, 130, 40, 22);
+        } catch (err) {
+            console.error("Erreur d'insertion du cachet/signature :", err);
+        }
+        docPdf.save(`Recu_${recu.numero}_${nomEleve.replace(/\s+/g, '_')}.pdf`);
+    };
+
+    img.onerror = function() {
+        docPdf.text("............................................", 130, 145);
+        docPdf.save(`Recu_${recu.numero}_${nomEleve.replace(/\s+/g, '_')}.pdf`);
+    };
 }
 
 window.ouvrirMensualites = ouvrirMensualites;
