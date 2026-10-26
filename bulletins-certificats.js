@@ -174,6 +174,10 @@ export function ouvrirNouveauBulletin() {
     let btnRetour = document.getElementById('btn-retour-archives');
     if (btnRetour) btnRetour.style.display = 'none';
 
+    // Masquer l'image de signature en mode création de nouveau bulletin
+    let imgSignature = document.getElementById('apercu-signature-form');
+    if (imgSignature) imgSignature.style.display = 'none';
+
     window.afficherSection('zone-creation-bulletin');
 }
 
@@ -318,8 +322,9 @@ export function afficherBulletin(index) {
     document.getElementById('moyenne-notes').value = bul.moyenne;
 
     let zoneCreation = document.getElementById('zone-creation-bulletin');
-    let btnRetour = document.getElementById('btn-retour-archives');
     
+    // Bouton de retour
+    let btnRetour = document.getElementById('btn-retour-archives');
     if (!btnRetour) {
         btnRetour = document.createElement('button');
         btnRetour.id = 'btn-retour-archives';
@@ -327,9 +332,21 @@ export function afficherBulletin(index) {
         btnRetour.style.cssText = "background: #475569; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; margin-bottom: 15px; font-weight: bold;";
         zoneCreation.insertBefore(btnRetour, zoneCreation.firstChild);
     }
-    
     btnRetour.style.display = 'inline-block';
     btnRetour.onclick = () => ouvrirAnciensBulletins();
+
+    // Affichage de l'image de la signature/cachet dans le formulaire de consultation
+    let imgSignature = document.getElementById('apercu-signature-form');
+    if (!imgSignature) {
+        imgSignature = document.createElement('img');
+        imgSignature.id = 'apercu-signature-form';
+        imgSignature.src = 'signature.jpg';
+        imgSignature.alt = 'Cachet et Signature';
+        imgSignature.style.cssText = "display: block; max-width: 180px; margin: 20px auto 10px auto; border-radius: 4px;";
+        zoneCreation.appendChild(imgSignature);
+    } else {
+        imgSignature.style.display = 'block';
+    }
 
     window.afficherSection('zone-creation-bulletin');
 }
@@ -464,12 +481,10 @@ export function telechargerPDF(index) {
     docPdf.setFont("helvetica", "bold");
     docPdf.text("Le Maître d'Armes", 135, currentY);
 
-    // Chargement et insertion de l'image signature.jpg
     const img = new Image();
-    img.src = "signature.jpg"; // Assure-toi que l'image est bien à la racine du projet
+    img.src = "signature.jpg";
     img.onload = function() {
         try {
-            // Paramètres : (image, format, x, y, largeur, hauteur)
             docPdf.addImage(img, 'JPEG', 125, currentY + 3, 40, 25);
         } catch (err) {
             console.error("Erreur d'insertion du cachet/signature :", err);
@@ -477,7 +492,6 @@ export function telechargerPDF(index) {
         docPdf.save(`Bulletin_${nom.replace(/\s+/g, '_')}_${bul.grade.replace(/\s+/g, '_')}.pdf`);
     };
     
-    // Fallback au cas où l'image met du temps à charger ou est introuvable
     img.onerror = function() {
         docPdf.text("............................................", 125, currentY + 12);
         docPdf.save(`Bulletin_${nom.replace(/\s+/g, '_')}_${bul.grade.replace(/\s+/g, '_')}.pdf`);
