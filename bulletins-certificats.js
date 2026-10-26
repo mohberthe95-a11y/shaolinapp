@@ -297,44 +297,81 @@ export function telechargerPDF(index) {
     const { jsPDF } = window.jspdf;
     const docPdf = new jsPDF();
 
-    // En-tête
+    // -------------------------------------------------------------------------
+    // ESPACE RÉSERVÉ EN HAUT (Laissé libre pour ton icône / logo à venir)
+    // -------------------------------------------------------------------------
+    // (Tu pourras insérer ton icône ici plus tard avec : docPdf.addImage(...) vers Y=12)
+
+    // En-tête du club (décalé légèrement vers le bas pour laisser respirer l'icône)
     docPdf.setFont("helvetica", "bold");
     docPdf.setFontSize(10);
     docPdf.setTextColor(100, 100, 100);
-    docPdf.text("FEDERATION MALIENNE DE KUNG FU WUSHU", 105, 15, { align: "center" });
+    docPdf.text("FEDERATION MALIENNE DE KUNG FU WUSHU", 105, 22, { align: "center" });
 
     docPdf.setFontSize(16);
     docPdf.setTextColor(185, 28, 28);
-    docPdf.text("CLUB YOUZE", 105, 23, { align: "center" });
+    docPdf.text("CLUB YOUZE", 105, 30, { align: "center" });
 
     docPdf.setFontSize(9);
-    docPdf.text("Bamako - Yirimadio  |  Tél: +223 71 62 15 36", 105, 30, { align: "center" });
+    docPdf.setTextColor(71, 85, 105);
+    docPdf.text("Bamako - Yirimadio  |  Tél: +223 71 62 15 36", 105, 37, { align: "center" });
 
-    docPdf.setDrawColor(15, 23, 42);
-    docPdf.line(20, 35, 190, 35);
+    // Ligne de séparation dorée/sombre élégante
+    docPdf.setDrawColor(217, 119, 6);
+    docPdf.setLineWidth(0.8);
+    docPdf.line(20, 43, 190, 43);
 
+    // Titre du document dans un encadré professionnel
     docPdf.setFillColor(15, 23, 42);
-    docPdf.rect(20, 42, 170, 10, "F");
+    docPdf.roundedRect(20, 48, 170, 9, 1.5, 1.5, "F");
     docPdf.setTextColor(255, 255, 255);
-    docPdf.setFontSize(11);
-    docPdf.text("FICHE DE PASSATION DE GRADES", 105, 49, { align: "center" });
+    docPdf.setFontSize(10);
+    docPdf.setFont("helvetica", "bold");
+    docPdf.text("FICHE DE PASSATION DE GRADES", 105, 54, { align: "center" });
 
-    // Infos élève
+    // Informations générales de l'élève (Encadré propre)
+    docPdf.setDrawColor(203, 213, 225);
+    docPdf.setFillColor(248, 250, 252);
+    docPdf.roundedRect(20, 61, 170, 22, 2, 2, "FD");
+
     docPdf.setTextColor(15, 23, 42);
     docPdf.setFontSize(10);
-    docPdf.text(`Elève : ${nom}`, 20, 62);
-    docPdf.text(`Grade : ${bul.grade}`, 20, 69);
-    docPdf.text(`Date : ${bul.date}`, 120, 62);
-    docPdf.text(`Rang : ${bul.rang}`, 120, 69);
-
-    // Tableau des notes
-    let startY = 78;
-    docPdf.setFillColor(241, 245, 249);
-    docPdf.rect(20, startY, 170, 8, "F");
     docPdf.setFont("helvetica", "bold");
-    docPdf.text("N°", 25, startY + 5.5);
+    docPdf.text(`Elève :`, 25, 68);
+    docPdf.setFont("helvetica", "normal");
+    docPdf.text(`${nom}`, 45, 68);
+
+    docPdf.setFont("helvetica", "bold");
+    docPdf.text(`Grade :`, 25, 76);
+    docPdf.setFont("helvetica", "normal");
+    docPdf.text(`${bul.grade}`, 45, 76);
+
+    docPdf.setFont("helvetica", "bold");
+    docPdf.text(`Date :`, 120, 68);
+    docPdf.setFont("helvetica", "normal");
+    docPdf.text(`${bul.date}`, 135, 68);
+
+    docPdf.setFont("helvetica", "bold");
+    docPdf.text(`Rang :`, 120, 76);
+    docPdf.setFont("helvetica", "normal");
+    docPdf.text(`${bul.rang}`, 135, 76);
+
+    // -------------------------------------------------------------------------
+    // TABLEAU DES NOTES PROFESSIONNEL (Bordures nettes & en-tête stylisé)
+    // -------------------------------------------------------------------------
+    let startY = 90;
+    
+    // En-tête du tableau
+    docPdf.setFillColor(30, 41, 59); // Fond sombre pro
+    docPdf.setDrawColor(30, 41, 59);
+    docPdf.rect(20, startY, 170, 8, "FD");
+    
+    docPdf.setTextColor(255, 255, 255);
+    docPdf.setFont("helvetica", "bold");
+    docPdf.setFontSize(9);
+    docPdf.text("N°", 24, startY + 5.5);
     docPdf.text("ÉLÉMENT D'ÉVALUATION (TECHNIQUE / PHYSIQUE)", 45, startY + 5.5);
-    docPdf.text("NOTE", 160, startY + 5.5);
+    docPdf.text("NOTE", 165, startY + 5.5, { align: "center" });
 
     const intitulesCriteres = [
         "1. Salutation & Posture martiale",
@@ -347,33 +384,56 @@ export function telechargerPDF(index) {
     ];
 
     docPdf.setFont("helvetica", "normal");
+    docPdf.setTextColor(30, 41, 59);
     let currentY = startY + 8;
 
     intitulesCriteres.forEach((intitule, i) => {
         let noteValeur = (bul.notes && bul.notes[i] !== undefined && bul.notes[i] !== "") ? bul.notes[i] + " / 10" : "-";
         
-        docPdf.rect(20, currentY, 170, 7);
-        docPdf.text(`${i + 1}`, 25, currentY + 5);
-        docPdf.text(intitule, 45, currentY + 5);
-        docPdf.text(noteValeur, 160, currentY + 5);
+        // Alternance de couleur de fond pour une lisibilité parfaite (effet zébré léger)
+        if (i % 2 === 0) {
+            docPdf.setFillColor(255, 255, 255);
+        } else {
+            docPdf.setFillColor(248, 250, 252);
+        }
+        
+        docPdf.setDrawColor(203, 213, 225); // Bordure grise subtile
+        docPdf.rect(20, currentY, 170, 7.5, "FD");
 
-        currentY += 7;
+        docPdf.text(`${i + 1}`, 24, currentY + 5);
+        docPdf.text(intitule, 45, currentY + 5);
+        docPdf.setFont("helvetica", "bold");
+        docPdf.text(noteValeur, 165, currentY + 5, { align: "center" });
+        docPdf.setFont("helvetica", "normal");
+
+        currentY += 7.5;
     });
 
-    // Totaux et Moyenne
-    currentY += 6;
+    // -------------------------------------------------------------------------
+    // TOTAUX ET MOYENNE (Encadré récapitulatif)
+    // -------------------------------------------------------------------------
+    currentY += 4;
+    docPdf.setFillColor(241, 245, 249);
+    docPdf.setDrawColor(203, 213, 225);
+    docPdf.roundedRect(20, currentY, 170, 10, 1, 1, "FD");
+
     docPdf.setFont("helvetica", "bold");
-    docPdf.text(`Total des notes : ${bul.total || '0 / 70'}`, 20, currentY);
-    docPdf.text(`Moyenne : ${bul.moyenne || '0 / 10'}`, 120, currentY);
+    docPdf.setTextColor(15, 23, 42);
+    docPdf.text(`Total : ${bul.total || '0 / 70'}`, 26, currentY + 6.5);
+    docPdf.text(`Moyenne Générale : ${bul.moyenne || '0 / 10'}`, 115, currentY + 6.5);
 
     // Observation
-    currentY += 10;
-    docPdf.setFont("helvetica", "normal");
-    docPdf.text(`Observation : ${bul.observation || 'Aucune'}`, 20, currentY);
-
-    // Signature
     currentY += 15;
+    docPdf.setFont("helvetica", "bold");
+    docPdf.text("Observation :", 20, currentY);
+    docPdf.setFont("helvetica", "normal");
+    docPdf.text(`${bul.observation || 'Aucune observation'}`, 48, currentY);
+
+    // Signature en bas de page
+    currentY += 18;
+    docPdf.setFont("helvetica", "bold");
     docPdf.text("Le Maître d'Armes", 135, currentY);
+    docPdf.setFont("helvetica", "normal");
     docPdf.text("............................................", 125, currentY + 12);
 
     docPdf.save(`Bulletin_${nom.replace(/\s+/g, '_')}_${bul.grade.replace(/\s+/g, '_')}.pdf`);
