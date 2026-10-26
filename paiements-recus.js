@@ -165,16 +165,44 @@ function ouvrirAnciensRecus() {
                         <button class="btn-afficher" style="background: #2563eb; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer;">👁 Afficher</button>
                         ${estAdmin ? `<button class="btn-modifier-archive" style="background: #d97706; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer;">✏ Modifier</button>` : ''}
                         <button class="btn-pdf" style="background: #e11d48; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer;">📄 PDF</button>
+                        ${estAdmin ? `<button class="btn-supprimer-recu" style="background: #dc2626; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer;">🗑 Supprimer</button>` : ''}
                     </div>
                 </div>
             `;
             
             carte.querySelector('.btn-afficher').onclick = () => afficherRecuArchive(index);
-            if (estAdmin) { carte.querySelector('.btn-modifier-archive').onclick = () => modifierRecuArchive(index); }
+            if (estAdmin) { 
+                carte.querySelector('.btn-modifier-archive').onclick = () => modifierRecuArchive(index); 
+                carte.querySelector('.btn-supprimer-recu').onclick = () => supprimerRecuArchive(index);
+            }
             carte.querySelector('.btn-pdf').onclick = () => telechargerRecuArchivePDF(nom, index);
 
             conteneur.appendChild(carte);
         });
+    }
+}
+
+async function supprimerRecuArchive(index) {
+    if (sessionStorage.getItem("adminConnecte") !== "true") {
+        alert("Accès refusé. Seul l'administrateur peut supprimer un reçu.");
+        return;
+    }
+
+    let confirmation = confirm("Voulez-vous vraiment supprimer ce reçu de paiement ?");
+    if (!confirmation) return;
+
+    const nom = eleveActuel.nom;
+    if (stockRecus[nom]) {
+        stockRecus[nom].splice(index, 1);
+
+        try {
+            await setDoc(doc(db, "stockGlobalShaolin", "recus"), stockRecus);
+            alert("Reçu supprimé avec succès !");
+            ouvrirAnciensRecus();
+        } catch (e) {
+            console.error("Erreur lors de la suppression du reçu :", e);
+            alert("Erreur lors de la suppression du reçu.");
+        }
     }
 }
 
@@ -375,6 +403,7 @@ window.selectionnerMoisRecu = selectionnerMoisRecu;
 window.enregistrerMensualites = enregistrerMensualites;
 window.enregistrerEtFigerRecu = enregistrerEtFigerRecu;
 window.ouvrirAnciensRecus = ouvrirAnciensRecus;
+window.supprimerRecuArchive = supprimerRecuArchive;
 window.afficherRecuArchive = afficherRecuArchive;
 window.modifierRecuArchive = modifierRecuArchive;
 window.telechargerRecuPDF = telechargerRecuPDF;
