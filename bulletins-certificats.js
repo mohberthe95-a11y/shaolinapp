@@ -14,7 +14,6 @@ export function ouvrirCertificat() {
     document.getElementById('cert-parents').textContent = eleveActuel.parents || "";
     document.getElementById('cert-date').textContent = new Date().toLocaleDateString('fr-FR');
 
-    // Afficher ou ajouter le cachet/signature dans la zone du certificat web
     let zoneCertificat = document.getElementById('zone-certificat');
     if (zoneCertificat) {
         let imgCert = document.getElementById('apercu-signature-certificat');
@@ -83,7 +82,6 @@ export function telechargerCertificatPDF() {
     let aujourdHui = new Date().toLocaleDateString('fr-FR');
     docPdf.text(`Fait à Bamako, le ${aujourdHui}`, 20, 190);
 
-    // Signature et nom officiel sur le PDF du certificat
     docPdf.setFont("helvetica", "bold");
     docPdf.text("Le Maître d'Armes", 135, 180);
     docPdf.text("Sidi Yaya Boire", 135, 186);
@@ -499,7 +497,6 @@ export function telechargerPDF(index) {
     docPdf.setFont("helvetica", "normal");
     docPdf.text(`${bul.observation || 'Aucune observation'}`, 48, currentY);
 
-    // Signature et Nom (Sidi Yaya Boire) sur le PDF du bulletin
     currentY += 18;
     docPdf.setFont("helvetica", "bold");
     docPdf.text("Le Maître d'Armes", 135, currentY);
@@ -529,7 +526,7 @@ window.telechargerCertificatPDF = telechargerCertificatPDF;
 window.ouvrirFicheMembre = ouvrirFicheMembre;
 window.imprimerFicheMembre = imprimerFicheMembre;
 window.telechargerFicheMembrePDF = telechargerFicheMembrePDF;
-window.ouvrirNouveauBulletin = ouvrirNouveauNouveauBulletin || ouvrirNouveauBulletin;
+window.ouvrirNouveauBulletin = ouvrirNouveauBulletin;
 window.calculerTotaux = calculerTotaux;
 window.enregistrerBulletin = enregistrerBulletin;
 window.ouvrirAnciensBulletins = ouvrirAnciensBulletins;
