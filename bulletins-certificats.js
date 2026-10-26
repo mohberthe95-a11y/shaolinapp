@@ -171,7 +171,6 @@ export function ouvrirNouveauBulletin() {
     document.getElementById('total-notes').value = '';
     document.getElementById('moyenne-notes').value = '';
 
-    // S'assurer qu'un éventuel bouton retour dynamique est masqué en mode création
     let btnRetour = document.getElementById('btn-retour-archives');
     if (btnRetour) btnRetour.style.display = 'none';
 
@@ -261,18 +260,44 @@ export function ouvrirAnciensBulletins() {
                     <div class="actions-archive" style="display: flex; gap: 5px;">
                         <button class="btn-afficher" style="background: #2563eb; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">👁 Afficher</button>
                         <button class="btn-pdf" style="background: #e11d48; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">📄 PDF</button>
+                        <button class="btn-supprimer-bul" style="background: #dc2626; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">🗑 Supprimer</button>
                     </div>
                 </div>
             `;
 
             carte.querySelector('.btn-afficher').onclick = () => afficherBulletin(index);
             carte.querySelector('.btn-pdf').onclick = () => telechargerPDF(index);
+            carte.querySelector('.btn-supprimer-bul').onclick = () => supprimerBulletinArchive(index);
 
             archivesConteneur.appendChild(carte);
         });
     }
 
     window.afficherSection('zone-anciens-bulletins');
+}
+
+export async function supprimerBulletinArchive(index) {
+    if (sessionStorage.getItem("adminConnecte") !== "true") {
+        alert("Accès refusé. Seul l'administrateur peut supprimer un bulletin.");
+        return;
+    }
+
+    let confirmation = confirm("Voulez-vous vraiment supprimer ce bulletin de passation ?");
+    if (!confirmation) return;
+
+    const nom = eleveActuel.nom;
+    if (stockBulletins[nom]) {
+        stockBulletins[nom].splice(index, 1);
+
+        try {
+            await setDoc(doc(db, "stockGlobalShaolin", "bulletins"), stockBulletins);
+            alert("Bulletin supprimé avec succès !");
+            ouvrirAnciensBulletins();
+        } catch (e) {
+            console.error("Erreur lors de la suppression :", e);
+            alert("Erreur lors de la suppression du bulletin.");
+        }
+    }
 }
 
 export function afficherBulletin(index) {
@@ -292,7 +317,6 @@ export function afficherBulletin(index) {
     document.getElementById('total-notes').value = bul.total;
     document.getElementById('moyenne-notes').value = bul.moyenne;
 
-    // --- AJOUT D'UN BOUTON RETOUR DYNAMIQUE ---
     let zoneCreation = document.getElementById('zone-creation-bulletin');
     let btnRetour = document.getElementById('btn-retour-archives');
     
@@ -301,8 +325,6 @@ export function afficherBulletin(index) {
         btnRetour.id = 'btn-retour-archives';
         btnRetour.innerHTML = '⬅ Retour aux anciens bulletins';
         btnRetour.style.cssText = "background: #475569; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; margin-bottom: 15px; font-weight: bold;";
-        
-        // Insérer le bouton tout en haut de la zone de création/consultation
         zoneCreation.insertBefore(btnRetour, zoneCreation.firstChild);
     }
     
@@ -318,7 +340,6 @@ export function telechargerPDF(index) {
     const { jsPDF } = window.jspdf;
     const docPdf = new jsPDF();
 
-    // Espace réservé en haut pour ton logo/icône à venir
     docPdf.setFont("helvetica", "bold");
     docPdf.setFontSize(10);
     docPdf.setTextColor(100, 100, 100);
@@ -343,7 +364,6 @@ export function telechargerPDF(index) {
     docPdf.setFont("helvetica", "bold");
     docPdf.text("FICHE DE PASSATION DE GRADES", 105, 54, { align: "center" });
 
-    // Infos générales élève
     docPdf.setDrawColor(203, 213, 225);
     docPdf.setFillColor(248, 250, 252);
     docPdf.roundedRect(20, 61, 170, 22, 2, 2, "FD");
@@ -370,7 +390,6 @@ export function telechargerPDF(index) {
     docPdf.setFont("helvetica", "normal");
     docPdf.text(`${bul.rang}`, 135, 76);
 
-    // Tableau des notes avec les vraies matières de ton application
     let startY = 90;
     
     docPdf.setFillColor(30, 41, 59);
@@ -384,7 +403,6 @@ export function telechargerPDF(index) {
     docPdf.text("ÉLÉMENT D'ÉVALUATION", 45, startY + 5.5);
     docPdf.text("NOTE (/10)", 165, startY + 5.5, { align: "center" });
 
-    // Vrais libellés de ton application web
     const intitulesCriteres = [
         "Marches de shaolin",
         "Pieds - Poings",
@@ -420,7 +438,6 @@ export function telechargerPDF(index) {
         currentY += 7.5;
     });
 
-    // Totaux et Moyenne
     currentY += 4;
     docPdf.setFillColor(241, 245, 249);
     docPdf.setDrawColor(203, 213, 225);
@@ -431,14 +448,12 @@ export function telechargerPDF(index) {
     docPdf.text(`Total : ${bul.total || '0 / 70'}`, 26, currentY + 6.5);
     docPdf.text(`Moyenne Générale : ${bul.moyenne || '0 / 10'}`, 115, currentY + 6.5);
 
-    // Observation
     currentY += 15;
     docPdf.setFont("helvetica", "bold");
     docPdf.text("Observation :", 20, currentY);
     docPdf.setFont("helvetica", "normal");
     docPdf.text(`${bul.observation || 'Aucune observation'}`, 48, currentY);
 
-    // Signature
     currentY += 18;
     docPdf.setFont("helvetica", "bold");
     docPdf.text("Le Maître d'Armes", 135, currentY);
@@ -459,5 +474,6 @@ window.ouvrirNouveauBulletin = ouvrirNouveauBulletin;
 window.calculerTotaux = calculerTotaux;
 window.enregistrerBulletin = enregistrerBulletin;
 window.ouvrirAnciensBulletins = ouvrirAnciensBulletins;
+window.supprimerBulletinArchive = supprimerBulletinArchive;
 window.afficherBulletin = afficherBulletin;
 window.telechargerPDF = telechargerPDF;
