@@ -211,7 +211,7 @@ async function telechargerListePDF() {
 }
 
 // ==========================================
-// LOGIQUE DE LA PASSATION GÉNÉRALE (TRIÉE PAR ORDRE DE GRADE CROISSANT & RANGS INDÉPENDANTS)
+// LOGIQUE DE LA PASSATION GÉNÉRALE (TRI AUTOMATIQUE & CALCUL AUTOMATIQUE DES MOYENNES/RANGS)
 // ==========================================
 async function accederPassationGenerale() {
     if (sessionStorage.getItem("adminConnecte") !== "true") {
@@ -259,6 +259,7 @@ async function accederPassationGenerale() {
 
         gradesTries.forEach(grade => {
             let trSep = document.createElement("tr");
+            trSep.className = "ligne-separateur-grade";
             trSep.innerHTML = `
                 <td colspan="10" style="background-color: #0f172a; color: white; font-weight: bold; padding: 12px 15px; font-size: 0.95rem; letter-spacing: 0.5px; border-top: 3px solid #38bdf8;">
                     🥋 SECTION / GRADE : ${grade.toUpperCase()}
@@ -294,6 +295,7 @@ async function accederPassationGenerale() {
             });
         });
 
+        // Calcul automatique immédiat à l'ouverture
         recalculerMoyennesEtRangsIndependants();
 
     } catch (e) {
@@ -307,14 +309,15 @@ function retournerAListeDepuisPassation() {
     document.getElementById('zone-liste-principale').style.display = 'block';
 }
 
+// Fonction déclenchée automatiquement dès qu'une note change pour recalculer et classer en direct
 function recalculerMoyennesEtRangsIndependants() {
-    let sectionsGrades = document.querySelectorAll('tr[style*="background-color: #0f172a"]');
+    let sectionsGrades = document.querySelectorAll('.ligne-separateur-grade');
     
     sectionsGrades.forEach(section => {
         let prochaineLigne = section.nextElementSibling;
         let elevesDuGroupe = [];
 
-        while (prochaineLigne && !prochaineLigne.querySelector('td[colspan="10"]')) {
+        while (prochaineLigne && !prochaineLigne.classList.contains('ligne-separateur-grade')) {
             if (prochaineLigne.classList.contains('ligne-eleve-passation')) {
                 let inputsNotes = prochaineLigne.querySelectorAll('.note-globale');
                 let somme = 0;
@@ -335,6 +338,7 @@ function recalculerMoyennesEtRangsIndependants() {
             prochaineLigne = prochaineLigne.nextElementSibling;
         }
 
+        // Tri automatique du meilleur au plus faible dans le groupe
         elevesDuGroupe.sort((a, b) => b.moyenne - a.moyenne);
         let totalElevesDansGrade = elevesDuGroupe.length;
 
@@ -347,8 +351,6 @@ function recalculerMoyennesEtRangsIndependants() {
 
             let celluleMoyenne = item.ligne.querySelector('.moyenne-ligne');
             celluleMoyenne.innerHTML = `${item.moyenne.toFixed(2)} / 10 <br><span style="font-size: 0.75rem; color: #2563eb; background: #eff6ff; padding: 2px 6px; border-radius: 4px; font-weight: bold;">Rang : ${suffixeRang} / ${totalElevesDansGrade}</span>`;
-            
-            section.parentNode.insertBefore(item.ligne, prochaineLigne);
         });
     });
 }
@@ -405,7 +407,7 @@ async function enregistrerPassationGlobale() {
 
     try {
         await setDoc(doc(db, "stockGlobalShaolin", "bulletins"), stockBulletins);
-        alert("⚡ Passation générale enregistrée avec succès ! Les rangs indépendants par grade ont été propagés.");
+        alert("⚡ Passation générale enregistrée avec succès ! Les moyennes et classements automatiques ont été sauvegardés.");
         retournerAListeDepuisPassation();
     } catch (e) {
         console.error("Erreur enregistrement passation globale :", e);
