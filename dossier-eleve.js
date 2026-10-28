@@ -211,7 +211,7 @@ async function telechargerListePDF() {
 }
 
 // ==========================================
-// LOGIQUE DE LA PASSATION GÉNÉRALE (GROUPÉE PAR GRADE AVEC LIGNE FONCÉE)
+// LOGIQUE DE LA PASSATION GÉNÉRALE (GROUPÉE PAR GRADE, NUMÉROTÉE 1, 2, 3 ET RANGS INDÉPENDANTS)
 // ==========================================
 async function accederPassationGenerale() {
     if (sessionStorage.getItem("adminConnecte") !== "true") {
@@ -237,7 +237,7 @@ async function accederPassationGenerale() {
 
         corpsTableau.innerHTML = "";
 
-        // Regrouper les élèves par leur grade actuel pour éviter qu'ils ne se mélangent
+        // Regrouper les élèves par leur grade actuel
         let groupesParGrade = {};
 
         listeMembres.forEach((eleve, index) => {
@@ -251,44 +251,49 @@ async function accederPassationGenerale() {
             groupesParGrade[gradeActuel].push({ eleve, nom, matricule, gradeActuel });
         });
 
-        // Afficher chaque groupe séparé par un en-tête foncé
+        // Afficher chaque groupe de grade séparé par un en-tête foncé et numéroté de façon indépendante (1, 2, 3...)
         for (let grade in groupesParGrade) {
             let trSep = document.createElement("tr");
             trSep.innerHTML = `
-                <td colspan="10" style="background-color: #0f172a; color: white; font-weight: bold; padding: 10px 15px; font-size: 0.95rem; letter-spacing: 0.5px; border-top: 3px solid #38bdf8;">
+                <td colspan="10" style="background-color: #0f172a; color: white; font-weight: bold; padding: 12px 15px; font-size: 0.95rem; letter-spacing: 0.5px; border-top: 3px solid #38bdf8;">
                     🥋 SECTION / GRADE : ${grade.toUpperCase()}
                 </td>
             `;
             corpsTableau.appendChild(trSep);
 
-            groupesParGrade[grade].forEach((item) => {
+            // Trier les élèves de ce grade par ordre alphabétique ou les garder dans l'ordre, puis leur assigner un numéro d'ordre (1, 2, 3...)
+            let elevesDuGrade = groupesParGrade[grade];
+
+            elevesDuGrade.forEach((item, indexNum) => {
+                let numeroOrdre = indexNum + 1; // 1, 2, 3...
                 let bulletinsEleve = stockBulletins[item.nom] || [];
                 let dernierBull = bulletinsEleve.length > 0 ? bulletinsEleve[bulletinsEleve.length - 1] : null;
                 let notes = dernierBull ? dernierBull.notes : [0, 0, 0, 0, 0, 0, 0];
 
                 let tr = document.createElement("tr");
                 tr.setAttribute("data-nom-eleve", item.nom);
+                tr.setAttribute("data-grade-groupe", grade);
                 tr.className = "ligne-eleve-passation";
                 tr.innerHTML = `
                     <td style="font-weight: 600; color: #0f172a; padding-left: 20px;">
-                        ${item.nom}
-                        <span style="display: block; font-size: 0.75rem; color: #64748b; font-weight: normal;">${item.matricule}</span>
+                        <span style="color: #2563eb; font-weight: bold; margin-right: 6px;">${numeroOrdre}.</span> ${item.nom}
+                        <span style="display: block; font-size: 0.75rem; color: #64748b; font-weight: normal; margin-left: 18px;">${item.matricule}</span>
                     </td>
-                    <td><input type="text" class="input-grade-globale" value="${item.gradeActuel}" style="width: 100%; padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.85rem;"></td>
-                    <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="10" step="0.5" value="${notes[0] || 0}" oninput="recalculerMoyennesEtRangs()"></td>
-                    <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="10" step="0.5" value="${notes[1] || 0}" oninput="recalculerMoyennesEtRangs()"></td>
-                    <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="10" step="0.5" value="${notes[2] || 0}" oninput="recalculerMoyennesEtRangs()"></td>
-                    <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="10" step="0.5" value="${notes[3] || 0}" oninput="recalculerMoyennesEtRangs()"></td>
-                    <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="10" step="0.5" value="${notes[4] || 0}" oninput="recalculerMoyennesEtRangs()"></td>
-                    <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="10" step="0.5" value="${notes[5] || 0}" oninput="recalculerMoyennesEtRangs()"></td>
-                    <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="10" step="0.5" value="${notes[6] || 0}" oninput="recalculerMoyennesEtRangs()"></td>
+                    <td><input type="text" class="input-grade-globale" value="${item.gradeActuel}" style="width: 100%; padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.85rem;" oninput="recalculerMoyennesEtRangsIndependants()"></td>
+                    <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="10" step="0.5" value="${notes[0] || 0}" oninput="recalculerMoyennesEtRangsIndependants()"></td>
+                    <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="10" step="0.5" value="${notes[1] || 0}" oninput="recalculerMoyennesEtRangsIndependants()"></td>
+                    <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="10" step="0.5" value="${notes[2] || 0}" oninput="recalculerMoyennesEtRangsIndependants()"></td>
+                    <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="10" step="0.5" value="${notes[3] || 0}" oninput="recalculerMoyennesEtRangsIndependants()"></td>
+                    <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="10" step="0.5" value="${notes[4] || 0}" oninput="recalculerMoyennesEtRangsIndependants()"></td>
+                    <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="10" step="0.5" value="${notes[5] || 0}" oninput="recalculerMoyennesEtRangsIndependants()"></td>
+                    <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="10" step="0.5" value="${notes[6] || 0}" oninput="recalculerMoyennesEtRangsIndependants()"></td>
                     <td style="text-align: center; font-weight: bold; color: #b91c1c;" class="moyenne-ligne">0.00 / 10</td>
                 `;
                 corpsTableau.appendChild(tr);
             });
         }
 
-        recalculerMoyennesEtRangs();
+        recalculerMoyennesEtRangsIndependants();
 
     } catch (e) {
         console.error("Erreur chargement passation générale :", e);
@@ -301,23 +306,54 @@ function retournerAListeDepuisPassation() {
     document.getElementById('zone-liste-principale').style.display = 'block';
 }
 
-function recalculerMoyennesEtRangs() {
-    let lignes = document.querySelectorAll('.ligne-eleve-passation');
+// Calcule les moyennes et attribue le rang de manière INDÉPENDANTE pour chaque groupe de grade
+function recalculerMoyennesEtRangsIndependants() {
+    // Récupérer tous les grades uniques affichés dans le tableau
+    let sectionsGrades = document.querySelectorAll('tr[style*="background-color: #0f172a"]');
+    
+    sectionsGrades.forEach(section => {
+        // Retrouver le texte du grade à partir de l'en-tête
+        let texteEnTete = section.textContent;
+        // On récupère les lignes d'élèves qui suivent immédiatement cet en-tête jusqu'au prochain en-tête
+        let prochaineLigne = section.nextElementSibling;
+        let elevesDuGroupe = [];
 
-    lignes.forEach(ligne => {
-        let inputsNotes = ligne.querySelectorAll('.note-globale');
-        let somme = 0;
-        
-        inputsNotes.forEach(input => {
-            let val = parseFloat(input.value) || 0;
-            if (val < 0) input.value = 0;
-            if (val > 10) input.value = 10;
-            somme += parseFloat(input.value) || 0;
+        while (prochaineLigne && !prochaineLigne.querySelector('td[colspan="10"]')) {
+            if (prochaineLigne.classList.contains('ligne-eleve-passation')) {
+                let inputsNotes = prochaineLigne.querySelectorAll('.note-globale');
+                let somme = 0;
+                
+                inputsNotes.forEach(input => {
+                    let val = parseFloat(input.value) || 0;
+                    if (val < 0) input.value = 0;
+                    if (val > 10) input.value = 10;
+                    somme += parseFloat(input.value) || 0;
+                });
+
+                let moyenne = somme / 7;
+                elevesDuGroupe.push({
+                    ligne: prochaineLigne,
+                    moyenne: moyenne
+                });
+            }
+            prochaineLigne = prochaineLigne.nextElementSibling;
+        }
+
+        // Trier les élèves de CE groupe spécifique du plus fort au plus faible pour le rang
+        elevesDuGroupe.sort((a, b) => b.moyenne - a.moyenne);
+
+        let totalElevesDansGrade = elevesDuGroupe.length;
+
+        elevesDuGroupe.forEach((item, index) => {
+            let rangNum = index + 1;
+            let suffixeRang = (rangNum === 1) ? "1er" : `${rangNum}e`;
+
+            item.ligne.setAttribute('data-rang-calcule', suffixeRang);
+            item.ligne.setAttribute('data-total-grade', totalElevesDansGrade);
+
+            let celluleMoyenne = item.ligne.querySelector('.moyenne-ligne');
+            celluleMoyenne.innerHTML = `${item.moyenne.toFixed(2)} / 10 <br><span style="font-size: 0.75rem; color: #2563eb; background: #eff6ff; padding: 2px 6px; border-radius: 4px; font-weight: bold;">(${suffixeRang} / ${totalElevesDansGrade})</span>`;
         });
-
-        let moyenne = somme / 7;
-        let celluleMoyenne = ligne.querySelector('.moyenne-ligne');
-        celluleMoyenne.innerHTML = `${moyenne.toFixed(2)} / 10`;
     });
 }
 
@@ -329,12 +365,13 @@ async function enregistrerPassationGlobale() {
 
     let lignes = document.querySelectorAll('.ligne-eleve-passation');
     let dateDuJour = new Date().toISOString().split('T')[0];
-    let nombreTotalEleves = lignes.length;
 
     lignes.forEach((ligne) => {
         let nom = ligne.getAttribute('data-nom-eleve');
         let grade = ligne.querySelector('.input-grade-globale').value;
         let inputsNotes = ligne.querySelectorAll('.note-globale');
+        let rangCalcule = ligne.getAttribute('data-rang-calcule') || "1er";
+        let totalGrade = ligne.getAttribute('data-total-grade') || "1";
         
         let notes = [];
         let total = 0;
@@ -358,7 +395,7 @@ async function enregistrerPassationGlobale() {
             notes: notes,
             total: total,
             moyenne: moyenne + " / 10",
-            rang: `1er / ${nombreTotalEleves}`,
+            rang: `${rangCalcule} / ${totalGrade}`,
             observation: observationText,
             date: dateDuJour,
             signature: "Maître Youze"
@@ -372,7 +409,7 @@ async function enregistrerPassationGlobale() {
 
     try {
         await setDoc(doc(db, "stockGlobalShaolin", "bulletins"), stockBulletins);
-        alert("⚡ Passation générale enregistrée avec succès ! Les notes et barrettes ont été sauvegardées.");
+        alert("⚡ Passation générale enregistrée avec succès ! Les classements indépendants par grade ont été propagés.");
         retournerAListeDepuisPassation();
     } catch (e) {
         console.error("Erreur enregistrement passation globale :", e);
@@ -552,7 +589,7 @@ window.imprimerListeEleves = imprimerListeEleves;
 window.telechargerListePDF = telechargerListePDF;
 window.accederPassationGenerale = accederPassationGenerale;
 window.retournerAListeDepuisPassation = retournerAListeDepuisPassation;
-window.recalculerMoyennesEtRangs = recalculerMoyennesEtRangs;
+window.recalculerMoyennesEtRangsIndependants = recalculerMoyennesEtRangsIndependants;
 window.enregistrerPassationGlobale = enregistrerPassationGlobale;
 window.ouvrirDossierEleve = ouvrirDossierEleve;
 window.retournerAListe = retournerAListe;
