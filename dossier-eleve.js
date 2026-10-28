@@ -111,7 +111,6 @@ function verifierRestrictionsAdmin() {
     const btnSuppr = document.querySelector('.btn-action.btn-supprimer');
     if (btnSuppr) btnSuppr.style.display = estAdmin ? 'inline-block' : 'none';
 
-    // Affichage sécurisé du bouton de Passation Générale
     const btnPassationGenerale = document.getElementById('btn-passation-generale');
     if (btnPassationGenerale) {
         btnPassationGenerale.style.display = estAdmin ? 'inline-block' : 'none';
@@ -212,7 +211,7 @@ async function telechargerListePDF() {
 }
 
 // ==========================================
-// LOGIQUE DE LA PASSATION GÉNÉRALE (TABLEAU HORIZONTAL)
+// LOGIQUE DE LA PASSATION GÉNÉRALE (TABLEAU HORIZONTAL - SUR 10)
 // ==========================================
 async function accederPassationGenerale() {
     if (sessionStorage.getItem("adminConnecte") !== "true") {
@@ -243,7 +242,6 @@ async function accederPassationGenerale() {
             let matricule = "SH-2026-00" + (index + 1);
             let gradeActuel = (stockDossiersMedicaux[nom] && stockDossiersMedicaux[nom].gradeActuel) || "7e Barrette";
 
-            // Récupérer le dernier bulletin existant s'il y en a un pour pré-remplir
             let bulletinsEleve = stockBulletins[nom] || [];
             let dernierBull = bulletinsEleve.length > 0 ? bulletinsEleve[bulletinsEleve.length - 1] : null;
             let notes = dernierBull ? dernierBull.notes : [0, 0, 0, 0, 0, 0, 0];
@@ -256,18 +254,17 @@ async function accederPassationGenerale() {
                     <span style="display: block; font-size: 0.75rem; color: #64748b; font-weight: normal;">${matricule}</span>
                 </td>
                 <td><input type="text" class="input-grade-globale" value="${gradeActuel}" style="width: 100%; padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.85rem;"></td>
-                <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="20" value="${notes[0] || 0}" oninput="calculerMoyenneLigne(this)"></td>
-                <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="20" value="${notes[1] || 0}" oninput="calculerMoyenneLigne(this)"></td>
-                <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="20" value="${notes[2] || 0}" oninput="calculerMoyenneLigne(this)"></td>
-                <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="20" value="${notes[3] || 0}" oninput="calculerMoyenneLigne(this)"></td>
-                <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="20" value="${notes[4] || 0}" oninput="calculerMoyenneLigne(this)"></td>
-                <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="20" value="${notes[5] || 0}" oninput="calculerMoyenneLigne(this)"></td>
-                <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="20" value="${notes[6] || 0}" oninput="calculerMoyenneLigne(this)"></td>
-                <td style="text-align: center; font-weight: bold; color: #b91c1c;" class="moyenne-ligne">0.00 / 20</td>
+                <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="10" step="0.5" value="${notes[0] || 0}" oninput="calculerMoyenneLigne(this)"></td>
+                <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="10" step="0.5" value="${notes[1] || 0}" oninput="calculerMoyenneLigne(this)"></td>
+                <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="10" step="0.5" value="${notes[2] || 0}" oninput="calculerMoyenneLigne(this)"></td>
+                <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="10" step="0.5" value="${notes[3] || 0}" oninput="calculerMoyenneLigne(this)"></td>
+                <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="10" step="0.5" value="${notes[4] || 0}" oninput="calculerMoyenneLigne(this)"></td>
+                <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="10" step="0.5" value="${notes[5] || 0}" oninput="calculerMoyenneLigne(this)"></td>
+                <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="10" step="0.5" value="${notes[6] || 0}" oninput="calculerMoyenneLigne(this)"></td>
+                <td style="text-align: center; font-weight: bold; color: #b91c1c;" class="moyenne-ligne">0.00 / 10</td>
             `;
             corpsTableau.appendChild(tr);
             
-            // Calculer la moyenne initiale de la ligne
             calculerMoyenneLigne(tr.querySelector('.note-globale'));
         });
 
@@ -290,13 +287,13 @@ function calculerMoyenneLigne(elementInput) {
     inputsNotes.forEach(input => {
         let val = parseFloat(input.value) || 0;
         if (val < 0) input.value = 0;
-        if (val > 20) input.value = 20;
+        if (val > 10) input.value = 10; // Maximum fixé à 10
         somme += parseFloat(input.value) || 0;
     });
 
     let moyenne = somme / 7;
     let celluleMoyenne = ligne.querySelector('.moyenne-ligne');
-    celluleMoyenne.textContent = moyenne.toFixed(2) + " / 20";
+    celluleMoyenne.textContent = moyenne.toFixed(2) + " / 10";
 }
 
 async function enregistrerPassationGlobale() {
@@ -323,12 +320,11 @@ async function enregistrerPassationGlobale() {
 
         let moyenne = (total / 7).toFixed(2);
 
-        // Structure du bulletin individuel
         let nouveauBulletin = {
             grade: grade,
             notes: notes,
             total: total,
-            moyenne: moyenne,
+            moyenne: moyenne + " / 10",
             rang: "1er",
             observation: "Passation générale validée avec succès.",
             date: dateDuJour,
@@ -343,7 +339,7 @@ async function enregistrerPassationGlobale() {
 
     try {
         await setDoc(doc(db, "stockGlobalShaolin", "bulletins"), stockBulletins);
-        alert("⚡ Passation générale enregistrée avec succès ! Tous les bulletins individuels ont été mis à jour.");
+        alert("⚡ Passation générale enregistrée avec succès (Notes sur 10) !");
         retournerAListeDepuisPassation();
     } catch (e) {
         console.error("Erreur enregistrement passation globale :", e);
@@ -518,7 +514,6 @@ async function supprimerEleveActuel() {
     }
 }
 
-// Exportation globale pour les balises HTML onclick
 window.filtrerEleves = filtrerEleves;
 window.imprimerListeEleves = imprimerListeEleves;
 window.telechargerListePDF = telechargerListePDF;
