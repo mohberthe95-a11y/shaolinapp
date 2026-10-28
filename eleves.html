@@ -231,13 +231,28 @@
                 <!-- 1. SECTION INFOS -->
                 <div id="zone-infos" class="section-box" style="display: block;">
                     <h4 style="margin-top: 0; color: #0f172a; border-bottom: 2px solid #cbd5e1; padding-bottom: 8px;">👤 Informations Personnelles & Administratives</h4>
-                    <p><strong>N° de l'élève (Matricule) :</strong> <span id="info-matricule"></span></p>
-                    <p><strong>Nom & Prénom :</strong> <span id="info-nom"></span></p>
-                    <p><strong>Date de naissance :</strong> <span id="info-naissance"></span></p>
-                    <p><strong>Date d'inscription :</strong> <span id="info-inscription" style="color: #0284c7; font-weight: bold;"></span></p>
-                    <p><strong>Contact de l'élève :</strong> <span id="info-contact-eleve"></span></p>
-                    <p><strong>Nom des parents :</strong> <span id="info-parents"></span></p>
-                    <p><strong>Contact Titulaire :</strong> <span id="info-contact-tuteur"></span></p>
+                    
+                    <!-- MISE EN PAGE FLEX POUR METTRE LES INFOS À GAUCHE ET LA PHOTO À DROITE -->
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap;">
+                        <div style="flex: 1; min-width: 250px;">
+                            <p><strong>N° de l'élève (Matricule) :</strong> <span id="info-matricule"></span></p>
+                            <p><strong>Nom & Prénom :</strong> <span id="info-nom"></span></p>
+                            <p><strong>Date de naissance :</strong> <span id="info-naissance"></span></p>
+                            <p><strong>Date d'inscription :</strong> <span id="info-inscription" style="color: #0284c7; font-weight: bold;"></span></p>
+                            <p><strong>Contact de l'élève :</strong> <span id="info-contact-eleve"></span></p>
+                            <p><strong>Nom des parents :</strong> <span id="info-parents"></span></p>
+                            <p><strong>Contact Titulaire :</strong> <span id="info-contact-tuteur"></span></p>
+                        </div>
+                        
+                        <!-- EMPLACEMENT DE LA PHOTO DE L'ÉLÈVE À DROITE -->
+                        <div style="text-align: center; background: #f8fafc; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                            <img id="info-photo-eleve" src="" alt="Photo de l'élève" style="width: 110px; height: 135px; object-fit: cover; border-radius: 6px; display: none; border: 1px solid #94a3b8;">
+                            <div id="info-sans-photo" style="width: 110px; height: 135px; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 0.8rem; font-style: italic;">
+                                Aucune photo
+                            </div>
+                            <span style="display: block; font-size: 0.75rem; color: #64748b; margin-top: 5px; font-weight: 600;">Photo d'identité</span>
+                        </div>
+                    </div>
 
                     <!-- AJOUT DU CHAMP CODE PIN MODIFIABLE PAR L'ADMIN -->
                     <div class="form-grid" style="margin-top: 15px;">
