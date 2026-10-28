@@ -211,7 +211,7 @@ async function telechargerListePDF() {
 }
 
 // ==========================================
-// LOGIQUE DE LA PASSATION GÉNÉRALE (TABLEAU HORIZONTAL - SUR 10)
+// LOGIQUE DE LA PASSATION GÉNÉRALE (SUR 10 + CALCUL DES RANGS)
 // ==========================================
 async function accederPassationGenerale() {
     if (sessionStorage.getItem("adminConnecte") !== "true") {
@@ -254,19 +254,19 @@ async function accederPassationGenerale() {
                     <span style="display: block; font-size: 0.75rem; color: #64748b; font-weight: normal;">${matricule}</span>
                 </td>
                 <td><input type="text" class="input-grade-globale" value="${gradeActuel}" style="width: 100%; padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.85rem;"></td>
-                <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="10" step="0.5" value="${notes[0] || 0}" oninput="calculerMoyenneLigne(this)"></td>
-                <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="10" step="0.5" value="${notes[1] || 0}" oninput="calculerMoyenneLigne(this)"></td>
-                <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="10" step="0.5" value="${notes[2] || 0}" oninput="calculerMoyenneLigne(this)"></td>
-                <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="10" step="0.5" value="${notes[3] || 0}" oninput="calculerMoyenneLigne(this)"></td>
-                <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="10" step="0.5" value="${notes[4] || 0}" oninput="calculerMoyenneLigne(this)"></td>
-                <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="10" step="0.5" value="${notes[5] || 0}" oninput="calculerMoyenneLigne(this)"></td>
-                <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="10" step="0.5" value="${notes[6] || 0}" oninput="calculerMoyenneLigne(this)"></td>
+                <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="10" step="0.5" value="${notes[0] || 0}" oninput="recalculerToutesLesMoyennesEtRangs()"></td>
+                <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="10" step="0.5" value="${notes[1] || 0}" oninput="recalculerToutesLesMoyennesEtRangs()"></td>
+                <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="10" step="0.5" value="${notes[2] || 0}" oninput="recalculerToutesLesMoyennesEtRangs()"></td>
+                <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="10" step="0.5" value="${notes[3] || 0}" oninput="recalculerToutesLesMoyennesEtRangs()"></td>
+                <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="10" step="0.5" value="${notes[4] || 0}" oninput="recalculerToutesLesMoyennesEtRangs()"></td>
+                <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="10" step="0.5" value="${notes[5] || 0}" oninput="recalculerToutesLesMoyennesEtRangs()"></td>
+                <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="10" step="0.5" value="${notes[6] || 0}" oninput="recalculerToutesLesMoyennesEtRangs()"></td>
                 <td style="text-align: center; font-weight: bold; color: #b91c1c;" class="moyenne-ligne">0.00 / 10</td>
             `;
             corpsTableau.appendChild(tr);
-            
-            calculerMoyenneLigne(tr.querySelector('.note-globale'));
         });
+
+        recalculerToutesLesMoyennesEtRangs();
 
     } catch (e) {
         console.error("Erreur chargement passation générale :", e);
@@ -279,21 +279,44 @@ function retournerAListeDepuisPassation() {
     document.getElementById('zone-liste-principale').style.display = 'block';
 }
 
-function calculerMoyenneLigne(elementInput) {
-    let ligne = elementInput.closest('tr');
-    let inputsNotes = ligne.querySelectorAll('.note-globale');
-    let somme = 0;
-    
-    inputsNotes.forEach(input => {
-        let val = parseFloat(input.value) || 0;
-        if (val < 0) input.value = 0;
-        if (val > 10) input.value = 10; // Maximum fixé à 10
-        somme += parseFloat(input.value) || 0;
+function recalculerToutesLesMoyennesEtRangs() {
+    let lignes = document.querySelectorAll('#corps-tableau-passation-globale tr');
+    let donneesEleves = [];
+
+    lignes.forEach(ligne => {
+        let inputsNotes = ligne.querySelectorAll('.note-globale');
+        let somme = 0;
+        
+        inputsNotes.forEach(input => {
+            let val = parseFloat(input.value) || 0;
+            if (val < 0) input.value = 0;
+            if (val > 10) input.value = 10;
+            somme += parseFloat(input.value) || 0;
+        });
+
+        let moyenne = somme / 7;
+
+        donneesEleves.push({
+            ligne: ligne,
+            moyenne: moyenne
+        });
     });
 
-    let moyenne = somme / 7;
-    let celluleMoyenne = ligne.querySelector('.moyenne-ligne');
-    celluleMoyenne.textContent = moyenne.toFixed(2) + " / 10";
+    // Tri du plus fort au plus faible
+    donneesEleves.sort((a, b) => b.moyenne - a.moyenne);
+
+    let corpsTableau = document.getElementById('corps-tableau-passation-globale');
+    donneesEleves.forEach((item, index) => {
+        let rangNum = index + 1;
+        let suffixeRang = (rangNum === 1) ? "1er" : `${rangNum}e`;
+        
+        item.ligne.setAttribute('data-rang-calcule', suffixeRang);
+        
+        let celluleMoyenne = item.ligne.querySelector('.moyenne-ligne');
+        celluleMoyenne.innerHTML = `${item.moyenne.toFixed(2)} / 10 <br><span style="font-size: 0.75rem; color: #2563eb; background: #eff6ff; padding: 2px 6px; border-radius: 4px; font-weight: bold;">(${suffixeRang})</span>`;
+
+        corpsTableau.appendChild(item.ligne);
+    });
 }
 
 async function enregistrerPassationGlobale() {
@@ -304,11 +327,13 @@ async function enregistrerPassationGlobale() {
 
     let lignes = document.querySelectorAll('#corps-tableau-passation-globale tr');
     let dateDuJour = new Date().toISOString().split('T')[0];
+    let nombreTotalEleves = lignes.length;
 
-    lignes.forEach(ligne => {
+    lignes.forEach((ligne, index) => {
         let nom = ligne.getAttribute('data-nom-eleve');
         let grade = ligne.querySelector('.input-grade-globale').value;
         let inputsNotes = ligne.querySelectorAll('.note-globale');
+        let rangCalcule = ligne.getAttribute('data-rang-calcule') || `${index + 1}e`;
         
         let notes = [];
         let total = 0;
@@ -319,14 +344,21 @@ async function enregistrerPassationGlobale() {
         });
 
         let moyenne = (total / 7).toFixed(2);
+        let moyNum = parseFloat(moyenne);
+        
+        let observationText = "Bon travail, continue ainsi.";
+        if (moyNum >= 8) observationText = "Excellent niveau, félicitations du maître !";
+        else if (moyNum >= 6) observationText = "Bon niveau, efforts satisfaisants.";
+        else if (moyNum >= 5) observationText = "Passable, des efforts à accentuer.";
+        else observationText = "Insuffisant, redouble d'efforts aux entraînements.";
 
         let nouveauBulletin = {
             grade: grade,
             notes: notes,
             total: total,
             moyenne: moyenne + " / 10",
-            rang: "1er",
-            observation: "Passation générale validée avec succès.",
+            rang: `${rangCalcule} / ${nombreTotalEleves}`,
+            observation: observationText,
             date: dateDuJour,
             signature: "Maître Youze"
         };
@@ -339,7 +371,7 @@ async function enregistrerPassationGlobale() {
 
     try {
         await setDoc(doc(db, "stockGlobalShaolin", "bulletins"), stockBulletins);
-        alert("⚡ Passation générale enregistrée avec succès (Notes sur 10) !");
+        alert("⚡ Passation générale enregistrée avec succès ! Les rangs et moyennes ont été propagés sur tous les bulletins.");
         retournerAListeDepuisPassation();
     } catch (e) {
         console.error("Erreur enregistrement passation globale :", e);
@@ -519,7 +551,7 @@ window.imprimerListeEleves = imprimerListeEleves;
 window.telechargerListePDF = telechargerListePDF;
 window.accederPassationGenerale = accederPassationGenerale;
 window.retournerAListeDepuisPassation = retournerAListeDepuisPassation;
-window.calculerMoyenneLigne = calculerMoyenneLigne;
+window.recalculerToutesLesMoyennesEtRangs = recalculerToutesLesMoyennesEtRangs;
 window.enregistrerPassationGlobale = enregistrerPassationGlobale;
 window.ouvrirDossierEleve = ouvrirDossierEleve;
 window.retournerAListe = retournerAListe;
