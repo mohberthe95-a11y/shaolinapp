@@ -211,7 +211,7 @@ async function telechargerListePDF() {
 }
 
 // ==========================================
-// LOGIQUE DE LA PASSATION GÉNÉRALE (GROUPÉE PAR GRADE, NUMÉROTÉE 1, 2, 3 ET RANGS INDÉPENDANTS)
+// LOGIQUE DE LA PASSATION GÉNÉRALE (TRIÉE PAR ORDRE DE GRADE CROISSANT & RANGS INDÉPENDANTS)
 // ==========================================
 async function accederPassationGenerale() {
     if (sessionStorage.getItem("adminConnecte") !== "true") {
@@ -237,7 +237,7 @@ async function accederPassationGenerale() {
 
         corpsTableau.innerHTML = "";
 
-        // Regrouper les élèves par leur grade actuel
+        // Regrouper les élèves par grade
         let groupesParGrade = {};
 
         listeMembres.forEach((eleve, index) => {
@@ -251,8 +251,15 @@ async function accederPassationGenerale() {
             groupesParGrade[gradeActuel].push({ eleve, nom, matricule, gradeActuel });
         });
 
-        // Afficher chaque groupe de grade séparé par un en-tête foncé et numéroté de façon indépendante (1, 2, 3...)
-        for (let grade in groupesParGrade) {
+        // Trier les clés (grades) par ordre croissant (ex: 1re barrette, 2e barrette... 7e barrette)
+        let gradesTries = Object.keys(groupesParGrade).sort((a, b) => {
+            let numA = parseInt(a) || 99;
+            let numB = parseInt(b) || 99;
+            return numA - numB;
+        });
+
+        // Afficher chaque groupe dans l'ordre trié
+        gradesTries.forEach(grade => {
             let trSep = document.createElement("tr");
             trSep.innerHTML = `
                 <td colspan="10" style="background-color: #0f172a; color: white; font-weight: bold; padding: 12px 15px; font-size: 0.95rem; letter-spacing: 0.5px; border-top: 3px solid #38bdf8;">
@@ -261,11 +268,7 @@ async function accederPassationGenerale() {
             `;
             corpsTableau.appendChild(trSep);
 
-            // Trier les élèves de ce grade par ordre alphabétique ou les garder dans l'ordre, puis leur assigner un numéro d'ordre (1, 2, 3...)
-            let elevesDuGrade = groupesParGrade[grade];
-
-            elevesDuGrade.forEach((item, indexNum) => {
-                let numeroOrdre = indexNum + 1; // 1, 2, 3...
+            groupesParGrade[grade].forEach((item) => {
                 let bulletinsEleve = stockBulletins[item.nom] || [];
                 let dernierBull = bulletinsEleve.length > 0 ? bulletinsEleve[bulletinsEleve.length - 1] : null;
                 let notes = dernierBull ? dernierBull.notes : [0, 0, 0, 0, 0, 0, 0];
@@ -276,8 +279,8 @@ async function accederPassationGenerale() {
                 tr.className = "ligne-eleve-passation";
                 tr.innerHTML = `
                     <td style="font-weight: 600; color: #0f172a; padding-left: 20px;">
-                        <span style="color: #2563eb; font-weight: bold; margin-right: 6px;">${numeroOrdre}.</span> ${item.nom}
-                        <span style="display: block; font-size: 0.75rem; color: #64748b; font-weight: normal; margin-left: 18px;">${item.matricule}</span>
+                        ${item.nom}
+                        <span style="display: block; font-size: 0.75rem; color: #64748b; font-weight: normal;">${item.matricule}</span>
                     </td>
                     <td><input type="text" class="input-grade-globale" value="${item.gradeActuel}" style="width: 100%; padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.85rem;" oninput="recalculerMoyennesEtRangsIndependants()"></td>
                     <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="10" step="0.5" value="${notes[0] || 0}" oninput="recalculerMoyennesEtRangsIndependants()"></td>
@@ -291,7 +294,7 @@ async function accederPassationGenerale() {
                 `;
                 corpsTableau.appendChild(tr);
             });
-        }
+        });
 
         recalculerMoyennesEtRangsIndependants();
 
@@ -306,15 +309,11 @@ function retournerAListeDepuisPassation() {
     document.getElementById('zone-liste-principale').style.display = 'block';
 }
 
-// Calcule les moyennes et attribue le rang de manière INDÉPENDANTE pour chaque groupe de grade
+// Calcule les moyennes et attribue le vrai RANG (1er, 2e...) de manière INDÉPENDANTE pour chaque grade
 function recalculerMoyennesEtRangsIndependants() {
-    // Récupérer tous les grades uniques affichés dans le tableau
     let sectionsGrades = document.querySelectorAll('tr[style*="background-color: #0f172a"]');
     
     sectionsGrades.forEach(section => {
-        // Retrouver le texte du grade à partir de l'en-tête
-        let texteEnTete = section.textContent;
-        // On récupère les lignes d'élèves qui suivent immédiatement cet en-tête jusqu'au prochain en-tête
         let prochaineLigne = section.nextElementSibling;
         let elevesDuGroupe = [];
 
@@ -339,7 +338,7 @@ function recalculerMoyennesEtRangsIndependants() {
             prochaineLigne = prochaineLigne.nextElementSibling;
         }
 
-        // Trier les élèves de CE groupe spécifique du plus fort au plus faible pour le rang
+        // Trier les élèves de ce grade spécifique par ordre de mérite (du plus fort au plus faible)
         elevesDuGroupe.sort((a, b) => b.moyenne - a.moyenne);
 
         let totalElevesDansGrade = elevesDuGroupe.length;
@@ -352,7 +351,10 @@ function recalculerMoyennesEtRangsIndependants() {
             item.ligne.setAttribute('data-total-grade', totalElevesDansGrade);
 
             let celluleMoyenne = item.ligne.querySelector('.moyenne-ligne');
-            celluleMoyenne.innerHTML = `${item.moyenne.toFixed(2)} / 10 <br><span style="font-size: 0.75rem; color: #2563eb; background: #eff6ff; padding: 2px 6px; border-radius: 4px; font-weight: bold;">(${suffixeRang} / ${totalElevesDansGrade})</span>`;
+            celluleMoyenne.innerHTML = `${item.moyenne.toFixed(2)} / 10 <br><span style="font-size: 0.75rem; color: #2563eb; background: #eff6ff; padding: 2px 6px; border-radius: 4px; font-weight: bold;">Rang : ${suffixeRang} / ${totalElevesDansGrade}</span>`;
+            
+            // Réorganiser visuellement l'ordre des élèves dans le tableau à l'intérieur de leur grade
+            section.parentNode.insertBefore(item.ligne, prochaineLigne);
         });
     });
 }
@@ -409,7 +411,7 @@ async function enregistrerPassationGlobale() {
 
     try {
         await setDoc(doc(db, "stockGlobalShaolin", "bulletins"), stockBulletins);
-        alert("⚡ Passation générale enregistrée avec succès ! Les classements indépendants par grade ont été propagés.");
+        alert("⚡ Passation générale enregistrée avec succès ! Les rangs indépendants par grade ont été propagés.");
         retournerAListeDepuisPassation();
     } catch (e) {
         console.error("Erreur enregistrement passation globale :", e);
@@ -535,7 +537,7 @@ async function enregistrerInfosSupplementaires() {
         dateGrade: document.getElementById('info-date-grade').value,
         certifMedical: document.getElementById('info-certif-medical').value,
         assurance: document.getElementById('info-assurance').value,
-        obsMedicales: document.getElementById('info-obs-medicales').value,
+        obsMedicales: document.getElementById('info-obs-medicales'].value,
         codePin: document.getElementById('info-codepin').value || '0000'
     };
     
