@@ -409,7 +409,7 @@
                     <input type="tel" id="telephoneTuteur" placeholder="Ex: +223 70 00 00 00" required>
                 </div>
 
-                <!-- NOUVEAU : Champ Code PIN confidentiel à 4 chiffres -->
+                <!-- Code PIN confidentiel à 4 chiffres -->
                 <div class="form-group">
                     <label for="codePin">Code PIN confidentiel (4 chiffres) :</label>
                     <input type="text" id="codePin" maxlength="4" placeholder="Ex: 1234" pattern="[0-9]{4}" title="Veuillez entrer exactement 4 chiffres" required style="letter-spacing: 2px; font-weight: bold;">
@@ -424,6 +424,12 @@
                         <option value="CLUB MEL">CLUB MEL</option>
                         <option value="CLUB EURRO">CLUB EURRO</option>
                     </select>
+                </div>
+
+                <!-- NOUVEAU : Champ pour sélectionner la Photo d'identité -->
+                <div class="form-group">
+                    <label for="photoEleve">Photo d'identité de l'élève :</label>
+                    <input type="file" id="photoEleve" accept="image/*" required>
                 </div>
 
                 <div class="form-group">
@@ -500,6 +506,16 @@
                 champDateInscrip.value = auj;
             }
 
+            // GESTION DE LA CONVERSION D'UN FICHIER EN BASE64
+            function convertirEnBase64(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = error => reject(error);
+                    reader.readAsDataURL(file);
+                });
+            }
+
             // GESTION DE L'ACTIVATION DES TAOS À DISTANCE
             const formTao = document.getElementById("formActivationTao");
             const msgTao = document.getElementById("msgSuccesTao");
@@ -523,7 +539,6 @@
                         const dateExpiration = maintenant.getTime() + (DUREE_ABONNEMENT_JOURS * 24 * 60 * 60 * 1000);
                         const dateExpFormatee = new Date(dateExpiration).toLocaleDateString('fr-FR');
 
-                        // Sauvegarde dans Firebase Firestore (Déblocage à distance pour l'élève)
                         const idDoc = `${tel}_${titreTao}`;
                         await setDoc(doc(db, "abonnements_taos", idDoc), {
                             telephone: tel,
@@ -549,7 +564,7 @@
                 });
             }
 
-            // GESTION ENREGISTREMENT ÉLÈVES
+            // GESTION ENREGISTREMENT ÉLÈVES (AVEC PHOTO D'IDENTITÉ ET PIÈCE)
             const form = document.getElementById("formEnregistrement");
             const messageSucces = document.getElementById("messageSucces");
             const btnEnregistrer = document.getElementById("btnEnregistrer");
@@ -564,8 +579,10 @@
                     const parentInput = document.getElementById("parent").value;
                     const telephoneEleveInput = document.getElementById("telephoneEleve").value;
                     const telephoneTuteurInput = document.getElementById("telephoneTuteur").value;
-                    const codePinInput = document.getElementById("codePin").value; // Récupération du code PIN
+                    const codePinInput = document.getElementById("codePin").value;
                     const clubInput = document.getElementById("club").value;
+                    
+                    const photoEleveInput = document.getElementById("photoEleve").files[0];
                     const pieceInput = document.getElementById("piece").files[0];
 
                     let dateFormatee = new Date().toLocaleDateString();
@@ -576,42 +593,43 @@
                         }
                     }
 
-                    if (pieceInput) {
+                    if (photoEleveInput && pieceInput) {
                         btnEnregistrer.disabled = true;
                         btnEnregistrer.textContent = "Enregistrement en cours...";
 
-                        const reader = new FileReader();
-                        reader.onload = async function(e) {
-                            try {
-                                const nouveauMembre = {
-                                    nom: nomInput,
-                                    naissance: naissanceInput,
-                                    parent: parentInput,
-                                    telephoneEleve: telephoneEleveInput,
-                                    telephoneTuteur: telephoneTuteurInput,
-                                    codePin: codePinInput, // Enregistrement du code PIN dans Firebase
-                                    club: clubInput,
-                                    pieceUrl: e.target.result, 
-                                    dateInscription: dateFormatee
-                                };
+                        try {
+                            // Conversion de la photo d'identité et de la pièce en Base64
+                            const photoBase64 = await convertirEnBase64(photoEleveInput);
+                            const pieceBase64 = await convertirEnBase64(pieceInput);
 
-                                await addDoc(collection(db, "membresShaolin"), nouveauMembre);
+                            const nouveauMembre = {
+                                nom: nomInput,
+                                naissance: naissanceInput,
+                                parent: parentInput,
+                                telephoneEleve: telephoneEleveInput,
+                                telephoneTuteur: telephoneTuteurInput,
+                                codePin: codePinInput,
+                                club: clubInput,
+                                photo: photoBase64,       // Enregistrement de la photo d'identité
+                                pieceUrl: pieceBase64,    // Enregistrement de la pièce justificative
+                                dateInscription: dateFormatee
+                            };
 
-                                if (messageSucces) {
-                                    messageSucces.style.display = "block";
-                                }
+                            await addDoc(collection(db, "membresShaolin"), nouveauMembre);
 
-                                setTimeout(() => {
-                                    window.location.href = "dashboard.html";
-                                }, 1500);
-                            } catch (error) {
-                                console.error("Erreur lors de l'enregistrement Firestore :", error);
-                                alert("Erreur lors de l'enregistrement. Vérifie ta connexion.");
-                                btnEnregistrer.disabled = false;
-                                btnEnregistrer.textContent = "Enregistrer l'élève";
+                            if (messageSucces) {
+                                messageSucces.style.display = "block";
                             }
-                        };
-                        reader.readAsDataURL(pieceInput);
+
+                            setTimeout(() => {
+                                window.location.href = "dashboard.html";
+                            }, 1500);
+                        } catch (error) {
+                            console.error("Erreur lors de l'enregistrement Firestore :", error);
+                            alert("Erreur lors de l'enregistrement. Vérifie ta connexion.");
+                            btnEnregistrer.disabled = false;
+                            btnEnregistrer.textContent = "Enregistrer l'élève";
+                        }
                     }
                 });
             }
