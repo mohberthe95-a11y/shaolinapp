@@ -42,20 +42,16 @@ document.addEventListener("DOMContentLoaded", async () => {
                 let nomEleve = eleve.nom || "Élève sans nom";
                 divItem.setAttribute("data-nom", nomEleve.toLowerCase());
                 
-                // Récupération du code PIN (depuis stockDossiersMedicaux ou l'objet élève, sinon "0000" par défaut)
                 let codePinEleve = (stockDossiersMedicaux[nomEleve] && stockDossiersMedicaux[nomEleve].codePin) || eleve.codePin || "0000";
 
                 divItem.onclick = function() {
                     const estAdmin = sessionStorage.getItem("adminConnecte") === "true";
 
                     if (estAdmin) {
-                        // L'administrateur accède directement au dossier sans code PIN
                         executerOuvertureDossier(eleve, matriculeAuto, nomEleve);
                     } else {
-                        // Demande du code PIN confidentiel à 4 chiffres
                         let codeSaisi = prompt(`🔒 Accès sécurisé au dossier de ${nomEleve}\nVeuillez entrer votre code PIN à 4 chiffres :`);
-                        
-                        if (codeSaisi === null) return; // Si l'utilisateur clique sur Annuler
+                        if (codeSaisi === null) return;
 
                         if (codeSaisi.trim() === codePinEleve.toString().trim()) {
                             executerOuvertureDossier(eleve, matriculeAuto, nomEleve);
@@ -91,7 +87,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     verifierRestrictionsAdmin();
 });
 
-// Fonction intermédiaire pour déclencher l'ouverture après validation du code
 function executerOuvertureDossier(eleve, matriculeAuto, nomEleve) {
     ouvrirDossierEleve(
         matriculeAuto, 
@@ -101,7 +96,7 @@ function executerOuvertureDossier(eleve, matriculeAuto, nomEleve) {
         eleve.telephoneEleve || '', 
         eleve.telephoneTuteur || '', 
         eleve.dateInscription || eleve.dateEnregistrement || '15/09/2025',
-        eleve.photo || '' // Passage de la photo de l'élève
+        eleve.photo || ''
     );
 }
 
@@ -115,6 +110,12 @@ function verifierRestrictionsAdmin() {
 
     const btnSuppr = document.querySelector('.btn-action.btn-supprimer');
     if (btnSuppr) btnSuppr.style.display = estAdmin ? 'inline-block' : 'none';
+
+    // Affichage sécurisé du bouton de Passation Générale
+    const btnPassationGenerale = document.getElementById('btn-passation-generale');
+    if (btnPassationGenerale) {
+        btnPassationGenerale.style.display = estAdmin ? 'inline-block' : 'none';
+    }
 }
 
 function obtenirMoisAPayer() {
@@ -210,6 +211,147 @@ async function telechargerListePDF() {
     docPdf.save("Registre_Eleves_Club_Youze.pdf");
 }
 
+// ==========================================
+// LOGIQUE DE LA PASSATION GÉNÉRALE (TABLEAU HORIZONTAL)
+// ==========================================
+async function accederPassationGenerale() {
+    if (sessionStorage.getItem("adminConnecte") !== "true") {
+        alert("Accès refusé. Réservé à l'administrateur.");
+        return;
+    }
+
+    document.getElementById('zone-liste-principale').style.display = 'none';
+    document.getElementById('zone-passation-generale').style.display = 'block';
+
+    const corpsTableau = document.getElementById('corps-tableau-passation-globale');
+    corpsTableau.innerHTML = "<tr><td colspan='10' style='text-align: center; padding: 20px; color: #64748b;'>Chargement des élèves...</td></tr>";
+
+    try {
+        const querySnapshot = await getDocs(collection(db, "membresShaolin"));
+        let listeMembres = [];
+        querySnapshot.forEach((d) => listeMembres.push({ id: d.id, ...d.data() }));
+
+        if (listeMembres.length === 0) {
+            corpsTableau.innerHTML = "<tr><td colspan='10' style='text-align: center; padding: 20px; color: #64748b;'>Aucun élève trouvé.</td></tr>";
+            return;
+        }
+
+        corpsTableau.innerHTML = "";
+
+        listeMembres.forEach((eleve, index) => {
+            let nom = eleve.nom || "Sans nom";
+            let matricule = "SH-2026-00" + (index + 1);
+            let gradeActuel = (stockDossiersMedicaux[nom] && stockDossiersMedicaux[nom].gradeActuel) || "7e Barrette";
+
+            // Récupérer le dernier bulletin existant s'il y en a un pour pré-remplir
+            let bulletinsEleve = stockBulletins[nom] || [];
+            let dernierBull = bulletinsEleve.length > 0 ? bulletinsEleve[bulletinsEleve.length - 1] : null;
+            let notes = dernierBull ? dernierBull.notes : [0, 0, 0, 0, 0, 0, 0];
+
+            let tr = document.createElement("tr");
+            tr.setAttribute("data-nom-eleve", nom);
+            tr.innerHTML = `
+                <td style="font-weight: 600; color: #0f172a;">
+                    ${nom}
+                    <span style="display: block; font-size: 0.75rem; color: #64748b; font-weight: normal;">${matricule}</span>
+                </td>
+                <td><input type="text" class="input-grade-globale" value="${gradeActuel}" style="width: 100%; padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.85rem;"></td>
+                <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="20" value="${notes[0] || 0}" oninput="calculerMoyenneLigne(this)"></td>
+                <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="20" value="${notes[1] || 0}" oninput="calculerMoyenneLigne(this)"></td>
+                <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="20" value="${notes[2] || 0}" oninput="calculerMoyenneLigne(this)"></td>
+                <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="20" value="${notes[3] || 0}" oninput="calculerMoyenneLigne(this)"></td>
+                <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="20" value="${notes[4] || 0}" oninput="calculerMoyenneLigne(this)"></td>
+                <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="20" value="${notes[5] || 0}" oninput="calculerMoyenneLigne(this)"></td>
+                <td style="text-align: center;"><input type="number" class="note-globale" min="0" max="20" value="${notes[6] || 0}" oninput="calculerMoyenneLigne(this)"></td>
+                <td style="text-align: center; font-weight: bold; color: #b91c1c;" class="moyenne-ligne">0.00 / 20</td>
+            `;
+            corpsTableau.appendChild(tr);
+            
+            // Calculer la moyenne initiale de la ligne
+            calculerMoyenneLigne(tr.querySelector('.note-globale'));
+        });
+
+    } catch (e) {
+        console.error("Erreur chargement passation générale :", e);
+        corpsTableau.innerHTML = "<tr><td colspan='10' style='text-align: center; color: red; padding: 20px;'>Erreur lors du chargement des élèves.</td></tr>";
+    }
+}
+
+function retournerAListeDepuisPassation() {
+    document.getElementById('zone-passation-generale').style.display = 'none';
+    document.getElementById('zone-liste-principale').style.display = 'block';
+}
+
+function calculerMoyenneLigne(elementInput) {
+    let ligne = elementInput.closest('tr');
+    let inputsNotes = ligne.querySelectorAll('.note-globale');
+    let somme = 0;
+    
+    inputsNotes.forEach(input => {
+        let val = parseFloat(input.value) || 0;
+        if (val < 0) input.value = 0;
+        if (val > 20) input.value = 20;
+        somme += parseFloat(input.value) || 0;
+    });
+
+    let moyenne = somme / 7;
+    let celluleMoyenne = ligne.querySelector('.moyenne-ligne');
+    celluleMoyenne.textContent = moyenne.toFixed(2) + " / 20";
+}
+
+async function enregistrerPassationGlobale() {
+    if (sessionStorage.getItem("adminConnecte") !== "true") {
+        alert("Accès refusé.");
+        return;
+    }
+
+    let lignes = document.querySelectorAll('#corps-tableau-passation-globale tr');
+    let dateDuJour = new Date().toISOString().split('T')[0];
+
+    lignes.forEach(ligne => {
+        let nom = ligne.getAttribute('data-nom-eleve');
+        let grade = ligne.querySelector('.input-grade-globale').value;
+        let inputsNotes = ligne.querySelectorAll('.note-globale');
+        
+        let notes = [];
+        let total = 0;
+        inputsNotes.forEach(input => {
+            let n = parseFloat(input.value) || 0;
+            notes.push(n);
+            total += n;
+        });
+
+        let moyenne = (total / 7).toFixed(2);
+
+        // Structure du bulletin individuel
+        let nouveauBulletin = {
+            grade: grade,
+            notes: notes,
+            total: total,
+            moyenne: moyenne,
+            rang: "1er",
+            observation: "Passation générale validée avec succès.",
+            date: dateDuJour,
+            signature: "Maître Youze"
+        };
+
+        if (!stockBulletins[nom]) {
+            stockBulletins[nom] = [];
+        }
+        stockBulletins[nom].push(nouveauBulletin);
+    });
+
+    try {
+        await setDoc(doc(db, "stockGlobalShaolin", "bulletins"), stockBulletins);
+        alert("⚡ Passation générale enregistrée avec succès ! Tous les bulletins individuels ont été mis à jour.");
+        retournerAListeDepuisPassation();
+    } catch (e) {
+        console.error("Erreur enregistrement passation globale :", e);
+        alert("Erreur lors de l'enregistrement dans le Cloud.");
+    }
+}
+// ==========================================
+
 function ouvrirDossierEleve(matricule, nom, naissance, parents, telephoneEleve, telephoneTuteur, inscription, photo) {
     eleveActuel.matricule = matricule;
     eleveActuel.nom = nom;
@@ -235,7 +377,6 @@ function ouvrirDossierEleve(matricule, nom, naissance, parents, telephoneEleve, 
     document.getElementById('titre-dossier-nom').textContent = nom;
     document.getElementById('bul-nom').value = nom;
 
-    // Gestion professionnelle de l'affichage de la photo d'identité
     let imgProfil = document.getElementById('info-photo-eleve');
     let texteSansPhoto = document.getElementById('info-sans-photo');
 
@@ -243,15 +384,14 @@ function ouvrirDossierEleve(matricule, nom, naissance, parents, telephoneEleve, 
         if (photo && photo.trim() !== "") {
             imgProfil.src = photo;
             imgProfil.style.display = "block";
-            texteSansPhoto.style.display = "none"; // Masque "Aucune photo" proprement
+            texteSansPhoto.style.display = "none";
         } else {
             imgProfil.src = "";
             imgProfil.style.display = "none";
-            texteSansPhoto.style.display = "flex"; // Affiche "Aucune photo" si vide
+            texteSansPhoto.style.display = "flex";
         }
     }
 
-    // Remplissage des données spécifiques (dont le code PIN)
     if (stockDossiersMedicaux[nom]) {
         document.getElementById('info-grade-actuel').value = stockDossiersMedicaux[nom].gradeActuel || '';
         document.getElementById('info-date-grade').value = stockDossiersMedicaux[nom].dateGrade || '';
@@ -378,9 +518,14 @@ async function supprimerEleveActuel() {
     }
 }
 
+// Exportation globale pour les balises HTML onclick
 window.filtrerEleves = filtrerEleves;
 window.imprimerListeEleves = imprimerListeEleves;
 window.telechargerListePDF = telechargerListePDF;
+window.accederPassationGenerale = accederPassationGenerale;
+window.retournerAListeDepuisPassation = retournerAListeDepuisPassation;
+window.calculerMoyenneLigne = calculerMoyenneLigne;
+window.enregistrerPassationGlobale = enregistrerPassationGlobale;
 window.ouvrirDossierEleve = ouvrirDossierEleve;
 window.retournerAListe = retournerAListe;
 window.afficherSection = afficherSection;
