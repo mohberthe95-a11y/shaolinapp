@@ -190,6 +190,8 @@
                     <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                         <button class="btn-export-liste" onclick="imprimerListeEleves()" style="background-color: #0f172a; color: white; border: none; padding: 8px 14px; border-radius: 6px; font-size: 0.9rem; font-weight: 600; cursor: pointer;">🖨️ Imprimer la liste</button>
                         <button class="btn-export-liste" onclick="telechargerListePDF()" style="background-color: #e11d48; color: white; border: none; padding: 8px 14px; border-radius: 6px; font-size: 0.9rem; font-weight: 600; cursor: pointer;">📥 Télécharger PDF</button>
+                        <!-- BOUTON SÉCURISÉ PASSATION GÉNÉRALE -->
+                        <button id="btn-passation-generale" class="btn-export-liste" onclick="accederPassationGenerale()" style="background-color: #f59e0b; color: white; border: none; padding: 8px 14px; border-radius: 6px; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: none;">⚡ Passation Générale</button>
                         <a href="admin.html" style="background-color: #10b981; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 0.9rem; font-weight: 600;">+ Inscrire un élève</a>
                     </div>
                 </div>
@@ -202,6 +204,46 @@
                 <!-- Liste dynamique -->
                 <div id="conteneur-liste">
                     <!-- Les éléments seront injectés ici automatiquement par le script -->
+                </div>
+            </div>
+        </div>
+
+        <!-- VUE 1.5 : PASSATION GÉNÉRALE (SAISIE COLLECTIVE HORIZONTALE) -->
+        <div id="zone-passation-generale" style="display: none;">
+            <div class="dossier-header">
+                <div>
+                    <button class="btn-retour" onclick="retournerAListeDepuisPassation()">⬅️ Retour à la liste des élèves</button>
+                    <h2 style="margin: 10px 0 0 0; color: #0f172a;">⚡ Passation Générale des Notes (Saisie Collective)</h2>
+                </div>
+            </div>
+
+            <div class="liste-eleves-container" style="margin-top: 20px;">
+                <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">Remplissez les notes directement dans ce tableau horizontal pour l'ensemble des élèves. En cliquant sur l'enregistrement global, les bulletins individuels de chaque élève seront mis à jour automatiquement !</p>
+
+                <div style="overflow-x: auto;">
+                    <table class="tableau-techniques" style="width: 100%; min-width: 900px; font-size: 0.85rem;">
+                        <thead>
+                            <tr>
+                                <th style="width: 20%;">Élève / Matricule</th>
+                                <th style="width: 10%;">Grade</th>
+                                <th style="text-align: center; width: 9%;">Marches</th>
+                                <th style="text-align: center; width: 9%;">Pieds-Poings</th>
+                                <th style="text-align: center; width: 9%;">Tao</th>
+                                <th style="text-align: center; width: 9%;">Kwen</th>
+                                <th style="text-align: center; width: 9%;">Solt</th>
+                                <th style="text-align: center; width: 9%;">Acrobatie</th>
+                                <th style="text-align: center; width: 9%;">Combat</th>
+                                <th style="text-align: center; width: 8%;">Moyenne</th>
+                            </tr>
+                        </thead>
+                        <tbody id="corps-tableau-passation-globale">
+                            <!-- Les lignes des élèves seront injectées dynamiquement ici -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="text-align: center; margin-top: 25px;">
+                    <button class="btn-valider" onclick="enregistrerPassationGlobale()" style="background-color: #10b981; padding: 12px 30px; font-size: 1rem;">💾 Enregistrer et Propager tous les Bulletins</button>
                 </div>
             </div>
         </div>
