@@ -237,7 +237,6 @@ async function accederPassationGenerale() {
 
         corpsTableau.innerHTML = "";
 
-        // Regrouper les élèves par grade
         let groupesParGrade = {};
 
         listeMembres.forEach((eleve, index) => {
@@ -251,14 +250,13 @@ async function accederPassationGenerale() {
             groupesParGrade[gradeActuel].push({ eleve, nom, matricule, gradeActuel });
         });
 
-        // Trier les clés (grades) par ordre croissant (ex: 1re barrette, 2e barrette... 7e barrette)
+        // Tri croissant des grades (1re barrette d'abord, puis 2e, etc.)
         let gradesTries = Object.keys(groupesParGrade).sort((a, b) => {
             let numA = parseInt(a) || 99;
             let numB = parseInt(b) || 99;
             return numA - numB;
         });
 
-        // Afficher chaque groupe dans l'ordre trié
         gradesTries.forEach(grade => {
             let trSep = document.createElement("tr");
             trSep.innerHTML = `
@@ -309,7 +307,6 @@ function retournerAListeDepuisPassation() {
     document.getElementById('zone-liste-principale').style.display = 'block';
 }
 
-// Calcule les moyennes et attribue le vrai RANG (1er, 2e...) de manière INDÉPENDANTE pour chaque grade
 function recalculerMoyennesEtRangsIndependants() {
     let sectionsGrades = document.querySelectorAll('tr[style*="background-color: #0f172a"]');
     
@@ -338,9 +335,7 @@ function recalculerMoyennesEtRangsIndependants() {
             prochaineLigne = prochaineLigne.nextElementSibling;
         }
 
-        // Trier les élèves de ce grade spécifique par ordre de mérite (du plus fort au plus faible)
         elevesDuGroupe.sort((a, b) => b.moyenne - a.moyenne);
-
         let totalElevesDansGrade = elevesDuGroupe.length;
 
         elevesDuGroupe.forEach((item, index) => {
@@ -353,7 +348,6 @@ function recalculerMoyennesEtRangsIndependants() {
             let celluleMoyenne = item.ligne.querySelector('.moyenne-ligne');
             celluleMoyenne.innerHTML = `${item.moyenne.toFixed(2)} / 10 <br><span style="font-size: 0.75rem; color: #2563eb; background: #eff6ff; padding: 2px 6px; border-radius: 4px; font-weight: bold;">Rang : ${suffixeRang} / ${totalElevesDansGrade}</span>`;
             
-            // Réorganiser visuellement l'ordre des élèves dans le tableau à l'intérieur de leur grade
             section.parentNode.insertBefore(item.ligne, prochaineLigne);
         });
     });
@@ -537,7 +531,7 @@ async function enregistrerInfosSupplementaires() {
         dateGrade: document.getElementById('info-date-grade').value,
         certifMedical: document.getElementById('info-certif-medical').value,
         assurance: document.getElementById('info-assurance').value,
-        obsMedicales: document.getElementById('info-obs-medicales'].value,
+        obsMedicales: document.getElementById('info-obs-medicales').value,
         codePin: document.getElementById('info-codepin').value || '0000'
     };
     
