@@ -100,7 +100,8 @@ function executerOuvertureDossier(eleve, matriculeAuto, nomEleve) {
         eleve.parent || eleve.parents || 'Non renseigné', 
         eleve.telephoneEleve || '', 
         eleve.telephoneTuteur || '', 
-        eleve.dateInscription || eleve.dateEnregistrement || '15/09/2025'
+        eleve.dateInscription || eleve.dateEnregistrement || '15/09/2025',
+        eleve.photo || '' // Passage de la photo de l'élève
     );
 }
 
@@ -209,7 +210,7 @@ async function telechargerListePDF() {
     docPdf.save("Registre_Eleves_Club_Youze.pdf");
 }
 
-function ouvrirDossierEleve(matricule, nom, naissance, parents, telephoneEleve, telephoneTuteur, inscription) {
+function ouvrirDossierEleve(matricule, nom, naissance, parents, telephoneEleve, telephoneTuteur, inscription, photo) {
     eleveActuel.matricule = matricule;
     eleveActuel.nom = nom;
     eleveActuel.naissance = naissance;
@@ -217,6 +218,7 @@ function ouvrirDossierEleve(matricule, nom, naissance, parents, telephoneEleve, 
     eleveActuel.telephoneEleve = telephoneEleve;
     eleveActuel.telephoneTuteur = telephoneTuteur;
     eleveActuel.inscription = inscription;
+    eleveActuel.photo = photo;
 
     document.getElementById('info-matricule').textContent = matricule;
     document.getElementById('info-nom').textContent = nom;
@@ -232,6 +234,18 @@ function ouvrirDossierEleve(matricule, nom, naissance, parents, telephoneEleve, 
 
     document.getElementById('titre-dossier-nom').textContent = nom;
     document.getElementById('bul-nom').value = nom;
+
+    // Gestion de l'affichage de la photo de l'élève à droite du profil (si un élément <img> ou conteneur existe)
+    let imgProfil = document.getElementById('info-photo-eleve');
+    if (imgProfil) {
+        if (photo && photo.trim() !== "") {
+            imgProfil.src = photo;
+            imgProfil.style.display = "block";
+        } else {
+            imgProfil.src = "";
+            imgProfil.style.display = "none";
+        }
+    }
 
     // Remplissage des données spécifiques (dont le code PIN)
     if (stockDossiersMedicaux[nom]) {
