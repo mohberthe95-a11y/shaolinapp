@@ -235,15 +235,19 @@ function ouvrirDossierEleve(matricule, nom, naissance, parents, telephoneEleve, 
     document.getElementById('titre-dossier-nom').textContent = nom;
     document.getElementById('bul-nom').value = nom;
 
-    // Gestion de l'affichage de la photo de l'élève à droite du profil (si un élément <img> ou conteneur existe)
+    // Gestion professionnelle de l'affichage de la photo d'identité
     let imgProfil = document.getElementById('info-photo-eleve');
-    if (imgProfil) {
+    let texteSansPhoto = document.getElementById('info-sans-photo');
+
+    if (imgProfil && texteSansPhoto) {
         if (photo && photo.trim() !== "") {
             imgProfil.src = photo;
             imgProfil.style.display = "block";
+            texteSansPhoto.style.display = "none"; // Masque "Aucune photo" proprement
         } else {
             imgProfil.src = "";
             imgProfil.style.display = "none";
+            texteSansPhoto.style.display = "flex"; // Affiche "Aucune photo" si vide
         }
     }
 
@@ -326,7 +330,7 @@ async function enregistrerInfosSupplementaires() {
         certifMedical: document.getElementById('info-certif-medical').value,
         assurance: document.getElementById('info-assurance').value,
         obsMedicales: document.getElementById('info-obs-medicales').value,
-        codePin: document.getElementById('info-codepin').value || '0000' // Sauvegarde du code PIN modifiable par l'admin
+        codePin: document.getElementById('info-codepin').value || '0000'
     };
     
     try {
