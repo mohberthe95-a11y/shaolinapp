@@ -18,6 +18,17 @@
             --border-color: #e2e8f0;
         }
 
+        /* Variables pour le Mode Sombre */
+        [data-theme="dark"] {
+            --primary: #f8fafc;
+            --accent: #38bdf8;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --bg-body: #0b0f19;
+            --card-bg: #1e293b;
+            --border-color: #334155;
+        }
+
         body {
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             background-color: var(--bg-body);
@@ -27,6 +38,7 @@
             padding-top: 110px;
             /* Espace pour la navigation mobile sur 2 lignes */
             scroll-behavior: smooth;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         /* Navbar flexible uniforme */
@@ -76,6 +88,9 @@
             width: 100%;
             display: flex;
             justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         nav ul {
@@ -86,6 +101,7 @@
             gap: 12px 20px;
             margin: 0;
             padding: 0;
+            align-items: center;
         }
 
         nav ul li a {
@@ -121,24 +137,44 @@
             width: 100%;
         }
 
+        /* Bouton Dark/Light Mode */
+        .theme-toggle-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle-btn:hover {
+            background: rgba(56, 189, 248, 0.2);
+            border-color: var(--accent);
+        }
+
         /* Style pour la FAQ Accordéon */
         .faq-item {
-            border: 1px solid #e2e8f0;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             margin-bottom: 12px;
             overflow: hidden;
-            background: #ffffff;
+            background: var(--card-bg);
         }
 
         .faq-question {
             width: 100%;
             text-align: left;
-            background: #f8fafc;
+            background: var(--bg-body);
             border: none;
             padding: 15px 20px;
             font-size: 0.95rem;
             font-weight: 600;
-            color: #0f172a;
+            color: var(--primary);
             cursor: pointer;
             display: flex;
             justify-content: space-between;
@@ -147,15 +183,15 @@
         }
 
         .faq-question:hover {
-            background: #f1f5f9;
+            background: var(--card-bg);
         }
 
         .faq-answer {
             display: none;
             padding: 15px 20px;
             font-size: 0.9rem;
-            color: #475569;
-            border-top: 1px solid #e2e8f0;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
             line-height: 1.6;
         }
 
@@ -176,13 +212,13 @@
         }
 
         .team-card {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
+            background: var(--bg-body);
+            border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 20px;
             text-align: center;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
-            transition: transform 0.2s ease;
+            transition: transform 0.2s ease, background-color 0.3s ease, border-color 0.3s ease;
         }
 
         .team-card:hover {
@@ -212,7 +248,7 @@
 
         .team-card h4 {
             margin: 0 0 5px 0;
-            color: #0f172a;
+            color: var(--primary);
             font-size: 1.1rem;
         }
 
@@ -236,11 +272,12 @@
         }
 
         .value-card {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
+            background: var(--bg-body);
+            border: 1px solid var(--border-color);
             border-radius: 10px;
             padding: 18px;
             text-align: center;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
         .value-card span {
@@ -251,13 +288,13 @@
 
         .value-card h4 {
             margin: 0 0 5px 0;
-            color: #0f172a;
+            color: var(--primary);
         }
 
         .value-card p {
             margin: 0;
             font-size: 0.85rem;
-            color: #64748b;
+            color: var(--text-muted);
         }
 
         /* Grille des combattants & médailles */
@@ -269,12 +306,12 @@
         }
 
         .champion-card {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
+            background: var(--bg-body);
+            border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 15px;
             text-align: center;
-            transition: transform 0.2s ease;
+            transition: transform 0.2s ease, background-color 0.3s ease, border-color 0.3s ease;
         }
 
         .champion-card:hover {
@@ -294,19 +331,19 @@
             font-size: 2rem;
             margin-bottom: 10px;
             object-fit: cover;
-            border: 1px solid #cbd5e1;
+            border: 1px solid var(--border-color);
         }
 
         .champion-card h4 {
             margin: 5px 0 2px 0;
-            color: #0f172a;
+            color: var(--primary);
             font-size: 0.95rem;
         }
 
         .champion-card p {
             margin: 0;
             font-size: 0.8rem;
-            color: #64748b;
+            color: var(--text-muted);
         }
 
         /* Styles pour la fenêtre modale (Zoom Image) */
@@ -411,24 +448,28 @@
                 <li><a href="taos.html">Regarder les Taos</a></li>
                 <li><a href="admin.html">Espace Admin</a></li>
             </ul>
+            <!-- Bouton pour changer de thème -->
+            <button id="themeToggleBtn" class="theme-toggle-btn" onclick="basculerTheme()">
+                🌙 Sombre
+            </button>
         </nav>
     </header>
 
     <!-- Contenu Principal -->
     <main class="services-container" style="max-width: 1100px; margin: 30px auto; padding: 0 20px;">
         <div class="styled-card"
-            style="background: white; padding: 30px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 20px rgba(0,0,0,0.03);">
+            style="background: var(--card-bg); padding: 30px; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: 0 4px 20px rgba(0,0,0,0.03); transition: background-color 0.3s ease, border-color 0.3s ease;">
             <div class="apropos-header">
                 <span class="badge-section">Institution</span>
-                <h2>À propos du Club Youze</h2>
-                <p>Découvrez l'histoire, la vision, nos maîtres encadrants, la compétition annuelle Sanda et les
+                <h2 style="color: var(--primary);">À propos du Club Youze</h2>
+                <p style="color: var(--text-muted);">Découvrez l'histoire, la vision, nos maîtres encadrants, la compétition annuelle Sanda et les
                     standards d'excellence qui font la renommée de notre structure martiale à Bamako.</p>
             </div>
 
             <!-- 1. Historique & Vision -->
             <div class="content-block">
-                <h3>📜 Origines et Philosophie</h3>
-                <p>
+                <h3 style="color: var(--primary);">📜 Origines et Philosophie</h3>
+                <p style="color: var(--text-muted);">
                     Implanté au cœur de Bamako (Sirakoro Cité Aéroport), le <strong>Club Youze</strong> est bien plus qu'une simple
                     école d'arts martiaux : c'est un véritable creuset de formation humaine et citoyenne. Fondé sur des
                     principes de rigueur, de dépassement de soi et de respect mutuel, notre établissement conjugue la
@@ -440,24 +481,24 @@
 
             <!-- NOUVEAU : 2. Compétition Annuelle de Combat Sanda -->
             <div class="content-block">
-                <h3>🥊 Compétition Annuelle Inter-Clubs de Sanda</h3>
-                <p style="margin-bottom: 12px;">
+                <h3 style="color: var(--primary);">🥊 Compétition Annuelle Inter-Clubs de Sanda</h3>
+                <p style="margin-bottom: 12px; color: var(--text-muted);">
                     Chaque année vers la fin du mois, le <strong>Club Youze</strong> organise un grand championnat
                     inter-clubs dédié au <strong>Combat Sanda (Sanda / Sanshou)</strong>. Cette compétition rassemble
                     les meilleurs athlètes des clubs partenaires autour de combats intenses répartis rigoureusement
                     <strong>par catégories de poids (par kilo)</strong> dans le respect de l'équité et de la sécurité.
                 </p>
                 <div
-                    style="background: #eff6ff; border: 1px solid #bfdbfe; border-left: 5px solid #2563eb; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                    <p style="margin: 0; color: #1e40af; font-weight: 600; font-size: 0.9rem;">
+                    style="background: var(--bg-body); border: 1px solid var(--border-color); border-left: 5px solid #2563eb; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <p style="margin: 0; color: var(--primary); font-weight: 600; font-size: 0.9rem;">
                         🏆 Récompenses : Des médailles d'Or, d'Argent et de Bronze ainsi que des diplômes de mérite sont
                         décernés aux vainqueurs de chaque catégorie de poids.
                     </p>
                 </div>
 
                 <!-- Galerie des Meilleures Combattants et Médailles -->
-                <h4 style="color: #0f172a; margin-bottom: 10px;">🥇 Galerie des Champions & Médailles</h4>
-                <p style="font-size: 0.88rem; color: #64748b; margin-bottom: 15px;">Aperçu des combattants méritants et
+                <h4 style="color: var(--primary); margin-bottom: 10px;">🥇 Galerie des Champions & Médailles</h4>
+                <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 15px;">Aperçu des combattants méritants et
                     des distinctions obtenues lors de nos compétitions :</p>
 
                 <div class="champions-grid">
@@ -493,26 +534,26 @@
 
             <!-- 3. Nos Valeurs Martiales -->
             <div class="content-block">
-                <h3>🏆 Nos Valeurs Fondamentales</h3>
+                <h3 style="color: var(--primary);">🏆 Nos Valeurs Fondamentales</h3>
                 <div class="values-grid">
                     <div class="value-card">
                         <span>🧘‍♂️</span>
-                        <h4>Discipline</h4>
+                        <h4 style="color: var(--primary);">Discipline</h4>
                         <p>Apprendre la maîtrise de soi et le respect des règles sur et en dehors du tapis.</p>
                     </div>
                     <div class="value-card">
                         <span>🤝</span>
-                        <h4>Respect</h4>
+                        <h4 style="color: var(--primary);">Respect</h4>
                         <p>Inculquer la considération envers les maîtres, les camarades et le dojo.</p>
                     </div>
                     <div class="value-card">
                         <span>🔥</span>
-                        <h4>Rigueur</h4>
+                        <h4 style="color: var(--primary);">Rigueur</h4>
                         <p>Exiger la précision dans chaque geste et dans la pratique des Taos.</p>
                     </div>
                     <div class="value-card">
                         <span>💪</span>
-                        <h4>Dépassement</h4>
+                        <h4 style="color: var(--primary);">Dépassement</h4>
                         <p>Développer la force mentale et physique pour surmonter tous les défis.</p>
                     </div>
                 </div>
@@ -520,8 +561,8 @@
 
             <!-- 4. Équipe Pédagogique & Direction -->
             <div class="content-block">
-                <h3>🥋 Équipe Pédagogique & Direction</h3>
-                <p style="margin-bottom: 15px;">Le club est dirigé par des maîtres hautement qualifiés, réputés pour
+                <h3 style="color: var(--primary);">🥋 Équipe Pédagogique & Direction</h3>
+                <p style="margin-bottom: 15px; color: var(--text-muted);">Le club est dirigé par des maîtres hautement qualifiés, réputés pour
                     leur respect, leur rigueur et leur grande motivation :</p>
 
                 <div class="team-grid">
@@ -530,7 +571,7 @@
                         <img src="sidi_yaya.jpg" alt="Maître Sidi Yaya Boirè" class="team-photo-placeholder" onclick="ouvrirModal(this.src)">
                         <h4>Maître Sidi Yaya Boirè</h4>
                         <span class="team-grade">Ceinture Noire 3ème Dan</span>
-                        <p style="font-size: 0.88rem; color: #475569; margin: 8px 0 12px 0;"><strong>Fondateur & Maître
+                        <p style="font-size: 0.88rem; color: var(--text-muted); margin: 8px 0 12px 0;"><strong>Fondateur & Maître
                                 d'Armes</strong><br>Un encadrant très respectueux, rigoureux et motivé, dédié à la
                             transmission des valeurs du Kung Fu Wushu.</p>
                         <a href="https://wa.me/22371621536?text=Bonjour%20Maître%20Sidi%20Yaya%20Boirè," target="_blank"
@@ -543,7 +584,7 @@
                         <img src="Harouna konaré.jpg" alt="Maître Harouna Konaté" class="team-photo-placeholder" onclick="ouvrirModal(this.src)">
                         <h4>Maître Harouna Konaté</h4>
                         <span class="team-grade">Ceinture Noire 2ème Dan</span>
-                        <p style="font-size: 0.88rem; color: #475569; margin: 8px 0 12px 0;"><strong>Trésorier &
+                        <p style="font-size: 0.88rem; color: var(--text-muted); margin: 8px 0 12px 0;"><strong>Trésorier &
                                 Encadrant Technique</strong><br>Un maître modèle, reconnu pour son sérieux, sa rigueur
                             et son engagement constant pour le club.</p>
                         <a href="https://wa.me/22372390133?text=Bonjour%20Maître%20Harouna%20Konaté," target="_blank"
@@ -559,7 +600,7 @@
                         <img src="aboubacar.jpg" alt="Aboubacar Berthé" class="team-photo-placeholder" onclick="ouvrirModal(this.src)" onerror="this.src='logo.jpg'">
                         <h4>Aboubacar Berthé</h4>
                         <span class="team-grade">Ceinture Noire 1ère Dan</span>
-                        <p style="font-size: 0.88rem; color: #475569; margin: 8px 0 12px 0;"><strong>Aide-maître & Encadrant Technique</strong><br>Un encadrant très sérieux, rigoureux et complet, investi pleinement dans l'accompagnement des élèves.</p>
+                        <p style="font-size: 0.88rem; color: var(--text-muted); margin: 8px 0 12px 0;"><strong>Aide-maître & Encadrant Technique</strong><br>Un encadrant très sérieux, rigoureux et complet, investi pleinement dans l'accompagnement des élèves.</p>
                         <a href="https://wa.me/22392256349?text=Bonjour%20Aboubacar%20Berthé," target="_blank"
                             style="display: inline-block; background: #2563eb; color: white; padding: 6px 14px; border-radius: 6px; text-decoration: none; font-size: 0.82rem; font-weight: 600;">📞
                             Contact : +223 92 25 63 49</a>
@@ -570,7 +611,7 @@
                         <img src="hawa.jpg" alt="Hawa Diallo" class="team-photo-placeholder" onclick="ouvrirModal(this.src)" onerror="this.src='logo.jpg'">
                         <h4>Hawa Diallo</h4>
                         <span class="team-grade">Ceinture Noire 2ème Dan</span>
-                        <p style="font-size: 0.88rem; color: #475569; margin: 8px 0 12px 0;"><strong>Aide-maître & Encadrante</strong><br>Une encadrante exemplaire et motivée, reconnue pour son dynamisme et sa maîtrise technique.</p>
+                        <p style="font-size: 0.88rem; color: var(--text-muted); margin: 8px 0 12px 0;"><strong>Aide-maître & Encadrante</strong><br>Une encadrante exemplaire et motivée, reconnue pour son dynamisme et sa maîtrise technique.</p>
                         <a href="https://wa.me/22372399776?text=Bonjour%20Hawa%20Diallo," target="_blank"
                             style="display: inline-block; background: #2563eb; color: white; padding: 6px 14px; border-radius: 6px; text-decoration: none; font-size: 0.82rem; font-weight: 600;">📞
                             Contact : +223 72 39 97 76</a>
@@ -578,9 +619,9 @@
                 </div>
 
                 <!-- SECTION : LES GRANDS MAÎTRES (3 COLONNES) -->
-                <div style="margin-top: 35px; border-top: 2px dashed #e2e8f0; padding-top: 25px;">
-                    <h3 style="color: #0f172a; margin-bottom: 10px;">🥋 Les Grands Maîtres</h3>
-                    <p style="margin-bottom: 15px; color: #64748b; font-size: 0.92rem;">Hommage et présentation de nos grands maîtres d'exception qui ont inspiré et façonné notre art martial :</p>
+                <div style="margin-top: 35px; border-top: 2px dashed var(--border-color); padding-top: 25px;">
+                    <h3 style="color: var(--primary); margin-bottom: 10px;">🥋 Les Grands Maîtres</h3>
+                    <p style="margin-bottom: 15px; color: var(--text-muted); font-size: 0.92rem;">Hommage et présentation de nos grands maîtres d'exception qui ont inspiré et façonné notre art martial :</p>
 
                     <div class="team-grid-3">
                         <!-- Grand Maître 1 -->
@@ -588,7 +629,7 @@
                             <img src="grand_maitre1.jpg" alt="Grand Maître 1" class="team-photo-placeholder" onclick="ouvrirModal(this.src)" onerror="this.src='logo.jpg'">
                             <h4>Grand Maître 1</h4>
                             <span class="team-grade">Ceinture Noire Haute Dan</span>
-                            <p style="font-size: 0.88rem; color: #475569; margin: 8px 0 12px 0;"><strong>Titre / Fonction</strong><br>Courte description ou hommage au parcours d'exception.</p>
+                            <p style="font-size: 0.88rem; color: var(--text-muted); margin: 8px 0 12px 0;"><strong>Titre / Fonction</strong><br>Courte description ou hommage au parcours d'exception.</p>
                             <a href="#" target="_blank"
                                 style="display: inline-block; background: #2563eb; color: white; padding: 6px 14px; border-radius: 6px; text-decoration: none; font-size: 0.82rem; font-weight: 600;">📞
                                 Contact / Info</a>
@@ -599,7 +640,7 @@
                             <img src="grand_maitre2.jpg" alt="Grand Maître 2" class="team-photo-placeholder" onclick="ouvrirModal(this.src)" onerror="this.src='logo.jpg'">
                             <h4>Grand Maître 2</h4>
                             <span class="team-grade">Ceinture Noire Haute Dan</span>
-                            <p style="font-size: 0.88rem; color: #475569; margin: 8px 0 12px 0;"><strong>Titre / Fonction</strong><br>Courte description ou hommage au parcours d'exception.</p>
+                            <p style="font-size: 0.88rem; color: var(--text-muted); margin: 8px 0 12px 0;"><strong>Titre / Fonction</strong><br>Courte description ou hommage au parcours d'exception.</p>
                             <a href="#" target="_blank"
                                 style="display: inline-block; background: #2563eb; color: white; padding: 6px 14px; border-radius: 6px; text-decoration: none; font-size: 0.82rem; font-weight: 600;">📞
                                 Contact / Info</a>
@@ -610,7 +651,7 @@
                             <img src="grand_maitre3.jpg" alt="Grand Maître 3" class="team-photo-placeholder" onclick="ouvrirModal(this.src)" onerror="this.src='logo.jpg'">
                             <h4>Grand Maître 3</h4>
                             <span class="team-grade">Ceinture Noire Haute Dan</span>
-                            <p style="font-size: 0.88rem; color: #475569; margin: 8px 0 12px 0;"><strong>Titre / Fonction</strong><br>Courte description ou hommage au parcours d'exception.</p>
+                            <p style="font-size: 0.88rem; color: var(--text-muted); margin: 8px 0 12px 0;"><strong>Titre / Fonction</strong><br>Courte description ou hommage au parcours d'exception.</p>
                             <a href="#" target="_blank"
                                 style="display: inline-block; background: #2563eb; color: white; padding: 6px 14px; border-radius: 6px; text-decoration: none; font-size: 0.82rem; font-weight: 600;">📞
                                 Contact / Info</a>
@@ -621,28 +662,28 @@
 
             <!-- 5. Horaires des Entraînements -->
             <div class="content-block">
-                <h3>🕒 Horaires des Séances d'Entraînement</h3>
-                <p style="margin-bottom: 15px;">Nos séances d'entraînement collectives se déroulent au dojo selon le
+                <h3 style="color: var(--primary);">🕒 Horaires des Séances d'Entraînement</h3>
+                <p style="margin-bottom: 15px; color: var(--text-muted);">Nos séances d'entraînement collectives se déroulent au dojo selon le
                     programme ci-dessous :</p>
 
                 <div
-                    style="background: #f8fafc; border: 1px solid #e2e8f0; border-left: 5px solid #2563eb; padding: 20px; border-radius: 10px; max-width: 600px;">
-                    <h4 style="margin: 0 0 8px 0; color: #0f172a; font-size: 1.1rem;">🥋 Séances d'Entraînement
+                    style="background: var(--bg-body); border: 1px solid var(--border-color); border-left: 5px solid #2563eb; padding: 20px; border-radius: 10px; max-width: 600px;">
+                    <h4 style="margin: 0 0 8px 0; color: var(--primary); font-size: 1.1rem;">🥋 Séances d'Entraînement
                         Générales</h4>
-                    <p style="margin: 0 0 5px 0; font-size: 1rem; color: #1e293b; font-weight: 600;">Jours : Lundi,
+                    <p style="margin: 0 0 5px 0; font-size: 1rem; color: var(--text-main); font-weight: 600;">Jours : Lundi,
                         Mercredi et Vendredi</p>
-                    <p style="margin: 0; font-size: 0.95rem; color: #2563eb; font-weight: bold;">Horaires : 18h00 -
+                    <p style="margin: 0; font-size: 0.95rem; color: var(--accent); font-weight: bold;">Horaires : 18h00 -
                         20h00</p>
                 </div>
             </div>
 
             <!-- 6. Localisation du Dojo -->
             <div class="content-block">
-                <h3>📍 Localisation & Emplacement du Dojo</h3>
-                <p style="margin-bottom: 15px;">Le dojo du Club Youze est situé à <strong>Sirakoro Cité Aéroport (Bamako,
+                <h3 style="color: var(--primary);">📍 Localisation & Emplacement du Dojo</h3>
+                <p style="margin-bottom: 15px; color: var(--text-muted);">Le dojo du Club Youze est situé à <strong>Sirakoro Cité Aéroport (Bamako,
                         Mali)</strong>, sous la direction de <strong>Maître Sidi Yaya Boirè</strong>.</p>
 
-                <div style="border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; margin-bottom: 15px;">
+                <div style="border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); margin-bottom: 15px;">
                     <iframe src="https://maps.google.com/maps?q=Sirakoro%20Cité%20Aéroport%20Bamako&t=&z=14&ie=UTF8&iwloc=&output=embed"
                         width="100%" height="280" style="border:0;" allowfullscreen="" loading="lazy">
                     </iframe>
@@ -661,35 +702,35 @@
 
             <!-- 7. Conditions d'admission -->
             <div class="content-block">
-                <h3>📋 Conditions d'Admission et Tarifs</h3>
-                <p style="margin-bottom: 15px;">Nous accueillons tous les passionnés désireux de s'investir dans une
+                <h3 style="color: var(--primary);">📋 Conditions d'Admission et Tarifs</h3>
+                <p style="margin-bottom: 15px; color: var(--text-muted);">Nous accueillons tous les passionnés désireux de s'investir dans une
                     démarche sérieuse de progression :</p>
 
                 <div class="conditions-grid">
                     <div class="condition-item"
                         onclick="alert('Public concerné : Ouvert à tous les niveaux, du débutant au confirmé.')">
-                        <h4>Public Concerné</h4>
-                        <p>Ouvert à tous (enfants, adolescents, adultes), de niveau débutant à confirmé.</p>
+                        <h4 style="color: var(--primary);">Public Concerné</h4>
+                        <p style="color: var(--text-muted);">Ouvert à tous (enfants, adolescents, adultes), de niveau débutant à confirmé.</p>
                     </div>
                     <div class="condition-item"
                         onclick="alert('Dossier : Fiche d’inscription et pièce justificative requises.')">
-                        <h4>Dossier Administratif</h4>
-                        <p>Remplissage de la fiche d'inscription officielle et présentation d'une pièce justificative.
+                        <h4 style="color: var(--primary);">Dossier Administratif</h4>
+                        <p style="color: var(--text-muted);">Remplissage de la fiche d'inscription officielle et présentation d'une pièce justificative.
                         </p>
                     </div>
                     <div class="condition-item" onclick="alert('Aptitude physique : Certificat médical obligatoire.')">
-                        <h4>Aptitude Physique</h4>
-                        <p>Fourniture obligatoire d'un certificat médical attestant la non-contre-indication au sport.
+                        <h4 style="color: var(--primary);">Aptitude Physique</h4>
+                        <p style="color: var(--text-muted);">Fourniture obligatoire d'un certificat médical attestant la non-contre-indication au sport.
                         </p>
                     </div>
                     <div class="condition-item"
                         onclick="alert('Charte : Respect strict du règlement intérieur et des horaires.')">
-                        <h4>Engagement & Charte</h4>
-                        <p>Adhésion stricte au règlement intérieur, au code d'honneur et aux horaires du club.</p>
+                        <h4 style="color: var(--primary);">Engagement & Charte</h4>
+                        <p style="color: var(--text-muted);">Adhésion stricte au règlement intérieur, au code d'honneur et aux horaires du club.</p>
                     </div>
                     <div class="condition-item" style="border-left-color: #2563eb; grid-column: span 2;">
-                        <h4>Tarifs & Contributions</h4>
-                        <p><strong>Inscription :</strong> 2 500 FCFA<br><strong>Tenue complète :</strong> 7 500
+                        <h4 style="color: var(--primary);">Tarifs & Contributions</h4>
+                        <p style="color: var(--text-muted);"><strong>Inscription :</strong> 2 500 FCFA<br><strong>Tenue complète :</strong> 7 500
                             FCFA<br><strong>Mensualité :</strong> 2 000 FCFA (fin de mois)</p>
                     </div>
                 </div>
@@ -697,8 +738,8 @@
 
             <!-- 8. FOIRE AUX QUESTIONS (FAQ) -->
             <div class="content-block">
-                <h3>❓ Foire Aux Questions (FAQ)</h3>
-                <p style="margin-bottom: 15px;">Cliquez sur une question pour afficher la réponse :</p>
+                <h3 style="color: var(--primary);">❓ Foire Aux Questions (FAQ)</h3>
+                <p style="margin-bottom: 15px; color: var(--text-muted);">Cliquez sur une question pour afficher la réponse :</p>
 
                 <div class="faq-container">
                     <div class="faq-item">
@@ -751,23 +792,23 @@
 
             <!-- 9. Immersion Multimédia -->
             <div class="content-block" style="margin-bottom: 0;">
-                <h3>🎥 Immersion et Retours d'Expérience</h3>
-                <p style="margin-bottom: 20px;">Plongez au cœur de nos sessions d'entraînement à travers un aperçu de
+                <h3 style="color: var(--primary);">🎥 Immersion et Retours d'Expérience</h3>
+                <p style="margin-bottom: 20px; color: var(--text-muted);">Plongez au cœur de nos sessions d'entraînement à travers un aperçu de
                     nos activités phares :</p>
 
                 <div class="media-grid"
                     style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
 
                     <div class="media-card"
-                        style="border: 1px solid #e2e8f0; border-radius: 10px; padding: 15px; background: #f8fafc;">
+                        style="border: 1px solid var(--border-color); border-radius: 10px; padding: 15px; background: var(--bg-body);">
                         <div class="media-placeholder"
                             style="background: #0f172a; color: white; height: 140px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 8px; margin-bottom: 12px;">
                             <span style="font-size: 28px;">▶️</span>
                             <span>Encadrement Technique</span>
                         </div>
-                        <h4 style="margin: 0 0 5px 0; color: #0f172a; font-size: 0.95rem;">Évaluation de la progression
+                        <h4 style="margin: 0 0 5px 0; color: var(--primary); font-size: 0.95rem;">Évaluation de la progression
                         </h4>
-                        <p style="font-size: 0.82rem; color: #64748b; margin-bottom: 15px;">Vidéo de présentation de la
+                        <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 15px;">Vidéo de présentation de la
                             pédagogie du club.</p>
                         <div style="display: flex; gap: 8px;">
                             <button onclick="alert('Lancement de la vidéo d’encadrement technique.')"
@@ -779,14 +820,14 @@
                     </div>
 
                     <div class="media-card"
-                        style="border: 1px solid #e2e8f0; border-radius: 10px; padding: 15px; background: #f8fafc;">
+                        style="border: 1px solid var(--border-color); border-radius: 10px; padding: 15px; background: var(--bg-body);">
                         <div class="media-placeholder"
                             style="background: #0f172a; color: white; height: 140px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 8px; margin-bottom: 12px;">
                             <span style="font-size: 28px;">🥋</span>
                             <span>Démonstrations de Taos</span>
                         </div>
-                        <h4 style="margin: 0 0 5px 0; color: #0f172a; font-size: 0.95rem;">Rigueur et précision</h4>
-                        <p style="font-size: 0.82rem; color: #64748b; margin-bottom: 15px;">Aperçu des enchaînements
+                        <h4 style="margin: 0 0 5px 0; color: var(--primary); font-size: 0.95rem;">Rigueur et précision</h4>
+                        <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 15px;">Aperçu des enchaînements
                             martiaux collectifs.</p>
                         <div style="display: flex; gap: 8px;">
                             <button onclick="alert('Lancement de la vidéo de démonstration.')"
@@ -811,6 +852,33 @@
         <img id="modalImg" src="" alt="Agrandissement de l'image">
         <button id="closeModalBtn" onclick="fermerModal()">Fermer</button>
     </div>
+
+    <!-- Script de gestion du Mode Sombre -->
+    <script>
+        function basculerTheme() {
+            const htmlTag = document.documentElement;
+            const btn = document.getElementById("themeToggleBtn");
+
+            if (htmlTag.getAttribute("data-theme") === "dark") {
+                htmlTag.removeAttribute("data-theme");
+                localStorage.setItem("theme", "light");
+                btn.innerHTML = "🌙 Sombre";
+            } else {
+                htmlTag.setAttribute("data-theme", "dark");
+                localStorage.setItem("theme", "dark");
+                btn.innerHTML = "☀️ Clair";
+            }
+        }
+
+        window.addEventListener("DOMContentLoaded", () => {
+            const savedTheme = localStorage.getItem("theme");
+            const btn = document.getElementById("themeToggleBtn");
+            if (savedTheme === "dark") {
+                document.documentElement.setAttribute("data-theme", "dark");
+                if (btn) btn.innerHTML = "☀️ Clair";
+            }
+        });
+    </script>
 
     <!-- Script pour la FAQ et le Zoom Image -->
     <script>
