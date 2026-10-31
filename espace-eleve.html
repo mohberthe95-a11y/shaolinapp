@@ -449,7 +449,6 @@
                 querySnapshot.forEach((docSnap) => {
                     const data = docSnap.data();
                     
-                    // Correspondance exacte avec les champs vus dans ta base Firebase (téléphoneEleve, CodePin, etc.)
                     const telMembre = String(data.téléphoneEleve || data.telephoneEleve || data["Contact de l'élève"] || data.contactEleve || "").trim();
                     const pinMembre = String(data.CodePin || data.CodePIN || data["CodePIN confidentiel"] || data.codePin || "").trim();
 
@@ -493,9 +492,11 @@
             document.getElementById("profil-parent").textContent = eleve.parent || "N/C";
             document.getElementById("profil-tuteur-tel").textContent = eleve.téléphoneTuteur || eleve.telephoneTuteur || "N/C";
 
-            if (eleve.pieceUrl) {
+            // Utilisation de la photo d'identité (photoUrl ou photoEleve) à la place de la pièce
+            const photoSrc = eleve.photoUrl || eleve.photoEleve || eleve.photo || eleve.pieceUrl;
+            if (photoSrc) {
                 const img = document.getElementById("profil-photo");
-                img.src = eleve.pieceUrl;
+                img.src = photoSrc;
                 img.style.display = "block";
             }
         }
