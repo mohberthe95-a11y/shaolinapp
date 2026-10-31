@@ -49,7 +49,7 @@ export function telechargerCertificatPDF() {
 
     docPdf.setFontSize(9);
     docPdf.setTextColor(71, 85, 105);
-    docPdf.text("Bamako - Yirimadio  |  Tél: +223 71 62 15 36", 105, 35, { align: "center" });
+    docPdf.text("Bamako - Sirakoro Cité Aéroport  |  Tél: +223 71 62 15 36", 105, 35, { align: "center" });
 
     docPdf.setDrawColor(217, 119, 6);
     docPdf.setLineWidth(1);
@@ -137,7 +137,7 @@ export function telechargerFicheMembrePDF() {
     docPdf.setFont("helvetica", "normal");
     docPdf.setTextColor(100, 100, 100);
     docPdf.setFontSize(9);
-    docPdf.text("Kung Fu Wushu - Bamako Yirimadio", 20, 26);
+    docPdf.text("Kung Fu Wushu - Bamako Sirakoro Cité Aéroport", 20, 26);
 
     docPdf.setFillColor(15, 23, 42);
     docPdf.roundedRect(135, 15, 55, 12, 2, 2, "F");
@@ -394,7 +394,7 @@ export function telechargerPDF(index) {
 
     docPdf.setFontSize(9);
     docPdf.setTextColor(71, 85, 105);
-    docPdf.text("Bamako - Yirimadio  |  Tél: +223 71 62 15 36", 105, 37, { align: "center" });
+    docPdf.text("Bamako - Sirakoro Cité Aéroport  |  Tél: +223 71 62 15 36", 105, 37, { align: "center" });
 
     docPdf.setDrawColor(217, 119, 6);
     docPdf.setLineWidth(0.8);
