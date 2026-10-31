@@ -4,7 +4,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ShaolinApp - Espace Élève</title>
-    <!-- Liaison de la feuille de style externe si besoin, et styles intégrés -->
     <style>
         :root {
             --primary: #0f172a;
@@ -425,11 +424,10 @@
 
             try {
                 const querySnapshot = await getDocs(collection(db, "membresShaolin"));
-                let eleve Trouve = null;
+                let eleveTrouve = null;
 
                 querySnapshot.forEach((docSnap) => {
                     const data = docSnap.data();
-                    // On vérifie si le téléphone correspond et si le code PIN correspond
                     const telMembre = (data.telephoneEleve || "").trim();
                     const pinMembre = (data.codePin || "").trim();
 
@@ -457,7 +455,6 @@
             document.getElementById("zone-tableau-eleve").style.display = "block";
             document.getElementById("nav-deconnexion-eleve").style.display = "block";
 
-            // Remplissage des infos
             document.getElementById("profil-nom").textContent = eleve.nom || "Nom Inconnu";
             document.getElementById("profil-club").textContent = eleve.club || "Club Youze";
             document.getElementById("profil-tel").textContent = eleve.telephoneEleve || "N/C";
