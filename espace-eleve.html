@@ -437,14 +437,20 @@
             erreur.style.display = "none";
 
             try {
-                const querySnapshot = await getDocs(collection(db, "membresShaolin"));
+                // Sécurité anti-lenteur : on accorde 10 secondes max au réseau
+                const timeoutPromise = new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error("Timeout")), 10000)
+                );
+
+                const fetchPromise = getDocs(collection(db, "membresShaolin"));
+                const querySnapshot = await Promise.race([fetchPromise, timeoutPromise]);
+                
                 let eleveTrouve = null;
 
                 querySnapshot.forEach((docSnap) => {
                     const data = docSnap.data();
                     
                     const telMembre = String(data.téléphoneEleve || data.telephoneEleve || "").trim();
-                    // Ajout de "CodePIN confidentiel" pour correspondre exactement à Firebase
                     const pinMembre = String(data["CodePIN confidentiel"] || data.CodePIN || data.CodePin || data.codePin || "").trim();
 
                     if (telMembre === telSaisi && pinMembre === pinSaisi) {
@@ -463,7 +469,11 @@
                 }
             } catch (err) {
                 console.error("Erreur de connexion :", err);
-                erreur.textContent = "Erreur de connexion à la base de données.";
+                if (err.message === "Timeout") {
+                    erreur.textContent = "La connexion est trop lente. Vérifiez votre réseau.";
+                } else {
+                    erreur.textContent = "Erreur de connexion avec la base de données Cloud.";
+                }
                 erreur.style.display = "block";
                 btnValider.disabled = false;
                 btnValider.textContent = "Se connecter à mon dossier";
