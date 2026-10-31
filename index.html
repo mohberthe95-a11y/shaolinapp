@@ -4,6 +4,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ShaolinApp - Club Youze</title>
+    
+    <!-- Lien vers le Manifeste PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#38bdf8">
+
     <style>
         :root {
             --primary: #0f172a;
@@ -586,6 +591,21 @@
                 if (btn) btn.innerHTML = "☀️ Clair";
             }
         });
+    </script>
+
+    <!-- Enregistrement du Service Worker pour la PWA -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then((reg) => {
+                        console.log('Service Worker enregistré avec succès, scope :', reg.scope);
+                    })
+                    .catch((err) => {
+                        console.log('Échec de l\'enregistrement du Service Worker :', err);
+                    });
+            });
+        }
     </script>
 </body>
 </html>
