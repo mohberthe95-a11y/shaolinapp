@@ -428,8 +428,10 @@
 
                 querySnapshot.forEach((docSnap) => {
                     const data = docSnap.data();
-                    const telMembre = (data.telephoneEleve || "").trim();
-                    const pinMembre = (data.codePin || "").trim();
+                    
+                    // Prise en compte des variantes de noms de champs dans Firestore (téléphone/telephone et CodePin/codePin)
+                    const telMembre = String(data.téléphoneEleve || data.telephoneEleve || "").trim();
+                    const pinMembre = String(data.CodePin || data.codePin || "").trim();
 
                     if (telMembre === telSaisi && pinMembre === pinSaisi) {
                         eleveTrouve = { id: docSnap.id, ...data };
@@ -457,11 +459,11 @@
 
             document.getElementById("profil-nom").textContent = eleve.nom || "Nom Inconnu";
             document.getElementById("profil-club").textContent = eleve.club || "Club Youze";
-            document.getElementById("profil-tel").textContent = eleve.telephoneEleve || "N/C";
+            document.getElementById("profil-tel").textContent = eleve.téléphoneEleve || eleve.telephoneEleve || "N/C";
             document.getElementById("profil-naissance").textContent = eleve.naissance || "N/C";
             document.getElementById("profil-inscription").textContent = eleve.dateInscription || "N/C";
             document.getElementById("profil-parent").textContent = eleve.parent || "N/C";
-            document.getElementById("profil-tuteur-tel").textContent = eleve.telephoneTuteur || "N/C";
+            document.getElementById("profil-tuteur-tel").textContent = eleve.téléphoneTuteur || eleve.telephoneTuteur || "N/C";
 
             if (eleve.photo) {
                 const img = document.getElementById("profil-photo");
