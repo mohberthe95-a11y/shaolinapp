@@ -437,7 +437,6 @@
             erreur.style.display = "none";
 
             try {
-                // Sécurité anti-lenteur : on accorde 10 secondes max au réseau
                 const timeoutPromise = new Promise((_, reject) => 
                     setTimeout(() => reject(new Error("Timeout")), 10000)
                 );
@@ -450,7 +449,8 @@
                 querySnapshot.forEach((docSnap) => {
                     const data = docSnap.data();
                     
-                    const telMembre = String(data.téléphoneEleve || data.telephoneEleve || "").trim();
+                    // Inclusion de "Contact de l'élève" pour correspondre exactement à Firebase
+                    const telMembre = String(data["Contact de l'élève"] || data.contactEleve || data.téléphoneEleve || data.telephoneEleve || "").trim();
                     const pinMembre = String(data["CodePIN confidentiel"] || data.CodePIN || data.CodePin || data.codePin || "").trim();
 
                     if (telMembre === telSaisi && pinMembre === pinSaisi) {
@@ -475,8 +475,8 @@
                     erreur.textContent = "Erreur de connexion avec la base de données Cloud.";
                 }
                 erreur.style.display = "block";
-                btnValider.disabled = false;
-                btnValider.textContent = "Se connecter à mon dossier";
+                    btnValider.disabled = false;
+                    btnValider.textContent = "Se connecter à mon dossier";
             }
         }
 
@@ -487,7 +487,7 @@
 
             document.getElementById("profil-nom").textContent = eleve.nom || "Nom Inconnu";
             document.getElementById("profil-club").textContent = eleve.club || "Club Youze";
-            document.getElementById("profil-tel").textContent = eleve.téléphoneEleve || eleve.telephoneEleve || "N/C";
+            document.getElementById("profil-tel").textContent = eleve["Contact de l'élève"] || eleve.contactEleve || eleve.téléphoneEleve || eleve.telephoneEleve || "N/C";
             document.getElementById("profil-naissance").textContent = eleve.naissance || "N/C";
             document.getElementById("profil-inscription").textContent = eleve.dateInscription || "N/C";
             document.getElementById("profil-parent").textContent = eleve.parent || "N/C";
