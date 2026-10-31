@@ -20,6 +20,17 @@
             --border-color: #e2e8f0;
         }
 
+        /* Variables pour le Mode Sombre */
+        [data-theme="dark"] {
+            --primary: #f8fafc;
+            --accent: #38bdf8;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --bg-body: #0b0f19;
+            --card-bg: #1e293b;
+            --border-color: #334155;
+        }
+
         body {
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             background-color: var(--bg-body);
@@ -28,6 +39,7 @@
             color: var(--text-main);
             padding-top: 110px;
             scroll-behavior: smooth;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
         
         /* Navbar flexible avec menu sur deux lignes sur mobile */
@@ -77,6 +89,9 @@
             width: 100%;
             display: flex;
             justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         nav ul {
@@ -87,6 +102,7 @@
             gap: 12px 20px;
             margin: 0;
             padding: 0;
+            align-items: center;
         }
 
         nav ul li a {
@@ -118,6 +134,26 @@
 
         nav ul li a:hover::after, nav ul li a.actif::after {
             width: 100%;
+        }
+
+        /* Bouton Dark/Light Mode */
+        .theme-toggle-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle-btn:hover {
+            background: rgba(56, 189, 248, 0.2);
+            border-color: var(--accent);
         }
 
         @media (min-width: 850px) {
@@ -176,6 +212,7 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
             position: relative;
             overflow: hidden;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
         .stat-card::before {
@@ -210,16 +247,17 @@
         }
 
         /* Section Exportation */
-        .export-section {
+        .export-section, .details-section {
             background: var(--card-bg);
             padding: 30px;
             border-radius: 16px;
             border: 1px solid var(--border-color);
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
             margin-bottom: 35px;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
-        .export-section h3 {
+        .export-section h3, .details-section h3 {
             margin-top: 0;
             color: var(--primary);
             font-size: 1.25rem;
@@ -267,23 +305,6 @@
             transform: translateY(-2px);
         }
 
-        .details-section {
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: 16px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
-        }
-
-        .details-section h3 {
-            margin-top: 0;
-            color: var(--primary);
-            font-size: 1.25rem;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 12px;
-            margin-bottom: 20px;
-        }
-
         .club-list {
             display: flex;
             flex-direction: column;
@@ -295,10 +316,12 @@
             justify-content: space-between;
             align-items: center;
             padding: 12px 18px;
-            background: #f8fafc;
+            background: var(--bg-body);
             border-radius: 8px;
             border: 1px solid var(--border-color);
             font-weight: 600;
+            color: var(--text-main);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
         /* Footer professionnel et bleu */
@@ -336,6 +359,10 @@
                 <li><a href="taos.html">Regarder les Taos</a></li>
                 <li><a href="admin.html">Espace Admin</a></li>
             </ul>
+            <!-- Bouton pour changer de thème -->
+            <button id="themeToggleBtn" class="theme-toggle-btn" onclick="basculerTheme()">
+                🌙 Sombre
+            </button>
         </nav>
     </header>
 
@@ -392,6 +419,33 @@
         <p>&copy; 2027 - ShaolinApp & Services. Tous droits réservés.</p>
     </footer>
 
+    <!-- Script de gestion du Mode Sombre -->
+    <script>
+        function basculerTheme() {
+            const htmlTag = document.documentElement;
+            const btn = document.getElementById("themeToggleBtn");
+
+            if (htmlTag.getAttribute("data-theme") === "dark") {
+                htmlTag.removeAttribute("data-theme");
+                localStorage.setItem("theme", "light");
+                btn.innerHTML = "🌙 Sombre";
+            } else {
+                htmlTag.setAttribute("data-theme", "dark");
+                localStorage.setItem("theme", "dark");
+                btn.innerHTML = "☀️ Clair";
+            }
+        }
+
+        window.addEventListener("DOMContentLoaded", () => {
+            const savedTheme = localStorage.getItem("theme");
+            const btn = document.getElementById("themeToggleBtn");
+            if (savedTheme === "dark") {
+                document.documentElement.setAttribute("data-theme", "dark");
+                if (btn) btn.innerHTML = "☀️ Clair";
+            }
+        });
+    </script>
+
     <!-- Script Firebase & Dashboard -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -410,7 +464,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Variable globale pour stocker les membres chargés depuis Firebase
         let listeMembresGlobale = [];
 
         document.addEventListener("DOMContentLoaded", async () => {
@@ -451,7 +504,6 @@
                 document.getElementById("stat-payes").textContent = nbPayes;
                 document.getElementById("stat-retards").textContent = totalEleves - nbPayes;
 
-                // Liste de tous les clubs à afficher obligatoirement
                 let clubsStats = {
                     "Club Youze": 0,
                     "CLUB BAKO": 0,
@@ -460,7 +512,6 @@
                     "CLUB EURRO": 0
                 };
 
-                // Comptage des élèves par club
                 listeMembresGlobale.forEach(eleve => {
                     let club = eleve.club || "Club Youze";
                     if (clubsStats[club] !== undefined) {
@@ -473,7 +524,6 @@
                 const conteneurClubs = document.getElementById("conteneur-clubs");
                 conteneurClubs.innerHTML = "";
 
-                // Affichage systématique de TOUS les clubs (même à 0 élève)
                 for (let [clubNom, effectif] of Object.entries(clubsStats)) {
                     let div = document.createElement("div");
                     div.className = "club-item";
@@ -481,7 +531,6 @@
                     conteneurClubs.appendChild(div);
                 }
 
-                // Attachement des événements de téléchargement
                 document.getElementById("btn-export-excel").addEventListener("click", exporterExcel);
                 document.getElementById("btn-export-pdf").addEventListener("click", exporterPDF);
 
@@ -491,7 +540,6 @@
             }
         });
 
-        // Fonction 1 : Génération du fichier Excel (.xlsx)
         function exporterExcel() {
             if (listeMembresGlobale.length === 0) {
                 alert("Aucune donnée d'élève à exporter pour le moment !");
@@ -516,7 +564,6 @@
             XLSX.writeFile(classeur, "Liste_Eleves_Club_Youze_2026.xlsx");
         }
 
-        // Fonction 2 : Génération du document PDF (.pdf)
         function exporterPDF() {
             if (listeMembresGlobale.length === 0) {
                 alert("Aucune donnée d'élève à exporter pour le moment !");
@@ -526,7 +573,6 @@
             const { jsPDF } = window.jspdf;
             const docPdf = new jsPDF();
 
-            // En-tête du document
             docPdf.setFont("helvetica", "bold");
             docPdf.setFontSize(16);
             docPdf.setTextColor(15, 23, 42);
@@ -554,7 +600,6 @@
 
                 startY += 7;
 
-                // Gestion du saut de page si on atteint le bas
                 if (startY > 280) {
                     docPdf.addPage();
                     startY = 20;
