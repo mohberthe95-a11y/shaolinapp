@@ -20,6 +20,17 @@
             --border-color: #e2e8f0;
         }
 
+        /* Variables pour le Mode Sombre */
+        [data-theme="dark"] {
+            --primary: #f8fafc;
+            --accent: #38bdf8;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --bg-body: #0b0f19;
+            --card-bg: #1e293b;
+            --border-color: #334155;
+        }
+
         body {
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             background-color: var(--bg-body);
@@ -28,6 +39,7 @@
             color: var(--text-main);
             padding-top: 110px;
             scroll-behavior: smooth;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         /* Navbar flexible uniforme */
@@ -77,6 +89,9 @@
             width: 100%;
             display: flex;
             justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         nav ul {
@@ -87,6 +102,7 @@
             gap: 12px 20px;
             margin: 0;
             padding: 0;
+            align-items: center;
         }
 
         nav ul li a {
@@ -120,6 +136,26 @@
         nav ul li a:hover::after,
         nav ul li a.actif::after {
             width: 100%;
+        }
+
+        /* Bouton Dark/Light Mode */
+        .theme-toggle-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle-btn:hover {
+            background: rgba(56, 189, 248, 0.2);
+            border-color: var(--accent);
         }
 
         @media (min-width: 850px) {
@@ -183,6 +219,10 @@
                 <li><a href="taos.html">Regarder les Taos</a></li>
                 <li><a href="admin.html">Espace Admin</a></li>
             </ul>
+            <!-- Bouton pour changer de thème -->
+            <button id="themeToggleBtn" class="theme-toggle-btn" onclick="basculerTheme()">
+                🌙 Sombre
+            </button>
         </nav>
     </header>
 
@@ -191,11 +231,11 @@
         <!-- VUE 1 : LISTE DES ELEVES -->
         <div id="zone-liste-principale">
             <h2>Registre des Élèves Inscrits</h2>
-            <p style="color: #475569; margin-bottom: 20px;">Cliquez sur un élève pour accéder à son dossier complet, ses bulletins et ses informations.</p>
+            <p style="color: var(--text-muted); margin-bottom: 20px;">Cliquez sur un élève pour accéder à son dossier complet, ses bulletins et ses informations.</p>
 
             <div class="liste-eleves-container">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 15px;">
-                    <h3 style="margin: 0; font-size: 1.2rem; color: #0f172a;">📋 Liste des Élèves</h3>
+                    <h3 style="margin: 0; font-size: 1.2rem; color: var(--primary);">📋 Liste des Élèves</h3>
                     <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                         <button class="btn-export-liste" onclick="imprimerListeEleves()" style="background-color: #0f172a; color: white; border: none; padding: 8px 14px; border-radius: 6px; font-size: 0.9rem; font-weight: 600; cursor: pointer;">🖨️ Imprimer la liste</button>
                         <button class="btn-export-liste" onclick="telechargerListePDF()" style="background-color: #e11d48; color: white; border: none; padding: 8px 14px; border-radius: 6px; font-size: 0.9rem; font-weight: 600; cursor: pointer;">📥 Télécharger PDF</button>
@@ -222,12 +262,12 @@
             <div class="dossier-header">
                 <div>
                     <button class="btn-retour" onclick="retournerAListeDepuisPassation()">⬅️ Retour à la liste des élèves</button>
-                    <h2 style="margin: 10px 0 0 0; color: #0f172a;">⚡ Passation Générale des Notes (Saisie Collective)</h2>
+                    <h2 style="margin: 10px 0 0 0; color: var(--primary);">⚡ Passation Générale des Notes (Saisie Collective)</h2>
                 </div>
             </div>
 
             <div class="liste-eleves-container" style="margin-top: 20px;">
-                <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">Remplissez les notes directement dans ce tableau horizontal pour l'ensemble des élèves. En cliquant sur l'enregistrement global, les bulletins individuels de chaque élève seront mis à jour automatiquement !</p>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Remplissez les notes directement dans ce tableau horizontal pour l'ensemble des élèves. En cliquant sur l'enregistrement global, les bulletins individuels de chaque élève seront mis à jour automatiquement !</p>
 
                 <div style="overflow-x: auto;">
                     <table class="tableau-techniques" style="width: 100%; min-width: 900px; font-size: 0.85rem;">
@@ -262,7 +302,7 @@
             <div class="dossier-header">
                 <div>
                     <button class="btn-retour" onclick="retournerAListe()">⬅️ Retour à la liste des élèves</button>
-                    <h2 id="titre-dossier-nom" style="margin: 10px 0 0 0; color: #0f172a;">Nom de l'élève</h2>
+                    <h2 id="titre-dossier-nom" style="margin: 10px 0 0 0; color: var(--primary);">Nom de l'élève</h2>
                 </div>
             </div>
 
@@ -281,7 +321,7 @@
             <div class="liste-eleves-container">
                 <!-- 1. SECTION INFOS -->
                 <div id="zone-infos" class="section-box" style="display: block;">
-                    <h4 style="margin-top: 0; color: #0f172a; border-bottom: 2px solid #cbd5e1; padding-bottom: 8px;">👤 Informations Personnelles & Administratives</h4>
+                    <h4 style="margin-top: 0; color: var(--primary); border-bottom: 2px solid var(--border-color); padding-bottom: 8px;">👤 Informations Personnelles & Administratives</h4>
                     
                     <!-- MISE EN PAGE FLEX POUR METTRE LES INFOS À GAUCHE ET LA PHOTO À DROITE -->
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap;">
@@ -296,12 +336,12 @@
                         </div>
                         
                         <!-- EMPLACEMENT DE LA PHOTO DE L'ÉLÈVE À DROITE -->
-                        <div style="text-align: center; background: #f8fafc; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
-                            <img id="info-photo-eleve" src="" alt="Photo de l'élève" style="width: 110px; height: 135px; object-fit: cover; border-radius: 6px; display: none; border: 1px solid #94a3b8;">
-                            <div id="info-sans-photo" style="width: 110px; height: 135px; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 0.8rem; font-style: italic;">
+                        <div style="text-align: center; background: var(--bg-body); padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                            <img id="info-photo-eleve" src="" alt="Photo de l'élève" style="width: 110px; height: 135px; object-fit: cover; border-radius: 6px; display: none; border: 1px solid var(--border-color);">
+                            <div id="info-sans-photo" style="width: 110px; height: 135px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.8rem; font-style: italic;">
                                 Aucune photo
                             </div>
-                            <span style="display: block; font-size: 0.75rem; color: #64748b; margin-top: 5px; font-weight: 600;">Photo d'identité</span>
+                            <span style="display: block; font-size: 0.75rem; color: var(--text-muted); margin-top: 5px; font-weight: 600;">Photo d'identité</span>
                         </div>
                     </div>
 
@@ -313,7 +353,7 @@
                         </div>
                     </div>
 
-                    <h4 style="margin-top: 25px; color: #0f172a; border-bottom: 2px solid #cbd5e1; padding-bottom: 8px;">🥋 Parcours & Grades (Ceinture Actuelle)</h4>
+                    <h4 style="margin-top: 25px; color: var(--primary); border-bottom: 2px solid var(--border-color); padding-bottom: 8px;">🥋 Parcours & Grades (Ceinture Actuelle)</h4>
                     <div class="form-grid" style="margin-top: 15px;">
                         <div class="form-group">
                             <label>Ceinture / Grade Actuel :</label>
@@ -325,7 +365,7 @@
                         </div>
                     </div>
 
-                    <h4 style="margin-top: 25px; color: #0f172a; border-bottom: 2px solid #cbd5e1; padding-bottom: 8px;">🏥 Suivi Médical & Aptitude Sportive</h4>
+                    <h4 style="margin-top: 25px; color: var(--primary); border-bottom: 2px solid var(--border-color); padding-bottom: 8px;">🏥 Suivi Médical & Aptitude Sportive</h4>
                     <div class="form-grid" style="margin-top: 15px;">
                         <div class="form-group">
                             <label>Certificat Médical :</label>
@@ -353,11 +393,11 @@
                 <!-- 2. SECTION MENSUALITES & REÇUS -->
                 <div id="zone-mensualites" class="section-box" style="display: none;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <h4 style="margin: 0; color: #0f172a;">💳 Suivi des Mensualités & Reçu Officiel</h4>
+                        <h4 style="margin: 0; color: var(--primary);">💳 Suivi des Mensualités & Reçu Officiel</h4>
                         <button class="btn-retour" onclick="afficherSection('zone-infos')">⬅️ Retour au dossier</button>
                     </div>
 
-                    <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 15px;">Cochez un mois pour enregistrer le paiement et pré-remplir automatiquement le reçu ci-dessous :</p>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">Cochez un mois pour enregistrer le paiement et pré-remplir automatiquement le reçu ci-dessous :</p>
 
                     <table class="tableau-techniques" style="margin-bottom: 25px;">
                         <thead>
@@ -374,7 +414,7 @@
                     </div>
 
                     <!-- MODÈLE DU REÇU OFFICIEL -->
-                    <div style="background: #ffffff; border: 2px solid #2563eb; border-radius: 12px; padding: 25px; position: relative; max-width: 650px; margin: 0 auto; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                    <div style="background: #ffffff; border: 2px solid #2563eb; border-radius: 12px; padding: 25px; position: relative; max-width: 650px; margin: 0 auto; box-shadow: 0 4px 15px rgba(0,0,0,0.05); color: #1e293b;">
 
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 15px;">
                             <div>
@@ -427,7 +467,7 @@
                 <!-- 3. SECTION CERTIFICAT -->
                 <div id="zone-certificat" class="section-box" style="display: none;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h4 style="margin: 0; color: #0f172a;">📜 Certificat de Fréquentation Officiel</h4>
+                        <h4 style="margin: 0; color: var(--primary);">📜 Certificat de Fréquentation Officiel</h4>
                         <button class="btn-retour" onclick="afficherSection('zone-infos')">⬅️ Retour au dossier</button>
                     </div>
 
@@ -482,11 +522,11 @@
                 <!-- 3. BIS - SECTION FICHE DE MEMBRE / ATTESTATION -->
                 <div id="zone-fiche-membre" class="section-box" style="display: none;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h4 style="margin: 0; color: #0f172a;">📋 Fiche de Membre & Attestation d'Inscription</h4>
+                        <h4 style="margin: 0; color: var(--primary);">📋 Fiche de Membre & Attestation d'Inscription</h4>
                         <button class="btn-retour" onclick="afficherSection('zone-infos')">⬅️ Retour au dossier</button>
                     </div>
 
-                    <div class="certificat-cadre-externe" style="border: 2px solid #0f172a; padding: 30px; background: #fff; border-radius: 12px;">
+                    <div class="certificat-cadre-externe" style="border: 2px solid #0f172a; padding: 30px; background: #fff; border-radius: 12px; color: #1e293b;">
                         <div style="display: flex; justify-content: space-between; border-bottom: 2px solid #0f172a; padding-bottom: 15px; margin-bottom: 20px;">
                             <div>
                                 <h3 style="margin: 0; color: #b91c1c; font-size: 1.6rem;">CLUB YOUZE</h3>
@@ -629,22 +669,22 @@
                 <!-- 5. SECTION ANCIENS BULLETINS -->
                 <div id="zone-anciens-bulletins" class="section-box" style="display: none;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <h4 style="margin: 0; color: #0f172a;">📂 Historique des Anciens Bulletins</h4>
+                        <h4 style="margin: 0; color: var(--primary);">📂 Historique des Anciens Bulletins</h4>
                         <button class="btn-retour" onclick="afficherSection('zone-infos')">⬅ Retour au dossier</button>
                     </div>
                     <div id="archives-conteneur">
-                        <p style="color: #64748b; font-style: italic;">Aucun bulletin enregistré pour cet élève pour le moment.</p>
+                        <p style="color: var(--text-muted); font-style: italic;">Aucun bulletin enregistré pour cet élève pour le moment.</p>
                     </div>
                 </div>
 
                 <!-- 6. SECTION HISTORIQUE DES ANCIENS REÇUS -->
                 <div id="zone-anciens-recus" class="section-box" style="display: none;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <h4 style="margin: 0; color: #0f172a;">📂 Historique des Reçus de Paiement</h4>
+                        <h4 style="margin: 0; color: var(--primary);">📂 Historique des Reçus de Paiement</h4>
                         <button class="btn-retour" onclick="ouvrirMensualites()">⬅ Retour aux mensualités</button>
                     </div>
                     <div id="archives-recus-conteneur">
-                        <p style="color: #64748b; font-style: italic;">Aucun reçu archivé pour cet élève.</p>
+                        <p style="color: var(--text-muted); font-style: italic;">Aucun reçu archivé pour cet élève.</p>
                     </div>
                 </div>
 
@@ -666,6 +706,33 @@
     <footer>
         <p>&copy; 2027 - ShaolinApp & Services. Tous droits réservés.</p>
     </footer>
+
+    <!-- Script de gestion du Mode Sombre -->
+    <script>
+        function basculerTheme() {
+            const htmlTag = document.documentElement;
+            const btn = document.getElementById("themeToggleBtn");
+
+            if (htmlTag.getAttribute("data-theme") === "dark") {
+                htmlTag.removeAttribute("data-theme");
+                localStorage.setItem("theme", "light");
+                btn.innerHTML = "🌙 Sombre";
+            } else {
+                htmlTag.setAttribute("data-theme", "dark");
+                localStorage.setItem("theme", "dark");
+                btn.innerHTML = "☀️ Clair";
+            }
+        }
+
+        window.addEventListener("DOMContentLoaded", () => {
+            const savedTheme = localStorage.getItem("theme");
+            const btn = document.getElementById("themeToggleBtn");
+            if (savedTheme === "dark") {
+                document.documentElement.setAttribute("data-theme", "dark");
+                if (btn) btn.innerHTML = "☀️ Clair";
+            }
+        });
+    </script>
 
     <!-- ORDRE DE CHARGEMENT CORRIGÉ DES MODULES JS -->
     <script type="module" src="firebase-config.js"></script>
