@@ -260,6 +260,11 @@
             background-color: #1d4ed8;
         }
 
+        .btn-submit:disabled {
+            background-color: #94a3b8;
+            cursor: not-allowed;
+        }
+
         footer {
             background-color: #0f172a;
             color: #94a3b8;
@@ -315,16 +320,14 @@
             <div style="max-width: 400px; margin: 0 auto;">
                 <div class="form-group" style="text-align: left;">
                     <label>Numéro de téléphone :</label>
-                    <!-- Ajout de autocomplete="off" pour empêcher le remplissage automatique -->
                     <input type="tel" id="inputTelEleve" placeholder="Ex: +223 70 00 00 00" autocomplete="off">
                 </div>
                 <div class="form-group" style="text-align: left;">
                     <label>Code PIN (4 chiffres) :</label>
-                    <!-- Ajout de autocomplete="new-password" pour forcer le champ à rester vide -->
-                    <input type="password" id="inputPinEleve" maxlength="4" placeholder="••••" autocomplete="new-password" style="letter-spacing: 3px; font-weight: bold; text-align: center;">
+                    <input type="text" id="inputPinEleve" maxlength="4" placeholder="Ex: 1234" autocomplete="new-password" spellcheck="false" style="letter-spacing: 3px; font-weight: bold; text-align: center;">
                 </div>
-                <button onclick="connecterEleve()" class="btn-submit">Se connecter à mon dossier</button>
-                <p id="erreurLoginEleve" style="color: #ef4444; font-weight: 600; margin-top: 15px; display: none;">Numéro de téléphone ou code PIN incorrect.</p>
+                <button id="btnConnexionEleve" onclick="connecterEleve()" class="btn-submit">Se connecter à mon dossier</button>
+                <p id="erreurLoginEleve" style="color: #ef4444; font-weight: 600; margin-top: 15px; display: none;"></p>
             </div>
         </div>
 
@@ -387,13 +390,11 @@
                 if (btn) btn.innerHTML = "☀️ Clair";
             }
 
-            // Vider explicitement les champs au chargement pour éviter tout résidu de mémoire du navigateur
             const inputTel = document.getElementById("inputTelEleve");
             const inputPin = document.getElementById("inputPinEleve");
             if (inputTel) inputTel.value = "";
             if (inputPin) inputPin.value = "";
 
-            // Vérifier si un élève est déjà connecté dans sessionStorage
             const eleveConnecte = sessionStorage.getItem("eleveConnecteData");
             if (eleveConnecte) {
                 afficherTableauBordEleve(JSON.parse(eleveConnecte));
@@ -423,12 +424,18 @@
             const telSaisi = document.getElementById("inputTelEleve").value.trim();
             const pinSaisi = document.getElementById("inputPinEleve").value.trim();
             const erreur = document.getElementById("erreurLoginEleve");
+            const btnValider = document.getElementById("btnConnexionEleve");
 
             if (!telSaisi || !pinSaisi) {
                 erreur.textContent = "Veuillez remplir tous les champs.";
                 erreur.style.display = "block";
                 return;
             }
+
+            // Désactiver le bouton et afficher un message de chargement pour rassurer l'utilisateur
+            btnValider.disabled = true;
+            btnValider.textContent = "Connexion en cours...";
+            erreur.style.display = "none";
 
             try {
                 const querySnapshot = await getDocs(collection(db, "membresShaolin"));
@@ -437,7 +444,6 @@
                 querySnapshot.forEach((docSnap) => {
                     const data = docSnap.data();
                     
-                    // Prise en compte des variantes de noms de champs dans Firestore (téléphone/telephone et CodePin/codePin)
                     const telMembre = String(data.téléphoneEleve || data.telephoneEleve || "").trim();
                     const pinMembre = String(data.CodePin || data.codePin || "").trim();
 
@@ -452,11 +458,15 @@
                 } else {
                     erreur.textContent = "Numéro de téléphone ou code PIN incorrect.";
                     erreur.style.display = "block";
+                    btnValider.disabled = false;
+                    btnValider.textContent = "Se connecter à mon dossier";
                 }
             } catch (err) {
                 console.error("Erreur de connexion :", err);
                 erreur.textContent = "Erreur de connexion à la base de données.";
                 erreur.style.display = "block";
+                btnValider.disabled = false;
+                btnValider.textContent = "Se connecter à mon dossier";
             }
         }
 
