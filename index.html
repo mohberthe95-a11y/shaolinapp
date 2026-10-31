@@ -15,6 +15,17 @@
             --border-color: #e2e8f0;
         }
 
+        /* Variables pour le Mode Sombre */
+        [data-theme="dark"] {
+            --primary: #f8fafc;
+            --accent: #38bdf8;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --bg-body: #0b0f19;
+            --card-bg: #1e293b;
+            --border-color: #334155;
+        }
+
         body {
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             background-color: var(--bg-body);
@@ -23,6 +34,7 @@
             color: var(--text-main);
             padding-top: 110px;
             scroll-behavior: smooth;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
         
         /* Navbar flexible */
@@ -72,6 +84,9 @@
             width: 100%;
             display: flex;
             justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         nav ul {
@@ -82,6 +97,7 @@
             gap: 12px 20px;
             margin: 0;
             padding: 0;
+            align-items: center;
         }
 
         nav ul li a {
@@ -113,6 +129,26 @@
 
         nav ul li a:hover::after, nav ul li a.actif::after {
             width: 100%;
+        }
+
+        /* Bouton Dark/Light Mode */
+        .theme-toggle-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle-btn:hover {
+            background: rgba(56, 189, 248, 0.2);
+            border-color: var(--accent);
         }
 
         @media (min-width: 850px) {
@@ -164,7 +200,7 @@
             border: 1px solid var(--border-color);
             position: relative;
             overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
         }
 
         .styled-card:hover {
@@ -203,6 +239,12 @@
             border: 1px solid #bfdbfe;
         }
 
+        [data-theme="dark"] .badge-section {
+            background-color: rgba(37, 99, 235, 0.2);
+            color: #38bdf8;
+            border-color: rgba(56, 189, 248, 0.3);
+        }
+
         .hero-text-section {
             text-align: center;
         }
@@ -220,6 +262,10 @@
             font-size: 1.1rem;
             font-weight: 600;
             margin: 0 0 18px 0;
+        }
+
+        [data-theme="dark"] .hero-text-section h2 {
+            color: #38bdf8;
         }
 
         .hero-text-section p, .presentation p {
@@ -249,7 +295,7 @@
         }
 
         .carte-domaine {
-            background-color: #f8fafc;
+            background-color: var(--bg-body);
             border: 1px solid var(--border-color);
             padding: 20px 15px;
             border-radius: 12px;
@@ -259,7 +305,7 @@
 
         .carte-domaine:hover {
             transform: translateY(-5px);
-            background-color: #ffffff;
+            background-color: var(--card-bg);
             border-color: var(--accent);
             box-shadow: 0 6px 18px rgba(0,0,0,0.05);
         }
@@ -279,37 +325,40 @@
 
         /* Cartes Annonces interactives */
         .annonce-card {
-            background: #f8fafc;
+            background: var(--bg-body);
             border-left: 4px solid #2563eb;
             border-radius: 0 8px 8px 0;
             padding: 18px;
             margin-bottom: 15px;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
+            border-top: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
         }
 
         .annonce-card:hover {
             transform: translateX(8px) scale(1.01);
-            background: #ffffff;
+            background: var(--card-bg);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
         }
 
         .annonce-card.urgent {
             border-left-color: #e11d48;
-            background: #fff1f2;
+            background: rgba(225, 29, 72, 0.05);
         }
 
         .annonce-card.urgent:hover {
-            background: #ffe4e6;
+            background: rgba(225, 29, 72, 0.1);
         }
 
         .annonce-card.info-site {
-            border-left-color: #0f172a;
-            background: #f1f5f9;
+            border-left-color: var(--primary);
+            background: var(--bg-body);
         }
 
         .annonce-card.info-site:hover {
-            background: #ffffff;
+            background: var(--card-bg);
         }
 
         .annonce-badge {
@@ -325,6 +374,11 @@
         .badge-urgent { background: #e11d48; }
         .badge-event { background: #d97706; }
         .badge-platform { background: #0f172a; color: #38bdf8; }
+        [data-theme="dark"] .badge-platform { background: #38bdf8; color: #0f172a; }
+
+        .annonce-card h4, .annonce-card p {
+            color: var(--text-main) !important;
+        }
 
         .grid-clubs {
             display: grid;
@@ -334,7 +388,7 @@
         }
 
         .carte-club {
-            background-color: #f8fafc;
+            background-color: var(--bg-body);
             border: 1px solid var(--border-color);
             padding: 15px 10px;
             border-radius: 12px;
@@ -344,7 +398,7 @@
 
         .carte-club:hover {
             transform: scale(1.05);
-            background-color: #ffffff;
+            background-color: var(--card-bg);
             border-color: var(--accent);
         }
 
@@ -395,6 +449,10 @@
                 <li><a href="taos.html">Regarder les Taos</a></li>
                 <li><a href="admin.html">Espace Admin</a></li>
             </ul>
+            <!-- Bouton pour changer de thème -->
+            <button id="themeToggleBtn" class="theme-toggle-btn" onclick="basculerTheme()">
+                🌙 Sombre
+            </button>
         </nav>
     </header>
 
@@ -447,25 +505,25 @@
         
         <div class="annonce-card urgent" style="margin-top: 15px;">
             <span class="annonce-badge badge-urgent">INFORMATIONS DE PASSATION</span>
-            <h4 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1rem;">🥋 Passage de Ceintures & Barrettes</h4>
-            <p style="margin: 0; font-size: 0.9rem; color: #334155; line-height: 1.4;">
+            <h4 style="margin: 0 0 5px 0; font-size: 1rem;">🥋 Passage de Ceintures & Barrettes</h4>
+            <p style="margin: 0; font-size: 0.9rem; line-height: 1.4;">
                 La date du prochain passage de grades vous sera directement communiquée en salle d'entraînement par les Maîtres. Elle sera également publiée ici sur le site. <strong>Soyez attentifs et restez à l'écoute !</strong>
             </p>
         </div>
 
         <div class="annonce-card">
             <span class="annonce-badge badge-event">COMPÉTITION</span>
-            <h4 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1rem;">🥊 Ouverture des Inscriptions : Championnat Communal de Sanda</h4>
-            <p style="margin: 0; font-size: 0.9rem; color: #334155; line-height: 1.4;">
-                Les inscriptions pour le <strong>Championnat Communal de Sanda</strong> sont désormais ouvertes auprès de Maître Sidi Yaya Boirè. Préparez-vous bien !
+            <h4 style="margin: 0 0 5px 0; font-size: 1rem;">🥊 Ouverture des Inscriptions : Championnat Communal de Sanda</h4>
+            <p style="margin: 0; font-size: 0.9rem; line-height: 1.4;">
+                Les inscriptions pour le <strong>Championnat Communal de Sanda</strong> sont dès à présent ouvertes auprès de Maître Sidi Yaya Boirè. Préparez-vous bien !
             </p>
         </div>
 
         <!-- ANNONCE DU SITE SHAOLINAPP -->
         <div class="annonce-card info-site">
             <span class="annonce-badge badge-platform">📢 ANNONCE SHAOLINAPP</span>
-            <h4 style="margin: 0 0 5px 0; color: #0f172a; font-size: 1rem;">🔄 Mises à jour en direct & Accès Restreint</h4>
-            <p style="margin: 0; font-size: 0.9rem; color: #334155; line-height: 1.5;">
+            <h4 style="margin: 0 0 5px 0; font-size: 1rem;">🔄 Mises à jour en direct & Accès Restreint</h4>
+            <p style="margin: 0; font-size: 0.9rem; line-height: 1.5;">
                 • <strong>Mises à jour du site :</strong> Le lien du site reste permanent. Toutes les nouveautés et mises à jour de <strong>ShaolinApp</strong> s'appliquent automatiquement sur cette même adresse.<br>
                 • <strong>Accès Administration :</strong> L'<em>Espace Admin</em> est une zone strictement privée. Elle est réservée uniquement aux administrateurs du club et ne concerne personne d'autre.<br>
                 • <strong>Vidéos des Taos :</strong> Pour accéder aux Taos payants ("- B" et "- C"), pensez à activer votre souscription temporaire de 7 jours.
@@ -500,5 +558,33 @@
     <footer>
         <p>&copy; 2027 - ShaolinApp & Services. Tous droits réservés.</p>
     </footer>
+
+    <!-- Script pour la gestion du Mode Sombre -->
+    <script>
+        function basculerTheme() {
+            const htmlTag = document.documentElement;
+            const btn = document.getElementById("themeToggleBtn");
+
+            if (htmlTag.getAttribute("data-theme") === "dark") {
+                htmlTag.removeAttribute("data-theme");
+                localStorage.setItem("theme", "light");
+                btn.innerHTML = "🌙 Sombre";
+            } else {
+                htmlTag.setAttribute("data-theme", "dark");
+                localStorage.setItem("theme", "dark");
+                btn.innerHTML = "☀️ Clair";
+            }
+        }
+
+        // Charger le thème enregistré au démarrage
+        window.addEventListener("DOMContentLoaded", () => {
+            const savedTheme = localStorage.getItem("theme");
+            const btn = document.getElementById("themeToggleBtn");
+            if (savedTheme === "dark") {
+                document.documentElement.setAttribute("data-theme", "dark");
+                if (btn) btn.innerHTML = "☀️ Clair";
+            }
+        });
+    </script>
 </body>
 </html>
