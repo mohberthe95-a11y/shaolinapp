@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,6 +16,17 @@
             --border-color: #e2e8f0;
         }
 
+        /* Variables pour le Mode Sombre */
+        [data-theme="dark"] {
+            --primary: #f8fafc;
+            --accent: #38bdf8;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --bg-body: #0b0f19;
+            --card-bg: #1e293b;
+            --border-color: #334155;
+        }
+
         body {
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             background-color: var(--bg-body);
@@ -23,6 +35,7 @@
             color: var(--text-main);
             padding-top: 110px;
             scroll-behavior: smooth;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
         
         header {
@@ -71,6 +84,9 @@
             width: 100%;
             display: flex;
             justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         nav ul {
@@ -115,6 +131,26 @@
             width: 100%;
         }
 
+        /* Bouton Dark/Light Mode */
+        .theme-toggle-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle-btn:hover {
+            background: rgba(56, 189, 248, 0.2);
+            border-color: var(--accent);
+        }
+
         @media (min-width: 850px) {
             body {
                 padding-top: 80px;
@@ -145,6 +181,7 @@
             border: 1px solid var(--border-color);
             position: relative;
             overflow: hidden;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
         .styled-card::before {
@@ -159,8 +196,8 @@
 
         .badge-section {
             display: inline-block;
-            background-color: #eff6ff;
-            color: #2563eb;
+            background-color: var(--bg-body);
+            color: var(--accent);
             font-size: 0.8rem;
             font-weight: 700;
             padding: 6px 14px;
@@ -168,7 +205,7 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-bottom: 15px;
-            border: 1px solid #bfdbfe;
+            border: 1px solid var(--border-color);
         }
 
         .styled-card h3 {
@@ -197,14 +234,15 @@
             border-radius: 8px;
             box-sizing: border-box;
             font-size: 1rem;
-            background-color: #f8fafc;
+            background-color: var(--bg-body);
+            color: var(--text-main);
             transition: all 0.3s ease;
         }
 
         .form-group input:focus, .form-group select:focus {
             outline: none;
             border-color: var(--accent);
-            background-color: #ffffff;
+            background-color: var(--card-bg);
             box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
         }
 
@@ -237,10 +275,11 @@
             padding: 10px 12px;
             border: 1px solid var(--border-color);
             text-align: left;
+            color: var(--text-main);
         }
 
         .tableau-abos th {
-            background-color: #f1f5f9;
+            background-color: var(--bg-body);
             color: var(--primary);
             font-weight: 700;
         }
@@ -332,6 +371,10 @@
                     <button onclick="deconnecterAdmin()" style="background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600;">Déconnexion</button>
                 </li>
             </ul>
+            <!-- Bouton pour changer de thème -->
+            <button id="themeToggleBtn" class="theme-toggle-btn" onclick="basculerTheme()">
+                🌙 Sombre
+            </button>
         </nav>
     </header>
 
@@ -422,9 +465,9 @@
             </div>
 
             <!-- NOUVEAU : LISTE ET SUIVI DES ABONNEMENTS ACTIFS AVEC CHRONOMÈTRE -->
-            <div style="margin-top: 35px; border-top: 2px dashed #e2e8f0; padding-top: 20px;">
-                <h4 style="margin: 0 0 10px 0; color: #0f172a; font-size: 1.1rem;">⏱️ Suivi en direct des Abonnements Taos Actifs</h4>
-                <p style="color: #64748b; font-size: 0.85rem; margin-bottom: 15px;">Voici la liste des élèves ayant acheté un accès vidéo avec leur compte à rebours :</p>
+            <div style="margin-top: 35px; border-top: 2px dashed var(--border-color); padding-top: 20px;">
+                <h4 style="margin: 0 0 10px 0; color: var(--primary); font-size: 1.1rem;">⏱️ Suivi en direct des Abonnements Taos Actifs</h4>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 15px;">Voici la liste des élèves ayant acheté un accès vidéo avec leur compte à rebours :</p>
                 
                 <div style="overflow-x: auto;">
                     <table class="tableau-abos">
@@ -439,7 +482,7 @@
                         </thead>
                         <tbody id="corpsTableauAbonnements">
                             <tr>
-                                <td colspan="5" style="text-align: center; color: #94a3b8; font-style: italic;">Chargement des abonnements...</td>
+                                <td colspan="5" style="text-align: center; color: var(--text-muted); font-style: italic;">Chargement des abonnements...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -526,6 +569,33 @@
         <p>&copy; 2027 - ShaolinApp & Services. Tous droits réservés.</p>
     </footer>
 
+    <!-- Script de gestion du Mode Sombre -->
+    <script>
+        function basculerTheme() {
+            const htmlTag = document.documentElement;
+            const btn = document.getElementById("themeToggleBtn");
+
+            if (htmlTag.getAttribute("data-theme") === "dark") {
+                htmlTag.removeAttribute("data-theme");
+                localStorage.setItem("theme", "light");
+                btn.innerHTML = "🌙 Sombre";
+            } else {
+                htmlTag.setAttribute("data-theme", "dark");
+                localStorage.setItem("theme", "dark");
+                btn.innerHTML = "☀️ Clair";
+            }
+        }
+
+        window.addEventListener("DOMContentLoaded", () => {
+            const savedTheme = localStorage.getItem("theme");
+            const btn = document.getElementById("themeToggleBtn");
+            if (savedTheme === "dark") {
+                document.documentElement.setAttribute("data-theme", "dark");
+                if (btn) btn.innerHTML = "☀️ Clair";
+            }
+        });
+    </script>
+
     <!-- Script Firebase & Admin -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -610,7 +680,7 @@
             if (!conteneur) return;
 
             if (listeAbosGlobal.length === 0) {
-                conteneur.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #94a3b8; font-style: italic;">Aucun abonnement actif pour le moment.</td></tr>`;
+                conteneur.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted); font-style: italic;">Aucun abonnement actif pour le moment.</td></tr>`;
                 return;
             }
 
@@ -642,7 +712,7 @@
                         <td>${abo.datePaiement || 'N/A'}</td>
                         <td><span class="${classeStyle}">${chronoTexte}</span></td>
                         <td style="text-align: center;">
-                            <button onclick="supprimerAbonnement('${abo.id}')" style="background: #ef4444; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.78rem; font-weight: 600;">🗑 Révoler</button>
+                            <button onclick="supprimerAbonnement('${abo.id}')" style="background: #ef4444; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.78rem; font-weight: 600;">🗑 Révoquer</button>
                         </td>
                     </tr>
                 `;
