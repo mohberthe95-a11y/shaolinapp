@@ -449,9 +449,9 @@
                 querySnapshot.forEach((docSnap) => {
                     const data = docSnap.data();
                     
-                    // Inclusion de "Contact de l'élève" pour correspondre exactement à Firebase
-                    const telMembre = String(data["Contact de l'élève"] || data.contactEleve || data.téléphoneEleve || data.telephoneEleve || "").trim();
-                    const pinMembre = String(data["CodePIN confidentiel"] || data.CodePIN || data.CodePin || data.codePin || "").trim();
+                    // Correspondance exacte avec les champs vus dans ta base Firebase (téléphoneEleve, CodePin, etc.)
+                    const telMembre = String(data.téléphoneEleve || data.telephoneEleve || data["Contact de l'élève"] || data.contactEleve || "").trim();
+                    const pinMembre = String(data.CodePin || data.CodePIN || data["CodePIN confidentiel"] || data.codePin || "").trim();
 
                     if (telMembre === telSaisi && pinMembre === pinSaisi) {
                         eleveTrouve = { id: docSnap.id, ...data };
@@ -475,8 +475,8 @@
                     erreur.textContent = "Erreur de connexion avec la base de données Cloud.";
                 }
                 erreur.style.display = "block";
-                    btnValider.disabled = false;
-                    btnValider.textContent = "Se connecter à mon dossier";
+                btnValider.disabled = false;
+                btnValider.textContent = "Se connecter à mon dossier";
             }
         }
 
@@ -485,17 +485,17 @@
             document.getElementById("zone-tableau-eleve").style.display = "block";
             document.getElementById("nav-deconnexion-eleve").style.display = "block";
 
-            document.getElementById("profil-nom").textContent = eleve.nom || "Nom Inconnu";
+            document.getElementById("profil-nom").textContent = eleve.Nom || eleve.nom || "Nom Inconnu";
             document.getElementById("profil-club").textContent = eleve.club || "Club Youze";
-            document.getElementById("profil-tel").textContent = eleve["Contact de l'élève"] || eleve.contactEleve || eleve.téléphoneEleve || eleve.telephoneEleve || "N/C";
-            document.getElementById("profil-naissance").textContent = eleve.naissance || "N/C";
+            document.getElementById("profil-tel").textContent = eleve.téléphoneEleve || eleve.telephoneEleve || eleve["Contact de l'élève"] || "N/C";
+            document.getElementById("profil-naissance").textContent = eleve.Catégorie || eleve.naissance || "N/C";
             document.getElementById("profil-inscription").textContent = eleve.dateInscription || "N/C";
             document.getElementById("profil-parent").textContent = eleve.parent || "N/C";
             document.getElementById("profil-tuteur-tel").textContent = eleve.téléphoneTuteur || eleve.telephoneTuteur || "N/C";
 
-            if (eleve.photo) {
+            if (eleve.pieceUrl) {
                 const img = document.getElementById("profil-photo");
-                img.src = eleve.photo;
+                img.src = eleve.pieceUrl;
                 img.style.display = "block";
             }
         }
