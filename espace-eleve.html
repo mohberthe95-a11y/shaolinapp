@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShaolinApp - Espace Élève</title>
+    <!-- Liaison de la feuille de style externe si besoin, et styles intégrés -->
+    <style>
+        :root {
+            --primary: #0f172a;
+            --accent: #38bdf8;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-body: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+
+        /* Variables pour le Mode Sombre */
+        [data-theme="dark"] {
+            --primary: #f8fafc;
+            --accent: #38bdf8;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --bg-body: #0b0f19;
+            --card-bg: #1e293b;
+            --border-color: #334155;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-body);
+            margin: 0;
+            padding: 0;
+            color: var(--text-main);
+            padding-top: 110px;
+            scroll-behavior: smooth;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(15, 23, 42, 0.98);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            gap: 10px;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-container img {
+            height: 38px;
+            width: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent);
+        }
+
+        .logo-container h1 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            white-space: nowrap;
+        }
+
+        nav {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px 20px;
+            margin: 0;
+            padding: 0;
+            align-items: center;
+        }
+
+        nav ul li a {
+            color: #cbd5e1;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.88rem;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 3px 0;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        nav ul li a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        nav ul li a:hover, nav ul li a.actif {
+            color: white;
+        }
+
+        nav ul li a:hover::after, nav ul li a.actif::after {
+            width: 100%;
+        }
+
+        /* Bouton Dark/Light Mode */
+        .theme-toggle-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle-btn:hover {
+            background: rgba(56, 189, 248, 0.2);
+            border-color: var(--accent);
+        }
+
+        @media (min-width: 850px) {
+            body {
+                padding-top: 80px;
+            }
+            header {
+                flex-direction: row;
+                justify-content: space-between;
+                padding: 15px 40px;
+            }
+            nav {
+                width: auto;
+            }
+            nav ul {
+                gap: 25px;
+            }
+            nav ul li a {
+                font-size: 0.95rem;
+            }
+        }
+
+        .main-container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .styled-card {
+            background: var(--card-bg);
+            padding: 35px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+            margin-bottom: 30px;
+        }
+
+        .styled-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #2563eb, #38bdf8);
+        }
+
+        .badge-section {
+            display: inline-block;
+            background-color: var(--bg-body);
+            color: var(--accent);
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--primary);
+            font-size: 0.95rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1rem;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background-color: var(--card-bg);
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+        }
+
+        .btn-submit {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            background-color: #1d4ed8;
+        }
+
+        footer {
+            background-color: #0f172a;
+            color: #94a3b8;
+            text-align: center;
+            padding: 30px 20px;
+            font-size: 0.9rem;
+            border-top: 3px solid #38bdf8;
+            margin-top: 50px;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        footer p {
+            margin: 0;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-container">
+            <img src="logo.jpg" alt="Logo ShaolinApp">
+            <h1>ShaolinApp</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="eleves.html">Liste des Élèves</a></li>
+                <li><a href="apropos.html">À propos du Club</a></li>
+                <li><a href="taos.html">Regarder les Taos</a></li>
+                <li><a href="admin.html">Espace Admin</a></li>
+                <li><a href="espace-eleve.html" class="actif">Espace Élève</a></li>
+                <li id="nav-deconnexion-eleve" style="display: none;">
+                    <button onclick="deconnecterEleve()" style="background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600;">Déconnexion</button>
+                </li>
+            </ul>
+            <button id="themeToggleBtn" class="theme-toggle-btn" onclick="basculerTheme()">
+                🌙 Sombre
+            </button>
+        </nav>
+    </header>
+
+    <main class="main-container">
+        
+        <!-- ÉCRAN DE CONNEXION ÉLÈVE -->
+        <div id="zone-connexion-eleve" class="styled-card" style="text-align: center;">
+            <span class="badge-section">Portail Membre</span>
+            <h2 style="color: var(--primary); margin-top: 5px;">🥋 Connexion Espace Élève</h2>
+            <p style="color: var(--text-muted); margin-bottom: 25px;">Entrez votre numéro de téléphone et votre code PIN à 4 chiffres pour accéder à votre dossier personnel.</p>
+            
+            <div style="max-width: 400px; margin: 0 auto;">
+                <div class="form-group" style="text-align: left;">
+                    <label>Numéro de téléphone :</label>
+                    <input type="tel" id="inputTelEleve" placeholder="Ex: +223 70 00 00 00">
+                </div>
+                <div class="form-group" style="text-align: left;">
+                    <label>Code PIN (4 chiffres) :</label>
+                    <input type="password" id="inputPinEleve" maxlength="4" placeholder="••••" style="letter-spacing: 3px; font-weight: bold; text-align: center;">
+                </div>
+                <button onclick="connecterEleve()" class="btn-submit">Se connecter à mon dossier</button>
+                <p id="erreurLoginEleve" style="color: #ef4444; font-weight: 600; margin-top: 15px; display: none;">Numéro de téléphone ou code PIN incorrect.</p>
+            </div>
+        </div>
+
+        <!-- TABLEAU DE BORD PERSONNEL DE L'ÉLÈVE -->
+        <div id="zone-tableau-eleve" style="display: none;">
+            
+            <div class="styled-card">
+                <span class="badge-section">Mon Profil</span>
+                <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+                    <img id="profil-photo" src="" alt="Photo" style="width: 90px; height: 110px; object-fit: cover; border-radius: 8px; border: 2px solid var(--accent); display: none;">
+                    <div>
+                        <h2 id="profil-nom" style="margin: 0 0 5px 0; color: var(--primary);">Nom de l'élève</h2>
+                        <p style="margin: 0 0 5px 0; color: var(--text-muted);">Club : <strong id="profil-club" style="color: var(--accent);">Club Youze</strong></p>
+                        <p style="margin: 0; color: var(--text-muted);">Matricule / Téléphone : <strong id="profil-tel"></strong></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION INFORMATIONS & DOSSIER -->
+            <div class="styled-card">
+                <h3 style="color: var(--primary); margin-top: 0; border-bottom: 2px solid var(--border-color); padding-bottom: 10px;">📋 Mes Informations Administratives</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; font-size: 0.95rem;">
+                    <p style="margin: 0;"><strong>Date de naissance :</strong> <span id="profil-naissance">N/C</span></p>
+                    <p style="margin: 0;"><strong>Date d'inscription :</strong> <span id="profil-inscription">N/C</span></p>
+                    <p style="margin: 0;"><strong>Parent / Tuteur :</strong> <span id="profil-parent">N/C</span></p>
+                    <p style="margin: 0;"><strong>Contact Tuteur :</strong> <span id="profil-tuteur-tel">N/C</span></p>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2027 - ShaolinApp & Services. Tous droits réservés.</p>
+    </footer>
+
+    <!-- Script de gestion du Mode Sombre -->
+    <script>
+        function basculerTheme() {
+            const htmlTag = document.documentElement;
+            const btn = document.getElementById("themeToggleBtn");
+
+            if (htmlTag.getAttribute("data-theme") === "dark") {
+                htmlTag.removeAttribute("data-theme");
+                localStorage.setItem("theme", "light");
+                btn.innerHTML = "🌙 Sombre";
+            } else {
+                htmlTag.setAttribute("data-theme", "dark");
+                localStorage.setItem("theme", "dark");
+                btn.innerHTML = "☀️ Clair";
+            }
+        }
+
+        window.addEventListener("DOMContentLoaded", () => {
+            const savedTheme = localStorage.getItem("theme");
+            const btn = document.getElementById("themeToggleBtn");
+            if (savedTheme === "dark") {
+                document.documentElement.setAttribute("data-theme", "dark");
+                if (btn) btn.innerHTML = "☀️ Clair";
+            }
+
+            // Vérifier si un élève est déjà connecté dans sessionStorage
+            const eleveConnecte = sessionStorage.getItem("eleveConnecteData");
+            if (eleveConnecte) {
+                afficherTableauBordEleve(JSON.parse(eleveConnecte));
+            }
+        });
+    </script>
+
+    <!-- Script Firebase & Connexion Élève -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyCb4isUEJUeHTiylyFrWEqP3WhU0A2Wc4A",
+          authDomain: "shaolinapp-466e8.firebaseapp.com",
+          projectId: "shaolinapp-466e8",
+          storageBucket: "shaolinapp-466e8.firebasestorage.app",
+          messagingSenderId: "715800083026",
+          appId: "1:715800083026:web:0a51748663f4fddd29bd8b",
+          measurementId: "G-5GGYZYMSB4"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.connecterEleve = async function() {
+            const telSaisi = document.getElementById("inputTelEleve").value.trim();
+            const pinSaisi = document.getElementById("inputPinEleve").value.trim();
+            const erreur = document.getElementById("erreurLoginEleve");
+
+            if (!telSaisi || !pinSaisi) {
+                erreur.textContent = "Veuillez remplir tous les champs.";
+                erreur.style.display = "block";
+                return;
+            }
+
+            try {
+                const querySnapshot = await getDocs(collection(db, "membresShaolin"));
+                let eleve Trouve = null;
+
+                querySnapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    // On vérifie si le téléphone correspond et si le code PIN correspond
+                    const telMembre = (data.telephoneEleve || "").trim();
+                    const pinMembre = (data.codePin || "").trim();
+
+                    if (telMembre === telSaisi && pinMembre === pinSaisi) {
+                        eleveTrouve = { id: docSnap.id, ...data };
+                    }
+                });
+
+                if (eleveTrouve) {
+                    sessionStorage.setItem("eleveConnecteData", JSON.stringify(eleveTrouve));
+                    afficherTableauBordEleve(eleveTrouve);
+                } else {
+                    erreur.textContent = "Numéro de téléphone ou code PIN incorrect.";
+                    erreur.style.display = "block";
+                }
+            } catch (err) {
+                console.error("Erreur de connexion :", err);
+                erreur.textContent = "Erreur de connexion à la base de données.";
+                erreur.style.display = "block";
+            }
+        }
+
+        function afficherTableauBordEleve(eleve) {
+            document.getElementById("zone-connexion-eleve").style.display = "none";
+            document.getElementById("zone-tableau-eleve").style.display = "block";
+            document.getElementById("nav-deconnexion-eleve").style.display = "block";
+
+            // Remplissage des infos
+            document.getElementById("profil-nom").textContent = eleve.nom || "Nom Inconnu";
+            document.getElementById("profil-club").textContent = eleve.club || "Club Youze";
+            document.getElementById("profil-tel").textContent = eleve.telephoneEleve || "N/C";
+            document.getElementById("profil-naissance").textContent = eleve.naissance || "N/C";
+            document.getElementById("profil-inscription").textContent = eleve.dateInscription || "N/C";
+            document.getElementById("profil-parent").textContent = eleve.parent || "N/C";
+            document.getElementById("profil-tuteur-tel").textContent = eleve.telephoneTuteur || "N/C";
+
+            if (eleve.photo) {
+                const img = document.getElementById("profil-photo");
+                img.src = eleve.photo;
+                img.style.display = "block";
+            }
+        }
+
+        window.deconnecterEleve = function() {
+            sessionStorage.removeItem("eleveConnecteData");
+            location.reload();
+        }
+    </script>
+</body>
+</html>
