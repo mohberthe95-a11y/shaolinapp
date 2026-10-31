@@ -432,7 +432,6 @@
                 return;
             }
 
-            // Désactiver le bouton et afficher un message de chargement pour rassurer l'utilisateur
             btnValider.disabled = true;
             btnValider.textContent = "Connexion en cours...";
             erreur.style.display = "none";
@@ -445,7 +444,8 @@
                     const data = docSnap.data();
                     
                     const telMembre = String(data.téléphoneEleve || data.telephoneEleve || "").trim();
-                    const pinMembre = String(data.CodePin || data.codePin || "").trim();
+                    // Ajout de "CodePIN confidentiel" pour correspondre exactement à Firebase
+                    const pinMembre = String(data["CodePIN confidentiel"] || data.CodePIN || data.CodePin || data.codePin || "").trim();
 
                     if (telMembre === telSaisi && pinMembre === pinSaisi) {
                         eleveTrouve = { id: docSnap.id, ...data };
