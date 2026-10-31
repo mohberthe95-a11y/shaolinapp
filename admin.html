@@ -136,10 +136,10 @@
         }
 
         .styled-card {
-            max-width: 750px;
+            max-width: 850px;
             margin: 40px auto;
             background: var(--card-bg);
-            padding: 40px;
+            padding: 35px;
             border-radius: 16px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
             border: 1px solid var(--border-color);
@@ -225,6 +225,45 @@
             background-color: #1d4ed8;
         }
 
+        /* Tableau d'abonnements */
+        .tableau-abos {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+
+        .tableau-abos th, .tableau-abos td {
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            text-align: left;
+        }
+
+        .tableau-abos th {
+            background-color: #f1f5f9;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .timer-badge {
+            display: inline-block;
+            background: #0f172a;
+            color: #38bdf8;
+            font-family: monospace;
+            font-weight: bold;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .timer-expire {
+            background: #fee2e2;
+            color: #dc2626;
+            font-weight: bold;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
         #messageSucces {
             display: none;
             margin-top: 15px;
@@ -260,7 +299,8 @@
         }
 
         @media (max-width: 768px) {
-            .styled-card { margin: 20px; padding: 20px; }
+            .styled-card { margin: 15px; padding: 20px; }
+            .tableau-abos { font-size: 0.8rem; }
         }
     </style>
 </head>
@@ -371,6 +411,31 @@
             <div id="msgSuccesTao" style="display: none; margin-top: 15px; padding: 12px; background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; border-radius: 8px; text-align: center; font-weight: 600;">
                 Accès débloqué avec succès pour l'élève !
             </div>
+
+            <!-- NOUVEAU : LISTE ET SUIVI DES ABONNEMENTS ACTIFS AVEC CHRONOMÈTRE -->
+            <div style="margin-top: 35px; border-top: 2px dashed #e2e8f0; padding-top: 20px;">
+                <h4 style="margin: 0 0 10px 0; color: #0f172a; font-size: 1.1rem;">⏱️ Suivi en direct des Abonnements Taos Actifs</h4>
+                <p style="color: #64748b; font-size: 0.85rem; margin-bottom: 15px;">Voici la liste des élèves ayant acheté un accès vidéo avec leur compte à rebours :</p>
+                
+                <div style="overflow-x: auto;">
+                    <table class="tableau-abos">
+                        <thead>
+                            <tr>
+                                <th>Téléphone</th>
+                                <th>Tao / Barrette</th>
+                                <th>Date Paiement</th>
+                                <th>Temps Restant (Décompte)</th>
+                                <th style="text-align: center;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="corpsTableauAbonnements">
+                            <tr>
+                                <td colspan="5" style="text-align: center; color: #94a3b8; font-style: italic;">Chargement des abonnements...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
         <!-- SECTION 2 : ENREGISTREMENT ÉLÈVES -->
@@ -427,7 +492,7 @@
                     </select>
                 </div>
 
-                <!-- NOUVEAU : Champ pour sélectionner la Photo d'identité -->
+                <!-- Champ pour sélectionner la Photo d'identité -->
                 <div class="form-group">
                     <label for="photoEleve">Photo d'identité de l'élève :</label>
                     <input type="file" id="photoEleve" accept="image/*" required>
@@ -455,7 +520,7 @@
     <!-- Script Firebase & Admin -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, setDoc, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
           apiKey: "AIzaSyCb4isUEJUeHTiylyFrWEqP3WhU0A2Wc4A",
@@ -488,11 +553,93 @@
             document.getElementById("zone-connexion").style.display = "none";
             document.getElementById("zone-admin-contenu").style.display = "block";
             document.getElementById("nav-deconnexion").style.display = "block";
+            chargerEtSuivreAbonnements();
         }
 
         window.deconnecterAdmin = function() {
             sessionStorage.removeItem("adminConnecte");
             location.reload();
+        }
+
+        // SUPPRESSION MANUELLE D'UN ABONNEMENT
+        window.supprimerAbonnement = async function(idDoc) {
+            if (confirm("Voulez-vous vraiment révoquer cet abonnement ?")) {
+                try {
+                    await deleteDoc(doc(db, "abonnements_taos", idDoc));
+                    alert("Abonnement supprimé !");
+                } catch (err) {
+                    console.error("Erreur de suppression :", err);
+                }
+            }
+        }
+
+        // CHARGEMENT TEMPS RÉEL ET DÉCOMPTE DU CHRONOMÈTRE
+        let timerInterval = null;
+        let listeAbosGlobal = [];
+
+        function chargerEtSuivreAbonnements() {
+            const conteneur = document.getElementById("corpsTableauAbonnements");
+            
+            // Écoute en temps réel de la collection Firebase
+            onSnapshot(collection(db, "abonnements_taos"), (snapshot) => {
+                listeAbosGlobal = [];
+                snapshot.forEach((docSnap) => {
+                    listeAbosGlobal.push({ id: docSnap.id, ...docSnap.data() });
+                });
+
+                actualiserAffichageChrono();
+
+                // Lancement du timer 1s si non actif
+                if (!timerInterval) {
+                    timerInterval = setInterval(actualiserAffichageChrono, 1000);
+                }
+            });
+        }
+
+        function actualiserAffichageChrono() {
+            const conteneur = document.getElementById("corpsTableauAbonnements");
+            if (!conteneur) return;
+
+            if (listeAbosGlobal.length === 0) {
+                conteneur.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #94a3b8; font-style: italic;">Aucun abonnement actif pour le moment.</td></tr>`;
+                return;
+            }
+
+            const maintenant = new Date().getTime();
+            let html = "";
+
+            listeAbosGlobal.forEach((abo) => {
+                const tempsRestantMs = abo.dateExpiration - maintenant;
+
+                let chronoTexte = "";
+                let classeStyle = "timer-badge";
+
+                if (tempsRestantMs <= 0) {
+                    chronoTexte = "⛔ Expiré";
+                    classeStyle = "timer-expire";
+                } else {
+                    const jours = Math.floor(tempsRestantMs / (1000 * 60 * 60 * 24));
+                    const heures = Math.floor((tempsRestantMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((tempsRestantMs % (1000 * 60 * 60)) / (1000 * 60));
+                    const secondes = Math.floor((tempsRestantMs % (1000 * 60)) / 1000);
+
+                    chronoTexte = `⏳ ${jours}j ${heures}h ${minutes}m ${secondes}s`;
+                }
+
+                html += `
+                    <tr>
+                        <td><strong>${abo.telephone || 'N/A'}</strong></td>
+                        <td><span style="color: #2563eb; font-weight: 600;">${abo.titreTao || 'N/A'}</span></td>
+                        <td>${abo.datePaiement || 'N/A'}</td>
+                        <td><span class="${classeStyle}">${chronoTexte}</span></td>
+                        <td style="text-align: center;">
+                            <button onclick="supprimerAbonnement('${abo.id}')" style="background: #ef4444; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.78rem; font-weight: 600;">🗑 Révoler</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            conteneur.innerHTML = html;
         }
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -529,7 +676,6 @@
                             const ctx = canvas.getContext('2d');
                             ctx.drawImage(img, 0, 0, width, height);
 
-                            // Compression en JPEG avec la qualité définie
                             const dataUrl = canvas.toDataURL('image/jpeg', quality);
                             resolve(dataUrl);
                         };
@@ -589,7 +735,7 @@
                 });
             }
 
-            // GESTION ENREGISTREMENT ÉLÈVES (AVEC PHOTO D'IDENTITÉ ET PIÈCE COMPRESSÉES)
+            // GESTION ENREGISTREMENT ÉLÈVES
             const form = document.getElementById("formEnregistrement");
             const messageSucces = document.getElementById("messageSucces");
             const btnEnregistrer = document.getElementById("btnEnregistrer");
@@ -623,7 +769,6 @@
                         btnEnregistrer.textContent = "Compression et enregistrement...";
 
                         try {
-                            // Compression automatique des photos pour éviter les erreurs de taille Firestore
                             const photoBase64 = await compresserEtConvertirImage(photoEleveInput, 800, 0.7);
                             const pieceBase64 = await compresserEtConvertirImage(pieceInput, 1000, 0.7);
 
@@ -635,8 +780,8 @@
                                 telephoneTuteur: telephoneTuteurInput,
                                 codePin: codePinInput,
                                 club: clubInput,
-                                photo: photoBase64,       // Photo d'identité compressée
-                                pieceUrl: pieceBase64,    // Pièce justificative compressée
+                                photo: photoBase64,
+                                pieceUrl: pieceBase64,
                                 dateInscription: dateFormatee
                             };
 
