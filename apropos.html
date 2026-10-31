@@ -167,6 +167,14 @@
             margin-top: 15px;
         }
 
+        /* Grille spécifique à 3 colonnes pour les Grands Maîtres */
+        .team-grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+
         .team-card {
             background: #f8fafc;
             border: 1px solid #e2e8f0;
@@ -535,7 +543,7 @@
                     </div>
                 </div>
 
-                <!-- 2 NOUVELLES COLONNES EN BAS POUR LES AIDES-MAÎTRES -->
+                <!-- 2 COLONNES EN BAS POUR LES AIDES-MAÎTRES -->
                 <div class="team-grid" style="margin-top: 20px;">
                     <!-- Aide-maître Aboubacar Berthé -->
                     <div class="team-card">
@@ -557,6 +565,47 @@
                         <a href="https://wa.me/22372399776?text=Bonjour%20Hawa%20Diallo," target="_blank"
                             style="display: inline-block; background: #2563eb; color: white; padding: 6px 14px; border-radius: 6px; text-decoration: none; font-size: 0.82rem; font-weight: 600;">📞
                             Contact : +223 72 39 97 76</a>
+                    </div>
+                </div>
+
+                <!-- SECTION : LES GRANDS MAÎTRES (3 COLONNES) -->
+                <div style="margin-top: 35px; border-top: 2px dashed #e2e8f0; padding-top: 25px;">
+                    <h3 style="color: #0f172a; margin-bottom: 10px;">🥋 Les Grands Maîtres</h3>
+                    <p style="margin-bottom: 15px; color: #64748b; font-size: 0.92rem;">Hommage et présentation de nos grands maîtres d'exception qui ont inspiré et façonné notre art martial :</p>
+
+                    <div class="team-grid-3">
+                        <!-- Grand Maître 1 -->
+                        <div class="team-card">
+                            <img src="grand_maitre1.jpg" alt="Grand Maître 1" class="team-photo-placeholder" onclick="ouvrirModal(this.src)" onerror="this.src='logo.jpg'">
+                            <h4>Grand Maître 1</h4>
+                            <span class="team-grade">Ceinture Noire Haute Dan</span>
+                            <p style="font-size: 0.88rem; color: #475569; margin: 8px 0 12px 0;"><strong>Titre / Fonction</strong><br>Courte description ou hommage au parcours d'exception.</p>
+                            <a href="#" target="_blank"
+                                style="display: inline-block; background: #2563eb; color: white; padding: 6px 14px; border-radius: 6px; text-decoration: none; font-size: 0.82rem; font-weight: 600;">📞
+                                Contact / Info</a>
+                        </div>
+
+                        <!-- Grand Maître 2 -->
+                        <div class="team-card">
+                            <img src="grand_maitre2.jpg" alt="Grand Maître 2" class="team-photo-placeholder" onclick="ouvrirModal(this.src)" onerror="this.src='logo.jpg'">
+                            <h4>Grand Maître 2</h4>
+                            <span class="team-grade">Ceinture Noire Haute Dan</span>
+                            <p style="font-size: 0.88rem; color: #475569; margin: 8px 0 12px 0;"><strong>Titre / Fonction</strong><br>Courte description ou hommage au parcours d'exception.</p>
+                            <a href="#" target="_blank"
+                                style="display: inline-block; background: #2563eb; color: white; padding: 6px 14px; border-radius: 6px; text-decoration: none; font-size: 0.82rem; font-weight: 600;">📞
+                                Contact / Info</a>
+                        </div>
+
+                        <!-- Grand Maître 3 -->
+                        <div class="team-card">
+                            <img src="grand_maitre3.jpg" alt="Grand Maître 3" class="team-photo-placeholder" onclick="ouvrirModal(this.src)" onerror="this.src='logo.jpg'">
+                            <h4>Grand Maître 3</h4>
+                            <span class="team-grade">Ceinture Noire Haute Dan</span>
+                            <p style="font-size: 0.88rem; color: #475569; margin: 8px 0 12px 0;"><strong>Titre / Fonction</strong><br>Courte description ou hommage au parcours d'exception.</p>
+                            <a href="#" target="_blank"
+                                style="display: inline-block; background: #2563eb; color: white; padding: 6px 14px; border-radius: 6px; text-decoration: none; font-size: 0.82rem; font-weight: 600;">📞
+                                Contact / Info</a>
+                        </div>
                     </div>
                 </div>
             </div>
