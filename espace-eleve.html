@@ -315,11 +315,13 @@
             <div style="max-width: 400px; margin: 0 auto;">
                 <div class="form-group" style="text-align: left;">
                     <label>Numéro de téléphone :</label>
-                    <input type="tel" id="inputTelEleve" placeholder="Ex: +223 70 00 00 00">
+                    <!-- Ajout de autocomplete="off" pour empêcher le remplissage automatique -->
+                    <input type="tel" id="inputTelEleve" placeholder="Ex: +223 70 00 00 00" autocomplete="off">
                 </div>
                 <div class="form-group" style="text-align: left;">
                     <label>Code PIN (4 chiffres) :</label>
-                    <input type="password" id="inputPinEleve" maxlength="4" placeholder="••••" style="letter-spacing: 3px; font-weight: bold; text-align: center;">
+                    <!-- Ajout de autocomplete="new-password" pour forcer le champ à rester vide -->
+                    <input type="password" id="inputPinEleve" maxlength="4" placeholder="••••" autocomplete="new-password" style="letter-spacing: 3px; font-weight: bold; text-align: center;">
                 </div>
                 <button onclick="connecterEleve()" class="btn-submit">Se connecter à mon dossier</button>
                 <p id="erreurLoginEleve" style="color: #ef4444; font-weight: 600; margin-top: 15px; display: none;">Numéro de téléphone ou code PIN incorrect.</p>
@@ -384,6 +386,12 @@
                 document.documentElement.setAttribute("data-theme", "dark");
                 if (btn) btn.innerHTML = "☀️ Clair";
             }
+
+            // Vider explicitement les champs au chargement pour éviter tout résidu de mémoire du navigateur
+            const inputTel = document.getElementById("inputTelEleve");
+            const inputPin = document.getElementById("inputPinEleve");
+            if (inputTel) inputTel.value = "";
+            if (inputPin) inputPin.value = "";
 
             // Vérifier si un élève est déjà connecté dans sessionStorage
             const eleveConnecte = sessionStorage.getItem("eleveConnecteData");
